@@ -226,6 +226,14 @@ function AppContent() {
   
   // Category filter state
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [radiusKm, setRadiusKm] = useState(10); // Default 10km radius
+  const [showRadiusSlider, setShowRadiusSlider] = useState(false);
+  
+  // Camera state
+  const [showCameraView, setShowCameraView] = useState(false);
+  const [cameraStream, setCameraStream] = useState(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
   
   // Post form state
   const [newPost, setNewPost] = useState({
