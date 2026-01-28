@@ -138,7 +138,7 @@ IMPORTANT: Respond ONLY with valid JSON, no other text:
         
         user_message = UserMessage(
             text="Analyze this item image. Return only JSON with title, category, and description.",
-            image_contents=[image_content]
+            file_contents=[image_content]
         )
         
         response = await chat.send_message(user_message)
