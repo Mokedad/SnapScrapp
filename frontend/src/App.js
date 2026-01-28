@@ -622,7 +622,7 @@ function AppContent() {
     fileInputRef.current?.click();
   };
 
-  // Handle image upload
+  // Handle image upload from file picker
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -661,23 +661,15 @@ function AppContent() {
     };
 
     try {
-      // Show loading state
-      setNewPost(prev => ({ ...prev, image_base64: "loading" }));
-      
       // Compress the image
       const compressedBase64 = await compressImage(file);
-      setNewPost(prev => ({ ...prev, image_base64: compressedBase64 }));
-      
-      // Analyze with AI
-      setIsAnalyzing(true);
-      const base64Data = compressedBase64.split(',')[1] || compressedBase64;
-      const response = await axios.post(`${API}/analyze-image`, {
-        image_base64: base64Data
-      });
-      setNewPost(prev => ({
-        ...prev,
-        title: response.data.title,
-        category: response.data.category,
+      // Process it (AI analysis + show form)
+      await processImage(compressedBase64);
+    } catch (error) {
+      console.error("Image processing failed:", error);
+      toast.error("Could not process image. Please try again.");
+    }
+  };
         description: response.data.description
       }));
       toast.success("AI analysis complete!");
