@@ -1096,16 +1096,100 @@ function AppContent() {
         </div>
       )}
 
-      {/* FAB - Post Item */}
-      {!pickingLocation && (
+      {/* Hidden file input for gallery */}
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        onChange={handleImageUpload}
+        className="hidden"
+        data-testid="image-upload-input"
+      />
+      
+      {/* Hidden canvas for camera capture */}
+      <canvas ref={canvasRef} className="hidden" />
+
+      {/* Camera FAB Button */}
+      {!pickingLocation && !showCameraView && (
         <button 
           className="fab-button"
-          onClick={() => setShowPostDrawer(true)}
-          data-testid="post-item-fab"
-          aria-label="Post new item"
+          onClick={openCamera}
+          data-testid="camera-fab"
+          aria-label="Open camera"
         >
-          <Plus className="w-7 h-7" />
+          <Camera className="w-7 h-7" />
         </button>
+      )}
+
+      {/* Full Screen Camera View */}
+      {showCameraView && (
+        <div className="fixed inset-0 z-50 bg-black" data-testid="camera-view">
+          {/* Camera Feed */}
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="w-full h-full object-cover"
+          />
+          
+          {/* Camera UI Overlay */}
+          <div className="absolute inset-0 flex flex-col">
+            {/* Top Bar */}
+            <div className="flex items-center justify-between p-4 pt-12">
+              <button
+                onClick={closeCamera}
+                className="w-12 h-12 bg-black/40 rounded-full flex items-center justify-center"
+                data-testid="close-camera-btn"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+              <div className="text-center">
+                <p className="text-white text-sm font-medium opacity-80">Ucycle</p>
+                <p className="text-white text-xs opacity-60">Snap a free item</p>
+              </div>
+              <div className="w-12 h-12" /> {/* Spacer */}
+            </div>
+            
+            {/* Spacer */}
+            <div className="flex-1" />
+            
+            {/* Bottom Controls */}
+            <div className="p-6 pb-12">
+              <div className="flex items-center justify-center gap-8">
+                {/* Gallery Button */}
+                <button
+                  onClick={openGallery}
+                  className="w-14 h-14 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center"
+                  data-testid="gallery-btn"
+                >
+                  <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <path d="M21 15l-5-5L5 21" />
+                  </svg>
+                </button>
+                
+                {/* Capture Button */}
+                <button
+                  onClick={capturePhoto}
+                  className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl ring-4 ring-white/30"
+                  data-testid="capture-btn"
+                >
+                  <div className="w-16 h-16 bg-lime-400 rounded-full" />
+                </button>
+                
+                {/* Flip Camera (placeholder) */}
+                <button
+                  className="w-14 h-14 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center opacity-50"
+                  disabled
+                >
+                  <RefreshCw className="w-6 h-6 text-white" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Menu Drawer */}
