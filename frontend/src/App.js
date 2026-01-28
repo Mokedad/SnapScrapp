@@ -1312,46 +1312,55 @@ function AppContent() {
             {/* Image Upload */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">Photo</label>
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                ref={fileInputRef}
-                onChange={handleImageUpload}
-                className="hidden"
-                data-testid="image-upload-input"
-              />
-              <div 
-                className={`image-upload-area p-6 text-center cursor-pointer ${newPost.image_base64 ? 'has-image' : ''}`}
-                onClick={() => fileInputRef.current?.click()}
-                data-testid="image-upload-area"
-              >
-                {newPost.image_base64 ? (
-                  <div className="relative">
-                    <img 
-                      src={newPost.image_base64} 
-                      alt="Preview" 
-                      className="max-h-48 mx-auto rounded-lg"
-                    />
-                    {isAnalyzing && (
-                      <div className="absolute inset-0 bg-white/80 flex items-center justify-center rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <Loader2 className="w-5 h-5 animate-spin text-green-600" />
-                          <span className="text-sm font-medium text-slate-700">Analyzing...</span>
-                        </div>
+              {/* Image Preview - already captured */}
+              {newPost.image_base64 && (
+                <div className="relative">
+                  <img 
+                    src={newPost.image_base64} 
+                    alt="Preview" 
+                    className="w-full h-48 object-cover rounded-xl"
+                  />
+                  {isAnalyzing && (
+                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center rounded-xl">
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-5 h-5 animate-spin text-green-600" />
+                        <span className="text-sm font-medium text-slate-700">AI analyzing...</span>
                       </div>
-                    )}
-                  </div>
-                ) : (
+                    </div>
+                  )}
+                  <button
+                    onClick={() => {
+                      setNewPost(prev => ({ ...prev, image_base64: "" }));
+                      openCamera();
+                      setShowPostDrawer(false);
+                    }}
+                    className="absolute top-2 right-2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70"
+                    data-testid="retake-photo-btn"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+              
+              {/* Show camera prompt if no image */}
+              {!newPost.image_base64 && (
+                <div 
+                  className="image-upload-area p-6 text-center cursor-pointer"
+                  onClick={() => {
+                    setShowPostDrawer(false);
+                    openCamera();
+                  }}
+                  data-testid="image-upload-area"
+                >
                   <div className="space-y-3">
                     <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center">
                       <Camera className="w-7 h-7 text-slate-400" />
                     </div>
-                    <p className="text-slate-600">Tap to take or upload a photo</p>
+                    <p className="text-slate-600">Tap to take a photo</p>
                     <p className="text-xs text-slate-400">AI will auto-fill item details</p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* Title */}
