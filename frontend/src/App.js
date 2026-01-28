@@ -1336,200 +1336,151 @@ function AppContent() {
         </DrawerContent>
       </Drawer>
 
-      {/* Post Item Drawer */}
+      {/* Post Item Drawer - Compact Design */}
       <Drawer open={showPostDrawer} onOpenChange={setShowPostDrawer}>
-        <DrawerContent className="max-h-[90vh]">
-          <DrawerHeader>
-            <DrawerTitle>Post an Item</DrawerTitle>
-            <DrawerDescription>Share something you no longer need</DrawerDescription>
-          </DrawerHeader>
-          <div className="p-4 space-y-6 overflow-y-auto pb-8">
-            {/* Image Upload */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Photo</label>
-              {/* Image Preview - already captured */}
-              {newPost.image_base64 && (
-                <div className="relative">
-                  <img 
-                    src={newPost.image_base64} 
-                    alt="Preview" 
-                    className="w-full h-48 object-cover rounded-xl"
-                  />
-                  {isAnalyzing && (
-                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center rounded-xl">
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="w-5 h-5 animate-spin text-green-600" />
-                        <span className="text-sm font-medium text-slate-700">AI analyzing...</span>
-                      </div>
+        <DrawerContent className="max-h-[85vh]">
+          {/* Compact Header with Image */}
+          <div className="relative">
+            {newPost.image_base64 ? (
+              <>
+                <img 
+                  src={newPost.image_base64} 
+                  alt="Preview" 
+                  className="w-full h-40 object-cover"
+                />
+                {isAnalyzing && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <div className="flex items-center gap-2 text-white">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span className="text-sm font-medium">AI analyzing...</span>
                     </div>
-                  )}
-                  <button
-                    onClick={() => {
-                      setNewPost(prev => ({ ...prev, image_base64: "" }));
-                      openCamera();
-                      setShowPostDrawer(false);
-                    }}
-                    className="absolute top-2 right-2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70"
-                    data-testid="retake-photo-btn"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-              
-              {/* Show camera prompt if no image */}
-              {!newPost.image_base64 && (
-                <div 
-                  className="image-upload-area p-6 text-center cursor-pointer"
-                  onClick={() => {
-                    setShowPostDrawer(false);
-                    openCamera();
-                  }}
-                  data-testid="image-upload-area"
-                >
-                  <div className="space-y-3">
-                    <div className="w-16 h-16 mx-auto bg-slate-100 rounded-full flex items-center justify-center">
-                      <Camera className="w-7 h-7 text-slate-400" />
-                    </div>
-                    <p className="text-slate-600">Tap to take a photo</p>
-                    <p className="text-xs text-slate-400">AI will auto-fill item details</p>
                   </div>
+                )}
+                <button
+                  onClick={() => {
+                    setNewPost(prev => ({ ...prev, image_base64: "" }));
+                    openCamera();
+                    setShowPostDrawer(false);
+                  }}
+                  className="absolute top-3 right-3 p-2 bg-black/50 rounded-full text-white"
+                  data-testid="retake-photo-btn"
+                >
+                  <Camera className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <div 
+                className="h-40 bg-slate-100 flex items-center justify-center cursor-pointer"
+                onClick={() => { setShowPostDrawer(false); openCamera(); }}
+              >
+                <div className="text-center">
+                  <Camera className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+                  <p className="text-slate-500 text-sm">Tap to snap a photo</p>
                 </div>
-              )}
-            </div>
-
-            {/* Title */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Title</label>
-              <Input
-                value={newPost.title}
-                onChange={(e) => setNewPost(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="e.g. Old Bookshelf"
-                disabled={isAnalyzing}
-                data-testid="post-title-input"
-              />
-            </div>
-
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Category</label>
+              </div>
+            )}
+          </div>
+          
+          {/* Compact Form */}
+          <div className="p-4 space-y-4">
+            {/* Title - larger, prominent */}
+            <Input
+              value={newPost.title}
+              onChange={(e) => setNewPost(prev => ({ ...prev, title: e.target.value }))}
+              placeholder="What is it? (e.g. Old Chair)"
+              disabled={isAnalyzing}
+              className="text-lg font-semibold border-0 border-b rounded-none px-0 focus-visible:ring-0"
+              data-testid="post-title-input"
+            />
+            
+            {/* Category + Expiry in one row */}
+            <div className="flex gap-3">
               <Select 
                 value={newPost.category} 
                 onValueChange={(val) => setNewPost(prev => ({ ...prev, category: val }))}
                 disabled={isAnalyzing}
               >
-                <SelectTrigger data-testid="post-category-select">
-                  <SelectValue />
+                <SelectTrigger className="flex-1" data-testid="post-category-select">
+                  <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map(cat => (
                     <SelectItem key={cat} value={cat}>
-                      {cat.replace('-', ' ').charAt(0).toUpperCase() + cat.replace('-', ' ').slice(1)}
+                      {cat.replace('-', ' ').charAt(0).toUpperCase() + cat.slice(1)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Description</label>
-              <Textarea
-                value={newPost.description}
-                onChange={(e) => setNewPost(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Brief description of the item..."
-                rows={3}
-                disabled={isAnalyzing}
-                data-testid="post-description-input"
-              />
-            </div>
-
-            {/* Expiry */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Expires in</label>
-              <div className="grid grid-cols-3 gap-3">
+              
+              {/* Compact expiry buttons */}
+              <div className="flex border rounded-lg overflow-hidden">
                 {[24, 48, 72].map(hours => (
                   <button
                     key={hours}
                     onClick={() => setNewPost(prev => ({ ...prev, expiry_hours: hours }))}
-                    className={`expiry-option ${newPost.expiry_hours === hours ? 'selected' : ''}`}
+                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                      newPost.expiry_hours === hours 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-white text-slate-600 hover:bg-slate-50'
+                    }`}
                     data-testid={`expiry-${hours}h`}
                   >
-                    <Clock className={`w-5 h-5 mb-1 ${newPost.expiry_hours === hours ? 'text-green-700' : 'text-slate-400'}`} />
-                    <span className={`font-bold ${newPost.expiry_hours === hours ? 'text-green-700' : 'text-slate-700'}`}>
-                      {hours}h
-                    </span>
+                    {hours}h
                   </button>
                 ))}
               </div>
             </div>
-
-            {/* Location */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Location</label>
-              <div className="space-y-2">
-                {userLocation && (
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start gap-2 border-green-200 bg-green-50 hover:bg-green-100"
-                    onClick={() => {
-                      setNewPost(prev => ({
-                        ...prev,
-                        latitude: userLocation[0],
-                        longitude: userLocation[1]
-                      }));
-                      toast.success("Using your current location!");
-                    }}
-                    data-testid="use-my-location-btn"
-                  >
-                    <svg className="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="3" />
-                      <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
-                    </svg>
-                    <span className="text-green-700">Use my current location</span>
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  className="w-full justify-start gap-2"
+            
+            {/* Location - auto-use current if available */}
+            <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
+              <MapPin className="w-5 h-5 text-green-600" />
+              {newPost.latitude ? (
+                <span className="text-sm text-green-700 flex-1">Location set ✓</span>
+              ) : userLocation ? (
+                <button
                   onClick={() => {
-                    setShowPostDrawer(false);
-                    setPickingLocation(true);
+                    setNewPost(prev => ({
+                      ...prev,
+                      latitude: userLocation[0],
+                      longitude: userLocation[1]
+                    }));
+                    toast.success("Using your location!");
                   }}
-                  data-testid="set-location-btn"
+                  className="text-sm text-green-600 flex-1 text-left"
                 >
-                  <MapPin className="w-4 h-4" />
-                  {newPost.latitude ? (
-                    <span className="text-green-700">Location set ✓</span>
-                  ) : (
-                    <span>Or tap to pick on map</span>
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-slate-500 mt-2">
-                Only approximate location will be shown to protect privacy
+                  Tap to use current location
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setShowPostDrawer(false); setPickingLocation(true); }}
+                  className="text-sm text-slate-600 flex-1 text-left"
+                >
+                  Tap to set location
+                </button>
+              )}
+            </div>
+            
+            {/* Swipe to Post Button */}
+            <div className="pt-2">
+              <Button
+                className="w-full bg-gradient-to-r from-green-600 to-lime-500 hover:from-green-700 hover:to-lime-600 text-white font-bold py-6 rounded-full shadow-lg text-lg"
+                onClick={handleSubmitPost}
+                disabled={isPosting || isAnalyzing || !newPost.image_base64 || !newPost.title || !newPost.latitude}
+                data-testid="publish-post-btn"
+              >
+                {isPosting ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  <>
+                    <Check className="w-6 h-6 mr-2" />
+                    Help a mate find it!
+                  </>
+                )}
+              </Button>
+              <p className="text-center text-xs text-slate-400 mt-2">
+                Approximate location shown for privacy
               </p>
             </div>
-
-            {/* Submit */}
-            <Button
-              className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-6 rounded-full shadow-lg"
-              onClick={handleSubmitPost}
-              disabled={isPosting || isAnalyzing || !newPost.image_base64 || !newPost.title || !newPost.latitude}
-              data-testid="publish-post-btn"
-            >
-              {isPosting ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Publishing...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-5 h-5 mr-2" />
-                  Publish
-                </>
-              )}
-            </Button>
           </div>
         </DrawerContent>
       </Drawer>
