@@ -753,7 +753,9 @@ function AppContent() {
 
   const shareToFacebook = (post) => {
     const url = getShareUrl(post);
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+    // Use Facebook's share dialog with quote
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(`Free: ${post.title}`)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
     setShowShareDialog(false);
   };
 
