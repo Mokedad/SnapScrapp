@@ -224,6 +224,9 @@ function AppContent() {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const searchInputRef = useRef(null);
   
+  // Category filter state
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  
   // Post form state
   const [newPost, setNewPost] = useState({
     image_base64: "",
@@ -243,6 +246,21 @@ function AppContent() {
   const [isReporting, setIsReporting] = useState(false);
   
   const fileInputRef = useRef(null);
+
+  // Filter posts by category
+  const getDisplayPosts = useCallback(() => {
+    let result = filteredPosts;
+    if (selectedCategory) {
+      result = result.filter(post => post.category === selectedCategory);
+    }
+    return result;
+  }, [filteredPosts, selectedCategory]);
+
+  // Get unique categories from posts
+  const availableCategories = useMemo(() => {
+    const cats = [...new Set(posts.map(p => p.category))];
+    return cats.sort();
+  }, [posts]);
 
   // Request user location
   const requestLocation = useCallback(() => {
