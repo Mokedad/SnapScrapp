@@ -862,6 +862,43 @@ function AppContent() {
         </MapContainer>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="fixed inset-0 z-40 bg-white/80 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto bg-gradient-to-br from-green-600 to-lime-500 rounded-2xl flex items-center justify-center mb-4 animate-pulse">
+              <RefreshCw className="w-8 h-8 text-white" />
+            </div>
+            <p className="text-slate-600 font-medium">Loading Ucycle...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Empty State - No Posts */}
+      {!loading && posts.length === 0 && !showSearchBar && (
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center p-6">
+          <div className="bg-white rounded-3xl shadow-xl p-8 max-w-sm">
+            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-100 to-lime-100 rounded-full flex items-center justify-center mb-4">
+              <MapPin className="w-10 h-10 text-green-600" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              No items yet
+            </h2>
+            <p className="text-slate-500 mb-6">
+              Be the first to post a free item in your area!
+            </p>
+            <button
+              onClick={() => setShowPostDrawer(true)}
+              className="w-full bg-gradient-to-r from-green-600 to-lime-500 text-white font-bold py-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+              data-testid="empty-state-post-btn"
+            >
+              <Plus className="w-5 h-5 inline mr-2" />
+              Post First Item
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Category Filter Chips */}
       {!showSearchBar && !pickingLocation && availableCategories.length > 0 && (
         <div className="fixed top-16 left-0 right-0 z-15 px-4 py-2 overflow-x-auto hide-scrollbar">
