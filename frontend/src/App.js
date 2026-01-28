@@ -337,42 +337,52 @@ function AppContent() {
     }
   };
 
-  // Share post
-  const handleSharePost = async (post) => {
-    const shareUrl = `${window.location.origin}/post/${post.id}`;
-    const shareData = {
-      title: `Free: ${post.title}`,
-      text: `Check out this free item on Ucycle: ${post.title} - ${post.description}`,
-      url: shareUrl
-    };
+  // Share post - show share dialog
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [sharePost, setSharePost] = useState(null);
 
-    // Try native share API first (works on mobile)
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-        toast.success("Shared successfully!");
-        return;
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.log("Native share failed, falling back to clipboard");
-        }
-      }
-    }
+  const handleSharePost = (post) => {
+    setSharePost(post);
+    setShowShareDialog(true);
+  };
 
-    // Fallback: copy to clipboard
+  const getShareUrl = (post) => `${window.location.origin}/post/${post.id}`;
+
+  const shareToWhatsApp = (post) => {
+    const url = getShareUrl(post);
+    const text = `Check out this free item on Ucycle: ${post.title}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+    setShowShareDialog(false);
+  };
+
+  const shareToFacebook = (post) => {
+    const url = getShareUrl(post);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+    setShowShareDialog(false);
+  };
+
+  const shareToTwitter = (post) => {
+    const url = getShareUrl(post);
+    const text = `Free item available: ${post.title} 🎁`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+    setShowShareDialog(false);
+  };
+
+  const copyShareLink = async (post) => {
+    const url = getShareUrl(post);
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(url);
       toast.success("Link copied to clipboard!");
     } catch (err) {
-      // Final fallback for older browsers
       const textArea = document.createElement("textarea");
-      textArea.value = shareUrl;
+      textArea.value = url;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
       toast.success("Link copied!");
     }
+    setShowShareDialog(false);
   };
 
   // Submit report
