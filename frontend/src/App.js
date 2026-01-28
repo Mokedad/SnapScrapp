@@ -1670,7 +1670,7 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
-      <Toaster position="top-center" />
+      <Toaster position="top-center" duration={3000} />
     </div>
   );
 }
@@ -1821,7 +1821,7 @@ function AdminPanel() {
             Back to map
           </button>
         </div>
-        <Toaster position="top-center" />
+        <Toaster position="top-center" duration={3000} />
       </div>
     );
   }
@@ -2015,7 +2015,7 @@ function AdminPanel() {
         )}
       </div>
 
-      <Toaster position="top-center" />
+      <Toaster position="top-center" duration={3000} />
     </div>
   );
 }
@@ -2124,7 +2124,7 @@ function PostPage() {
             Go to Map
           </Button>
         </div>
-        <Toaster position="top-center" />
+        <Toaster position="top-center" duration={3000} />
       </div>
     );
   }
@@ -2303,7 +2303,7 @@ function PostPage() {
         </DialogContent>
       </Dialog>
 
-      <Toaster position="top-center" />
+      <Toaster position="top-center" duration={3000} />
     </div>
   );
 }
