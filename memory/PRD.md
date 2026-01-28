@@ -86,10 +86,13 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - [x] Geolocation with "My Location" button
 - [x] Search bar (keywords + locations)
 - [x] Image compression before upload
-- [x] Category filter chips
+- [x] Category filter chips (radius-based)
+- [x] **Radius filter (1-100km slider)**
 - [x] Nearby items notifications
 - [x] PWA support (installable)
 - [x] SEO meta tags
+- [x] **Camera-first experience (Snapchat-style)**
+- [x] **Full-screen camera view with gallery option**
 
 ### P1 (High Priority) - Future
 - [ ] Email digest of nearby items
