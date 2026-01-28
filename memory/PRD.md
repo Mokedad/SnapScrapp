@@ -49,6 +49,9 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - Post detail view with safety notice
 - "Mark as Collected" functionality
 - Report system with 4 reasons
+- **Share feature with shareable links** (`/post/{id}`)
+- **Dedicated shared post page for social sharing**
+- **Native Web Share API support (mobile) with clipboard fallback**
 - Admin panel with PIN entry (9090)
 - Admin dashboard with stats, posts, and reports tabs
 
