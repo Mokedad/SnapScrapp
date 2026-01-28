@@ -32,7 +32,8 @@ import {
   CheckCircle,
   Share2,
   Copy,
-  ExternalLink
+  ExternalLink,
+  Navigation
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "@/index.css";
