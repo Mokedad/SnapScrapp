@@ -183,6 +183,9 @@ function AppContent() {
   const [showMenu, setShowMenu] = useState(false);
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]); // Default: London
   const [userLocation, setUserLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const mapRef = useRef(null);
   
   // Post form state
   const [newPost, setNewPost] = useState({
@@ -203,6 +206,60 @@ function AppContent() {
   const [isReporting, setIsReporting] = useState(false);
   
   const fileInputRef = useRef(null);
+
+  // Request user location
+  const requestLocation = useCallback(() => {
+    setIsLocating(true);
+    setLocationError(null);
+    
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      setIsLocating(false);
+      toast.error("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const loc = [position.coords.latitude, position.coords.longitude];
+        setUserLocation(loc);
+        setMapCenter(loc);
+        setIsLocating(false);
+        toast.success("Location found!");
+        
+        // Fly to location if map is ready
+        if (mapRef.current) {
+          mapRef.current.flyTo(loc, 15, { duration: 1.5 });
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        let errorMsg = "Unable to get location";
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMsg = "Location permission denied. Please enable location access.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMsg = "Location information unavailable";
+            break;
+          case error.TIMEOUT:
+            errorMsg = "Location request timed out";
+            break;
+          default:
+            errorMsg = "Unknown location error";
+        }
+        setLocationError(errorMsg);
+        toast.error(errorMsg);
+        // Keep default location
+        setMapCenter([51.505, -0.09]);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  }, []);
 
   // Fetch posts
   const fetchPosts = useCallback(async () => {
