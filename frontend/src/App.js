@@ -274,22 +274,10 @@ function AppContent() {
     }
   }, []);
 
-  // Get user location
+  // Get user location on mount
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const loc = [position.coords.latitude, position.coords.longitude];
-          setUserLocation(loc);
-          setMapCenter(loc);
-        },
-        () => {
-          // Default to London if geolocation fails
-          setMapCenter([51.505, -0.09]);
-        }
-      );
-    }
-  }, []);
+    requestLocation();
+  }, [requestLocation]);
 
   // Initial fetch
   useEffect(() => {
