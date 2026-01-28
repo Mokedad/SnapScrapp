@@ -762,22 +762,45 @@ function AppContent() {
             {/* Location */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">Location</label>
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2"
-                onClick={() => {
-                  setShowPostDrawer(false);
-                  setPickingLocation(true);
-                }}
-                data-testid="set-location-btn"
-              >
-                <MapPin className="w-4 h-4" />
-                {newPost.latitude ? (
-                  <span className="text-green-700">Location set ✓</span>
-                ) : (
-                  <span>Tap to set location on map</span>
+              <div className="space-y-2">
+                {userLocation && (
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2 border-green-200 bg-green-50 hover:bg-green-100"
+                    onClick={() => {
+                      setNewPost(prev => ({
+                        ...prev,
+                        latitude: userLocation[0],
+                        longitude: userLocation[1]
+                      }));
+                      toast.success("Using your current location!");
+                    }}
+                    data-testid="use-my-location-btn"
+                  >
+                    <svg className="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+                    </svg>
+                    <span className="text-green-700">Use my current location</span>
+                  </Button>
                 )}
-              </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => {
+                    setShowPostDrawer(false);
+                    setPickingLocation(true);
+                  }}
+                  data-testid="set-location-btn"
+                >
+                  <MapPin className="w-4 h-4" />
+                  {newPost.latitude ? (
+                    <span className="text-green-700">Location set ✓</span>
+                  ) : (
+                    <span>Or tap to pick on map</span>
+                  )}
+                </Button>
+              </div>
               <p className="text-xs text-slate-500 mt-2">
                 Only approximate location will be shown to protect privacy
               </p>
