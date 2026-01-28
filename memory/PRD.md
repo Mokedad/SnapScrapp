@@ -74,12 +74,12 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - [x] Mark as collected
 - [x] Report system
 - [x] Admin panel
+- [x] Share feature with shareable links
 
 ### P1 (High Priority) - Future
 - [ ] Push notifications for nearby posts
 - [ ] Image compression for faster uploads
 - [ ] Search/filter by category
-- [ ] "Near me" quick filter
 
 ### P2 (Medium Priority) - Future
 - [ ] Share post link
