@@ -670,17 +670,6 @@ function AppContent() {
       toast.error("Could not process image. Please try again.");
     }
   };
-        description: response.data.description
-      }));
-      toast.success("AI analysis complete!");
-    } catch (error) {
-      console.error("Image processing failed:", error);
-      toast.error("Could not process image. Please try again.");
-      setNewPost(prev => ({ ...prev, image_base64: "" }));
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
 
   // Handle location selection
   const handleLocationSelect = (coords) => {
