@@ -1,81 +1,32 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, Query
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional
 import uuid
-from datetime import datetime, timezone
-
+from datetime import datetime, timezone, timedelta
+import base64
+from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[os.environ.get('DB_NAME', 'test_database')]
 
-# Create the main app without a prefix
+# Emergent LLM key
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
+ADMIN_PIN = os.environ.get('ADMIN_PIN', '9090')
+
+# Create the main app
 app = FastAPI()
-
-# Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
-
-
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
-
-# Include the router in the main app
-app.include_router(api_router)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Configure logging
 logging.basicConfig(
@@ -83,6 +34,396 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# ============ MODELS ============
+
+class PostCreate(BaseModel):
+    image_base64: str
+    title: str
+    category: str
+    description: str
+    expiry_hours: int = 48
+    latitude: float
+    longitude: float
+
+class PostResponse(BaseModel):
+    id: str
+    image_base64: str
+    title: str
+    category: str
+    description: str
+    latitude: float
+    longitude: float
+    created_at: str
+    expires_at: str
+    status: str  # "active", "collected", "expired", "removed"
+    report_count: int = 0
+
+class AIAnalysisRequest(BaseModel):
+    image_base64: str
+
+class AIAnalysisResponse(BaseModel):
+    title: str
+    category: str
+    description: str
+
+class ReportCreate(BaseModel):
+    post_id: str
+    reason: str  # "item_gone", "incorrect_location", "unsafe", "spam"
+
+class ReportResponse(BaseModel):
+    id: str
+    post_id: str
+    reason: str
+    created_at: str
+    status: str  # "pending", "reviewed"
+
+class AdminVerify(BaseModel):
+    pin: str
+
+class StatsResponse(BaseModel):
+    total_posts: int
+    active_posts: int
+    collected_posts: int
+    expired_posts: int
+    removed_posts: int
+    pending_reports: int
+    categories: dict
+
+# ============ HELPER FUNCTIONS ============
+
+def generate_id():
+    return str(uuid.uuid4())
+
+def now_utc():
+    return datetime.now(timezone.utc)
+
+def to_iso(dt: datetime) -> str:
+    return dt.isoformat()
+
+def from_iso(s: str) -> datetime:
+    return datetime.fromisoformat(s.replace('Z', '+00:00'))
+
+# Fuzzy location (offset by ~100-300m randomly)
+import random
+def fuzz_location(lat: float, lng: float) -> tuple:
+    # ~0.001 degree is about 100m
+    offset_lat = random.uniform(-0.003, 0.003)
+    offset_lng = random.uniform(-0.003, 0.003)
+    return (lat + offset_lat, lng + offset_lng)
+
+# ============ AI IMAGE ANALYSIS ============
+
+@api_router.post("/analyze-image", response_model=AIAnalysisResponse)
+async def analyze_image(request: AIAnalysisRequest):
+    """Use Gemini to analyze an image and generate title, category, description"""
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"analyze-{generate_id()}",
+            system_message="""You are an AI that analyzes images of items being given away for free.
+Your task is to identify the item and provide:
+1. A short, descriptive title (2-5 words)
+2. A category from this list: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+3. A brief description (1-2 sentences) about the item's apparent condition
+
+Respond in JSON format only:
+{"title": "...", "category": "...", "description": "..."}"""
+        ).with_model("gemini", "gemini-2.0-flash")
+
+        image_content = ImageContent(image_base64=request.image_base64)
+        
+        user_message = UserMessage(
+            text="Analyze this item image and provide title, category, and description in JSON format.",
+            image_contents=[image_content]
+        )
+        
+        response = await chat.send_message(user_message)
+        
+        # Parse JSON from response
+        import json
+        # Try to extract JSON from response
+        response_text = response.strip()
+        if response_text.startswith("```"):
+            # Remove markdown code blocks
+            lines = response_text.split("\n")
+            response_text = "\n".join(lines[1:-1]) if len(lines) > 2 else response_text
+        
+        data = json.loads(response_text)
+        
+        return AIAnalysisResponse(
+            title=data.get("title", "Unknown Item"),
+            category=data.get("category", "general"),
+            description=data.get("description", "No description available")
+        )
+    except Exception as e:
+        logger.error(f"AI analysis error: {e}")
+        # Return defaults on error
+        return AIAnalysisResponse(
+            title="Item",
+            category="general",
+            description="Unable to analyze image automatically. Please add details manually."
+        )
+
+# ============ POSTS ============
+
+@api_router.post("/posts", response_model=PostResponse)
+async def create_post(post: PostCreate):
+    """Create a new post"""
+    now = now_utc()
+    expires = now + timedelta(hours=post.expiry_hours)
+    
+    # Fuzz the location for privacy
+    fuzzed_lat, fuzzed_lng = fuzz_location(post.latitude, post.longitude)
+    
+    post_doc = {
+        "id": generate_id(),
+        "image_base64": post.image_base64,
+        "title": post.title,
+        "category": post.category,
+        "description": post.description,
+        "latitude": fuzzed_lat,
+        "longitude": fuzzed_lng,
+        "original_latitude": post.latitude,
+        "original_longitude": post.longitude,
+        "created_at": to_iso(now),
+        "expires_at": to_iso(expires),
+        "status": "active",
+        "report_count": 0
+    }
+    
+    await db.posts.insert_one(post_doc)
+    
+    # Update statistics
+    await update_stats("post_created", post.category)
+    
+    return PostResponse(
+        id=post_doc["id"],
+        image_base64=post_doc["image_base64"],
+        title=post_doc["title"],
+        category=post_doc["category"],
+        description=post_doc["description"],
+        latitude=post_doc["latitude"],
+        longitude=post_doc["longitude"],
+        created_at=post_doc["created_at"],
+        expires_at=post_doc["expires_at"],
+        status=post_doc["status"],
+        report_count=post_doc["report_count"]
+    )
+
+@api_router.get("/posts", response_model=List[PostResponse])
+async def get_posts(include_expired: bool = False):
+    """Get all active posts (auto-expire check)"""
+    now = now_utc()
+    
+    # First, update expired posts
+    await db.posts.update_many(
+        {
+            "status": "active",
+            "expires_at": {"$lt": to_iso(now)}
+        },
+        {"$set": {"status": "expired"}}
+    )
+    
+    # Query for active posts
+    query = {"status": "active"} if not include_expired else {}
+    posts = await db.posts.find(query, {"_id": 0, "original_latitude": 0, "original_longitude": 0}).to_list(1000)
+    
+    return [PostResponse(**p) for p in posts]
+
+@api_router.get("/posts/{post_id}", response_model=PostResponse)
+async def get_post(post_id: str):
+    """Get a single post by ID"""
+    post = await db.posts.find_one({"id": post_id}, {"_id": 0, "original_latitude": 0, "original_longitude": 0})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return PostResponse(**post)
+
+@api_router.patch("/posts/{post_id}/collected")
+async def mark_collected(post_id: str):
+    """Mark a post as collected"""
+    result = await db.posts.update_one(
+        {"id": post_id, "status": "active"},
+        {"$set": {"status": "collected", "collected_at": to_iso(now_utc())}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found or already collected")
+    
+    # Get post for stats
+    post = await db.posts.find_one({"id": post_id}, {"_id": 0})
+    if post:
+        await update_stats("post_collected", post.get("category", "general"))
+    
+    return {"message": "Post marked as collected"}
+
+# ============ REPORTS ============
+
+@api_router.post("/reports", response_model=ReportResponse)
+async def create_report(report: ReportCreate):
+    """Report a post"""
+    # Check if post exists
+    post = await db.posts.find_one({"id": report.post_id}, {"_id": 0})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    report_doc = {
+        "id": generate_id(),
+        "post_id": report.post_id,
+        "reason": report.reason,
+        "created_at": to_iso(now_utc()),
+        "status": "pending"
+    }
+    
+    await db.reports.insert_one(report_doc)
+    
+    # Increment report count on post
+    await db.posts.update_one(
+        {"id": report.post_id},
+        {"$inc": {"report_count": 1}}
+    )
+    
+    return ReportResponse(**report_doc)
+
+@api_router.get("/reports", response_model=List[ReportResponse])
+async def get_reports(status: Optional[str] = None):
+    """Get all reports (admin)"""
+    query = {"status": status} if status else {}
+    reports = await db.reports.find(query, {"_id": 0}).to_list(1000)
+    return [ReportResponse(**r) for r in reports]
+
+# ============ ADMIN ============
+
+@api_router.post("/admin/verify")
+async def verify_admin(data: AdminVerify):
+    """Verify admin PIN"""
+    if data.pin == ADMIN_PIN:
+        return {"verified": True}
+    raise HTTPException(status_code=401, detail="Invalid PIN")
+
+@api_router.delete("/admin/posts/{post_id}")
+async def admin_delete_post(post_id: str, pin: str = Query(...)):
+    """Admin: Remove a post"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Invalid PIN")
+    
+    result = await db.posts.update_one(
+        {"id": post_id},
+        {"$set": {"status": "removed"}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    return {"message": "Post removed"}
+
+@api_router.patch("/admin/reports/{report_id}/reviewed")
+async def mark_report_reviewed(report_id: str, pin: str = Query(...)):
+    """Admin: Mark report as reviewed"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Invalid PIN")
+    
+    result = await db.reports.update_one(
+        {"id": report_id},
+        {"$set": {"status": "reviewed"}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Report not found")
+    
+    return {"message": "Report marked as reviewed"}
+
+@api_router.get("/admin/stats", response_model=StatsResponse)
+async def get_stats(pin: str = Query(...)):
+    """Admin: Get statistics"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Invalid PIN")
+    
+    # Update expired posts first
+    now = now_utc()
+    await db.posts.update_many(
+        {
+            "status": "active",
+            "expires_at": {"$lt": to_iso(now)}
+        },
+        {"$set": {"status": "expired"}}
+    )
+    
+    # Count posts by status
+    total_posts = await db.posts.count_documents({})
+    active_posts = await db.posts.count_documents({"status": "active"})
+    collected_posts = await db.posts.count_documents({"status": "collected"})
+    expired_posts = await db.posts.count_documents({"status": "expired"})
+    removed_posts = await db.posts.count_documents({"status": "removed"})
+    
+    # Count pending reports
+    pending_reports = await db.reports.count_documents({"status": "pending"})
+    
+    # Get category distribution
+    pipeline = [
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}}
+    ]
+    categories_cursor = db.posts.aggregate(pipeline)
+    categories = {}
+    async for doc in categories_cursor:
+        categories[doc["_id"]] = doc["count"]
+    
+    return StatsResponse(
+        total_posts=total_posts,
+        active_posts=active_posts,
+        collected_posts=collected_posts,
+        expired_posts=expired_posts,
+        removed_posts=removed_posts,
+        pending_reports=pending_reports,
+        categories=categories
+    )
+
+@api_router.get("/admin/posts", response_model=List[PostResponse])
+async def admin_get_all_posts(pin: str = Query(...)):
+    """Admin: Get all posts including inactive"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Invalid PIN")
+    
+    posts = await db.posts.find({}, {"_id": 0, "original_latitude": 0, "original_longitude": 0}).to_list(1000)
+    return [PostResponse(**p) for p in posts]
+
+# ============ STATS HELPER ============
+
+async def update_stats(event: str, category: str):
+    """Update internal statistics"""
+    now = now_utc()
+    date_key = now.strftime("%Y-%m-%d")
+    
+    await db.stats.update_one(
+        {"date": date_key},
+        {
+            "$inc": {
+                f"events.{event}": 1,
+                f"categories.{category}": 1
+            },
+            "$setOnInsert": {"date": date_key}
+        },
+        upsert=True
+    )
+
+# ============ HEALTH CHECK ============
+
+@api_router.get("/")
+async def root():
+    return {"message": "Ucycle API is running"}
+
+@api_router.get("/health")
+async def health():
+    return {"status": "healthy", "timestamp": to_iso(now_utc())}
+
+# Include router
+app.include_router(api_router)
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
