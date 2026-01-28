@@ -1,0 +1,182 @@
+{
+  "typography": {
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "light": 300,
+      "regular": 400,
+      "medium": 500,
+      "bold": 700,
+      "black": 900
+    },
+    "styles": {
+      "h1": "font-manrope font-bold text-4xl tracking-tight leading-none text-slate-900",
+      "h2": "font-manrope font-bold text-3xl tracking-tight text-slate-900",
+      "h3": "font-manrope font-semibold text-2xl tracking-tight text-slate-800",
+      "body_lg": "font-inter text-lg leading-relaxed text-slate-700",
+      "body_base": "font-inter text-base leading-relaxed text-slate-600",
+      "caption": "font-inter text-sm font-medium text-slate-500 uppercase tracking-wider",
+      "label": "font-manrope text-xs font-bold text-slate-400 uppercase tracking-widest"
+    }
+  },
+  "colors": {
+    "theme": "light",
+    "palette": {
+      "primary": {
+        "DEFAULT": "#166534",
+        "foreground": "#ffffff",
+        "description": "Deep Forest Green - Trust, Nature, Stability"
+      },
+      "secondary": {
+        "DEFAULT": "#84cc16",
+        "foreground": "#0f172a",
+        "description": "Vibrant Lime - Action, Freshness, Visibility"
+      },
+      "accent": {
+        "DEFAULT": "#f97316",
+        "foreground": "#ffffff",
+        "description": "Safety Orange - Alerts, Expiry, Attention"
+      },
+      "background": {
+        "DEFAULT": "#f8fafc",
+        "paper": "#ffffff",
+        "subtle": "#f1f5f9"
+      },
+      "text": {
+        "primary": "#0f172a",
+        "secondary": "#475569",
+        "muted": "#94a3b8"
+      },
+      "status": {
+        "success": "#22c55e",
+        "warning": "#eab308",
+        "error": "#ef4444",
+        "info": "#3b82f6"
+      }
+    },
+    "gradients": {
+      "primary_action": "bg-gradient-to-r from-green-700 to-green-600",
+      "overlay_fade": "bg-gradient-to-t from-black/50 to-transparent"
+    }
+  },
+  "visual_enhancers": {
+    "radius": {
+      "default": "rounded-xl",
+      "button": "rounded-full",
+      "card": "rounded-2xl",
+      "input": "rounded-lg"
+    },
+    "shadows": {
+      "card": "shadow-[0_2px_8px_rgba(0,0,0,0.08)]",
+      "floating": "shadow-[0_8px_30px_rgba(0,0,0,0.12)]",
+      "button": "shadow-[0_4px_14px_0_rgba(22,101,52,0.39)]"
+    },
+    "borders": {
+      "subtle": "border border-slate-200",
+      "focus": "ring-2 ring-lime-500 ring-offset-2"
+    },
+    "glassmorphism": {
+      "panel": "bg-white/90 backdrop-blur-md border border-white/20 shadow-sm",
+      "overlay": "bg-black/20 backdrop-blur-sm"
+    }
+  },
+  "layout": {
+    "structure": "mobile-first",
+    "grid_system": "grid-cols-4 gap-4 md:grid-cols-12 md:gap-8",
+    "container": "max-w-md mx-auto md:max-w-2xl lg:max-w-4xl",
+    "spacing": {
+      "section": "py-12 md:py-20",
+      "element": "mb-6"
+    },
+    "z_index": {
+      "map": "z-0",
+      "controls": "z-10",
+      "sheet": "z-40",
+      "modal": "z-50",
+      "toast": "z-50"
+    }
+  },
+  "components": {
+    "map": {
+      "provider": "Leaflet / React-Leaflet",
+      "tile_layer": "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      "attribution": "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/attributions'>CARTO</a>",
+      "pin_style": "w-12 h-12 rounded-full border-4 border-white shadow-lg object-cover transform transition-transform hover:scale-110"
+    },
+    "bottom_sheet": {
+      "library": "Vaul (Drawer)",
+      "style": "bg-white rounded-t-[2rem] shadow-[0_-4px_20px_rgba(0,0,0,0.1)]"
+    },
+    "buttons": {
+      "primary": "bg-green-800 text-white hover:bg-green-900 font-bold py-3 px-6 rounded-full shadow-lg transition-all active:scale-95",
+      "fab": "fixed bottom-8 right-8 w-16 h-16 bg-lime-500 text-slate-900 rounded-full shadow-xl flex items-center justify-center hover:bg-lime-400 transition-all active:scale-90 z-30",
+      "secondary": "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 font-semibold py-2 px-4 rounded-full"
+    },
+    "cards": {
+      "item_preview": "bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100"
+    }
+  },
+  "media": {
+    "images": [
+      {
+        "category": "items",
+        "description": "Cardboard boxes for recycling",
+        "url": "https://images.unsplash.com/photo-1719600804011-3bff3909b183?crop=entropy&cs=srgb&fm=jpg&q=85"
+      },
+      {
+        "category": "items",
+        "description": "Old bicycle",
+        "url": "https://images.unsplash.com/photo-1660214470859-21ef68c1094c?crop=entropy&cs=srgb&fm=jpg&q=85"
+      },
+      {
+        "category": "items",
+        "description": "Old couch on street",
+        "url": "https://images.unsplash.com/photo-1603844908699-ff22c77bece8?crop=entropy&cs=srgb&fm=jpg&q=85"
+      }
+    ],
+    "icons": {
+      "library": "lucide-react",
+      "style": "stroke-width-2"
+    }
+  },
+  "motion": {
+    "transitions": {
+      "default": "transition-all duration-200 ease-out",
+      "slow": "transition-all duration-500 ease-in-out"
+    },
+    "animations": {
+      "fade_in": "animate-in fade-in duration-300",
+      "slide_up": "animate-in slide-in-from-bottom duration-300",
+      "pulse": "animate-pulse"
+    }
+  },
+  "accessibility": {
+    "contrast": "Ensure text is slate-700+ on white, or white on green-800",
+    "focus": "Visible focus rings on all interactive elements",
+    "aria": "Use aria-label for map pins and icon-only buttons"
+  },
+  "instructions_to_main_agent": [
+    "Use 'Manrope' for all headings and 'Inter' for body text. Import them via Google Fonts in index.css.",
+    "The app is MAP-FIRST. The map should occupy the full viewport (h-screen w-screen).",
+    "Use the 'CartoDB Positron' tile layer for a clean, utility look that makes pins pop.",
+    "Pins should be circular images with a white border. Use the provided image URLs as sample data for pins.",
+    "The 'Post Item' flow should be a Bottom Sheet (Drawer) that slides up over the map.",
+    "Do not build a complex sidebar. Use a simple top bar with a transparent/glass background for the logo and a 'Menu' button.",
+    "Use the 'sonner' library for toast notifications (e.g., 'Item posted successfully').",
+    "For the Admin Panel, use a simple PIN entry screen (0-9 keypad) before showing the dashboard.",
+    "Ensure the 'Report' modal is simple: a list of reasons and a submit button.",
+    "Use 'lucide-react' for all icons (MapPin, Plus, AlertTriangle, Menu, X, Check)."
+  ],
+  "universal_guidelines": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts. Use asymmetry where possible, but keep this app functional.",
+    "Create depth through layered design elements with z-index hierarchy (Map < Controls < Sheet < Modal).",
+    "Use glass-morphism effects with backdrop filters (12-24px blur) for floating controls.",
+    "Every interaction needs micro-animations - hover states, transitions, entrance animations.",
+    "Use 2-3x more spacing than feels comfortable inside the bottom sheet content.",
+    "All interactive and key informational elements MUST include a `data-testid` attribute."
+  ]
+}
