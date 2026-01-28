@@ -509,7 +509,7 @@ function AppContent() {
       <div className="map-container">
         <MapContainer 
           center={mapCenter} 
-          zoom={13} 
+          zoom={14} 
           style={{ height: '100%', width: '100%' }}
           zoomControl={false}
         >
@@ -518,6 +518,10 @@ function AppContent() {
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
           />
           <MapCenterUpdater center={mapCenter} />
+          <MapRefSetter mapRef={mapRef} />
+          
+          {/* User location marker */}
+          <UserLocationMarker position={userLocation} />
           
           {/* Post markers */}
           {posts.map(post => (
@@ -540,6 +544,26 @@ function AppContent() {
           )}
         </MapContainer>
       </div>
+
+      {/* My Location button */}
+      {!pickingLocation && (
+        <button 
+          className={`my-location-btn ${isLocating ? 'locating' : ''}`}
+          onClick={requestLocation}
+          disabled={isLocating}
+          data-testid="my-location-btn"
+          aria-label="Go to my location"
+        >
+          {isLocating ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+            </svg>
+          )}
+        </button>
+      )}
 
       {/* Location picking overlay */}
       {pickingLocation && (
