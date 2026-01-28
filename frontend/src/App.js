@@ -910,9 +910,12 @@ function AppContent() {
         </div>
       )}
 
-      {/* No Results Message */}
+      {/* No Results Message - auto-dismiss after 3s */}
       {showSearchBar && searchQuery && !isSearching && searchResults.length === 0 && (
-        <div className="fixed top-16 left-4 right-4 z-30 bg-white rounded-2xl shadow-lg border border-slate-200 p-6 text-center animate-slide-up">
+        <div 
+          className="fixed top-16 left-4 right-4 z-30 bg-white rounded-2xl shadow-lg border border-slate-200 p-6 text-center animate-slide-up"
+          onAnimationEnd={() => setTimeout(() => setSearchQuery(""), 3000)}
+        >
           <Search className="w-8 h-8 text-slate-300 mx-auto mb-2" />
           <p className="text-slate-500">No results found for "{searchQuery}"</p>
         </div>
