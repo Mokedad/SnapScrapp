@@ -104,6 +104,32 @@ function MapCenterUpdater({ center }) {
   return null;
 }
 
+// Map reference setter
+function MapRefSetter({ mapRef }) {
+  const map = useMap();
+  useEffect(() => {
+    mapRef.current = map;
+  }, [map, mapRef]);
+  return null;
+}
+
+// User location marker
+function UserLocationMarker({ position }) {
+  if (!position) return null;
+  
+  const icon = L.divIcon({
+    html: `<div class="user-location-marker">
+      <div class="pulse-ring"></div>
+      <div class="center-dot"></div>
+    </div>`,
+    className: '',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
+  });
+  
+  return <Marker position={position} icon={icon} />;
+}
+
 // Category Badge
 function CategoryBadge({ category }) {
   return (
