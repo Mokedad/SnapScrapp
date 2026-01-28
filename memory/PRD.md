@@ -75,7 +75,7 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 
 ### P0 (Critical) - DONE
 - [x] Map view with posts as pins
-- [x] Post creation flow
+- [x] Post creation flow - **Compact 1-screen design**
 - [x] AI image analysis (Gemini 2.5 Flash)
 - [x] Auto-expiry system
 - [x] Mark as collected
@@ -93,6 +93,10 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - [x] SEO meta tags
 - [x] **Camera-first experience (Snapchat-style)**
 - [x] **Full-screen camera view with gallery option**
+- [x] **Welcome popup with Aussie "help a mate" language**
+- [x] **Norman Scrap Yard partner ad (Western Sydney only)**
+- [x] **Auto-dismiss popups (3 seconds)**
+- [x] **Centered share dialog (2x2 grid)**
 
 ### P1 (High Priority) - Future
 - [ ] Email digest of nearby items
