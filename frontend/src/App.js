@@ -747,9 +747,14 @@ function AppContent() {
   const handleMarkCollected = async (postId) => {
     try {
       await axios.patch(`${API}/posts/${postId}/collected`);
-      toast.success("Marked as collected!");
+      toast.success("Nice one! Item collected 🎉");
       setShowDetailDrawer(false);
       fetchPosts();
+      
+      // Show Norman Scrap Yard ad if user is in Western Sydney
+      if (isInWesternSydney()) {
+        setTimeout(() => setShowScrapYardAd(true), 500);
+      }
     } catch (error) {
       console.error("Failed to mark collected:", error);
       toast.error("Failed to update");
