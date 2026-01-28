@@ -1669,6 +1669,108 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
+      {/* Welcome Popup - First Visit */}
+      <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
+        <DialogContent className="max-w-sm text-center">
+          <div className="pt-4">
+            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-600 to-lime-500 rounded-3xl flex items-center justify-center mb-4">
+              <RefreshCw className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              G'day mate! 👋
+            </h2>
+            <p className="text-slate-600 mb-6">
+              Welcome to Ucycle - where you can help a mate find your unwanted stuff!
+            </p>
+            
+            <div className="text-left space-y-3 mb-6 p-4 bg-slate-50 rounded-xl">
+              <div className="flex items-start gap-3">
+                <Camera className="w-5 h-5 text-green-600 mt-0.5" />
+                <p className="text-sm text-slate-700"><strong>Snap it</strong> - Take a quick photo of your item</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-green-600 mt-0.5" />
+                <p className="text-sm text-slate-700"><strong>Drop it</strong> - Set your approximate location</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-green-600 mt-0.5" />
+                <p className="text-sm text-slate-700"><strong>Done!</strong> - Someone nearby will grab it</p>
+              </div>
+            </div>
+            
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl mb-6">
+              <p className="text-xs text-amber-800">
+                🚨 <strong>Safety first:</strong> Public pickup only. Never enter private property.
+              </p>
+            </div>
+            
+            <Button 
+              className="w-full bg-gradient-to-r from-green-600 to-lime-500 text-white font-bold py-5 rounded-full shadow-lg text-lg"
+              onClick={dismissWelcome}
+              data-testid="welcome-start-btn"
+            >
+              Let's go! 🚀
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Norman Scrap Yard Ad - Western Sydney Only */}
+      <Dialog open={showScrapYardAd} onOpenChange={setShowScrapYardAd}>
+        <DialogContent className="max-w-sm text-center">
+          <div className="pt-4">
+            <div className="w-16 h-16 mx-auto bg-blue-600 rounded-2xl flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="12" y1="18" x2="12" y2="12" />
+                <line x1="9" y1="15" x2="15" y2="15" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              Got scrap metal? 🔧
+            </h2>
+            <p className="text-slate-600 mb-4">
+              {NORMAN_SCRAP_YARD.name} in Penrith is a local legend for recycling!
+            </p>
+            
+            <div className="p-4 bg-slate-50 rounded-xl mb-6 text-left">
+              <p className="font-semibold text-slate-900">{NORMAN_SCRAP_YARD.name}</p>
+              <p className="text-sm text-slate-600">{NORMAN_SCRAP_YARD.address}</p>
+              <p className="text-xs text-slate-500 mt-2">
+                ♻️ Cash for scrap • Batteries • E-waste • Copper
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <Button 
+                variant="outline"
+                className="py-4 rounded-full"
+                onClick={() => setShowScrapYardAd(false)}
+                data-testid="scrapyard-skip-btn"
+              >
+                Not now
+              </Button>
+              <Button 
+                className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full"
+                onClick={() => {
+                  window.open(NORMAN_SCRAP_YARD.mapsUrl, '_blank');
+                  setShowScrapYardAd(false);
+                }}
+                data-testid="scrapyard-maps-btn"
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                Get directions
+              </Button>
+            </div>
+            
+            <p className="text-xs text-slate-400 mt-4">
+              Local partner • Western Sydney
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Toaster position="top-center" duration={3000} />
     </div>
   );
