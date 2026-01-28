@@ -40,6 +40,9 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 ### Frontend Features
 - Full-screen interactive map with CartoDB tiles
 - Glass-morphism header with Ucycle branding
+- **Search bar** - search by keyword (title, description, category) AND location/address
+- **Location geocoding** - uses OpenStreetMap Nominatim API
+- **Combined search results** - shows items AND places in dropdown
 - FAB button for posting items
 - **"My Location" button** - flies map to user's exact location with pulsing marker
 - **Geolocation with permission request** - high accuracy, proper error handling
