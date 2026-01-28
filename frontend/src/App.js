@@ -697,7 +697,17 @@ function AppContent() {
 
   // Process image (shared between camera capture and file upload)
   const processImage = async (base64) => {
-    setNewPost(prev => ({ ...prev, image_base64: base64 }));
+    // Auto-set location if available
+    const locationUpdate = userLocation ? {
+      latitude: userLocation[0],
+      longitude: userLocation[1]
+    } : {};
+    
+    setNewPost(prev => ({ 
+      ...prev, 
+      image_base64: base64,
+      ...locationUpdate
+    }));
     setShowPostDrawer(true);
     
     // Analyze with AI
