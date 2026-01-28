@@ -1253,6 +1253,7 @@ function PostPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showReportDialog, setShowReportDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [isReporting, setIsReporting] = useState(false);
 
@@ -1281,29 +1282,33 @@ function PostPage() {
     }
   };
 
-  const handleShare = async () => {
-    const shareUrl = window.location.href;
-    const shareData = {
-      title: `Free: ${post.title}`,
-      text: `Check out this free item on Ucycle: ${post.title}`,
-      url: shareUrl
-    };
+  const shareUrl = window.location.href;
 
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-        return;
-      } catch (err) {
-        if (err.name === 'AbortError') return;
-      }
-    }
+  const shareToWhatsApp = () => {
+    const text = `Check out this free item on Ucycle: ${post.title}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + shareUrl)}`, '_blank');
+    setShowShareDialog(false);
+  };
 
+  const shareToFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+    setShowShareDialog(false);
+  };
+
+  const shareToTwitter = () => {
+    const text = `Free item available: ${post.title} 🎁`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+    setShowShareDialog(false);
+  };
+
+  const copyShareLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       toast.success("Link copied!");
     } catch (err) {
       toast.error("Failed to copy link");
     }
+    setShowShareDialog(false);
   };
 
   const handleSubmitReport = async () => {
