@@ -517,7 +517,7 @@ function AppContent() {
         return newSet;
       });
     }
-  }, [posts, userLocation, lastNotifiedPosts, notificationPermission]);
+  }, [posts, userLocation, lastNotifiedPosts, notificationPermission, getDistance]);
 
   // Get user location on mount
   useEffect(() => {
@@ -528,6 +528,99 @@ function AppContent() {
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
+
+  // ============ CAMERA FUNCTIONS ============
+  
+  // Open camera
+  const openCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
+        audio: false
+      });
+      setCameraStream(stream);
+      setShowCameraView(true);
+      
+      // Connect stream to video element after render
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      }, 100);
+    } catch (error) {
+      console.error("Camera error:", error);
+      toast.error("Could not access camera. Please check permissions.");
+      // Fallback to file picker
+      fileInputRef.current?.click();
+    }
+  };
+
+  // Close camera
+  const closeCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setShowCameraView(false);
+  };
+
+  // Capture photo from camera
+  const capturePhoto = async () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    
+    // Set canvas size to video size
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Draw video frame to canvas
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+    
+    // Get compressed base64
+    const base64 = canvas.toDataURL('image/jpeg', 0.7);
+    
+    // Close camera
+    closeCamera();
+    
+    // Process the captured image
+    await processImage(base64);
+  };
+
+  // Process image (shared between camera capture and file upload)
+  const processImage = async (base64) => {
+    setNewPost(prev => ({ ...prev, image_base64: base64 }));
+    setShowPostDrawer(true);
+    
+    // Analyze with AI
+    setIsAnalyzing(true);
+    try {
+      const base64Data = base64.split(',')[1] || base64;
+      const response = await axios.post(`${API}/analyze-image`, {
+        image_base64: base64Data
+      });
+      setNewPost(prev => ({
+        ...prev,
+        title: response.data.title,
+        category: response.data.category,
+        description: response.data.description
+      }));
+      toast.success("AI analysis complete!");
+    } catch (error) {
+      console.error("AI analysis failed:", error);
+      toast.error("Could not analyze image. Please fill in details manually.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // Handle album/gallery selection
+  const openGallery = () => {
+    closeCamera();
+    fileInputRef.current?.click();
+  };
 
   // Handle image upload
   const handleImageUpload = async (e) => {
