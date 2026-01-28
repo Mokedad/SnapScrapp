@@ -420,35 +420,67 @@ function AppContent() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Convert to base64
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64 = reader.result;
-      setNewPost(prev => ({ ...prev, image_base64: base64 }));
+    // Compress image before upload
+    const compressImage = (file, maxWidth = 1200, quality = 0.7) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            // Scale down if too large
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert to compressed base64
+            const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+            resolve(compressedBase64);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+
+    try {
+      // Show loading state
+      setNewPost(prev => ({ ...prev, image_base64: "loading" }));
+      
+      // Compress the image
+      const compressedBase64 = await compressImage(file);
+      setNewPost(prev => ({ ...prev, image_base64: compressedBase64 }));
       
       // Analyze with AI
       setIsAnalyzing(true);
-      try {
-        // Extract just the base64 data without the data URL prefix
-        const base64Data = base64.split(',')[1] || base64;
-        const response = await axios.post(`${API}/analyze-image`, {
-          image_base64: base64Data
-        });
-        setNewPost(prev => ({
-          ...prev,
-          title: response.data.title,
-          category: response.data.category,
-          description: response.data.description
-        }));
-        toast.success("AI analysis complete!");
-      } catch (error) {
-        console.error("AI analysis failed:", error);
-        toast.error("Could not analyze image. Please fill in details manually.");
-      } finally {
-        setIsAnalyzing(false);
-      }
-    };
-    reader.readAsDataURL(file);
+      const base64Data = compressedBase64.split(',')[1] || compressedBase64;
+      const response = await axios.post(`${API}/analyze-image`, {
+        image_base64: base64Data
+      });
+      setNewPost(prev => ({
+        ...prev,
+        title: response.data.title,
+        category: response.data.category,
+        description: response.data.description
+      }));
+      toast.success("AI analysis complete!");
+    } catch (error) {
+      console.error("Image processing failed:", error);
+      toast.error("Could not process image. Please try again.");
+      setNewPost(prev => ({ ...prev, image_base64: "" }));
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   // Handle location selection
