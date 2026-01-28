@@ -546,10 +546,11 @@ function AppContent() {
 
   // Norman Scrap Yard details
   const NORMAN_SCRAP_YARD = {
-    name: "Norman Scrap Yard",
-    address: "Penrith, NSW",
+    name: "Norman's Scrap Metal",
+    address: "34 Peachtree Rd, Penrith NSW 2750",
     phone: "Contact via Google Maps",
-    mapsUrl: "https://maps.app.goo.gl/6rz7ikg3avEyQyC27"
+    mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=34+Peachtree+Rd,+Penrith+NSW+2750",
+    logo: "https://customer-assets.emergentagent.com/job_43339dc9-f006-41e6-8de9-36afdf0eb8cc/artifacts/tuki91fg_IMG_4869.png"
   };
 
   // ============ CAMERA FUNCTIONS ============
