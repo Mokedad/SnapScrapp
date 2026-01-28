@@ -1019,7 +1019,11 @@ function AppContent() {
                   min="1"
                   max="100"
                   value={radiusKm}
-                  onChange={(e) => setRadiusKm(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    setRadiusKm(parseInt(e.target.value));
+                    // Auto-close after 3 seconds
+                    setTimeout(() => setShowRadiusSlider(false), 3000);
+                  }}
                   className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
                   data-testid="radius-slider"
                 />
