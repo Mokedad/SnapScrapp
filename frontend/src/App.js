@@ -302,6 +302,7 @@ function AppContent() {
     try {
       const response = await axios.get(`${API}/posts`);
       setPosts(response.data);
+      setFilteredPosts(response.data);
     } catch (error) {
       console.error("Failed to fetch posts:", error);
       toast.error("Failed to load posts");
@@ -309,6 +310,99 @@ function AppContent() {
       setLoading(false);
     }
   }, []);
+
+  // Search functionality
+  const handleSearch = useCallback(async (query) => {
+    if (!query.trim()) {
+      setFilteredPosts(posts);
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const lowerQuery = query.toLowerCase();
+
+    // Filter posts by keyword (title, description, category)
+    const keywordResults = posts.filter(post => 
+      post.title.toLowerCase().includes(lowerQuery) ||
+      post.description.toLowerCase().includes(lowerQuery) ||
+      post.category.toLowerCase().includes(lowerQuery)
+    );
+    
+    setFilteredPosts(keywordResults);
+
+    // Also search for location using Nominatim (OpenStreetMap geocoding)
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      
+      const locationResults = response.data.map(item => ({
+        type: 'location',
+        name: item.display_name,
+        lat: parseFloat(item.lat),
+        lng: parseFloat(item.lon)
+      }));
+
+      // Combine with keyword results
+      const itemResults = keywordResults.map(post => ({
+        type: 'item',
+        ...post
+      }));
+
+      setSearchResults([...itemResults.slice(0, 3), ...locationResults]);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error("Geocoding failed:", error);
+      // Just show item results
+      setSearchResults(keywordResults.map(post => ({ type: 'item', ...post })));
+      setShowSearchResults(keywordResults.length > 0);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [posts]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery) {
+        handleSearch(searchQuery);
+      } else {
+        setFilteredPosts(posts);
+        setSearchResults([]);
+        setShowSearchResults(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, handleSearch, posts]);
+
+  // Handle search result selection
+  const handleSearchResultClick = (result) => {
+    if (result.type === 'location') {
+      // Fly to location
+      if (mapRef.current) {
+        mapRef.current.flyTo([result.lat, result.lng], 14, { duration: 1.5 });
+      }
+      setMapCenter([result.lat, result.lng]);
+      toast.success(`Showing: ${result.name.split(',')[0]}`);
+    } else {
+      // Show item detail
+      handleViewDetails(result);
+    }
+    setShowSearchResults(false);
+    setShowSearchBar(false);
+    setSearchQuery("");
+  };
+
+  // Clear search
+  const clearSearch = () => {
+    setSearchQuery("");
+    setFilteredPosts(posts);
+    setSearchResults([]);
+    setShowSearchResults(false);
+  };
 
   // Get user location on mount
   useEffect(() => {
