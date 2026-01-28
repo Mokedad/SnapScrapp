@@ -337,6 +337,44 @@ function AppContent() {
     }
   };
 
+  // Share post
+  const handleSharePost = async (post) => {
+    const shareUrl = `${window.location.origin}/post/${post.id}`;
+    const shareData = {
+      title: `Free: ${post.title}`,
+      text: `Check out this free item on Ucycle: ${post.title} - ${post.description}`,
+      url: shareUrl
+    };
+
+    // Try native share API first (works on mobile)
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        toast.success("Shared successfully!");
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.log("Native share failed, falling back to clipboard");
+        }
+      }
+    }
+
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copied to clipboard!");
+    } catch (err) {
+      // Final fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast.success("Link copied!");
+    }
+  };
+
   // Submit report
   const handleSubmitReport = async () => {
     if (!reportReason || !selectedPost) return;
