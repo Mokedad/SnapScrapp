@@ -41,6 +41,9 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - Full-screen interactive map with CartoDB tiles
 - Glass-morphism header with Ucycle branding
 - FAB button for posting items
+- **"My Location" button** - flies map to user's exact location with pulsing marker
+- **Geolocation with permission request** - high accuracy, proper error handling
+- **"Use my current location" option** in post creation
 - Bottom sheet drawer for post creation
 - AI-powered image analysis (auto-fills title, category, description)
 - Category selection (14 categories)
