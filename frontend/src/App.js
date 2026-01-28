@@ -33,7 +33,8 @@ import {
   Share2,
   Copy,
   ExternalLink,
-  Navigation
+  Navigation,
+  Search
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "@/index.css";
