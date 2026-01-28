@@ -235,6 +235,10 @@ function AppContent() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   
+  // Welcome & Scrap Yard state
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [showScrapYardAd, setShowScrapYardAd] = useState(false);
+  
   // Post form state
   const [newPost, setNewPost] = useState({
     image_base64: "",
