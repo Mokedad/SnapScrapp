@@ -117,6 +117,9 @@ def fuzz_location(lat: float, lng: float) -> tuple:
 @api_router.post("/analyze-image", response_model=AIAnalysisResponse)
 async def analyze_image(request: AIAnalysisRequest):
     """Use Gemini to analyze an image and generate title, category, description"""
+    import json
+    import re
+    
     try:
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
@@ -124,36 +127,49 @@ async def analyze_image(request: AIAnalysisRequest):
             system_message="""You are an AI that analyzes images of items being given away for free.
 Your task is to identify the item and provide:
 1. A short, descriptive title (2-5 words)
-2. A category from this list: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+2. A category from this list ONLY: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
 3. A brief description (1-2 sentences) about the item's apparent condition
 
-Respond in JSON format only:
+IMPORTANT: Respond ONLY with valid JSON, no other text:
 {"title": "...", "category": "...", "description": "..."}"""
-        ).with_model("gemini", "gemini-2.0-flash")
+        ).with_model("gemini", "gemini-2.5-flash")
 
         image_content = ImageContent(image_base64=request.image_base64)
         
         user_message = UserMessage(
-            text="Analyze this item image and provide title, category, and description in JSON format.",
+            text="Analyze this item image. Return only JSON with title, category, and description.",
             image_contents=[image_content]
         )
         
         response = await chat.send_message(user_message)
+        logger.info(f"AI Response: {response}")
         
-        # Parse JSON from response
-        import json
-        # Try to extract JSON from response
+        # Parse JSON from response - handle various formats
         response_text = response.strip()
-        if response_text.startswith("```"):
-            # Remove markdown code blocks
-            lines = response_text.split("\n")
-            response_text = "\n".join(lines[1:-1]) if len(lines) > 2 else response_text
+        
+        # Remove markdown code blocks if present
+        if "```" in response_text:
+            match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', response_text)
+            if match:
+                response_text = match.group(1).strip()
+        
+        # Try to find JSON object in response
+        json_match = re.search(r'\{[^{}]*\}', response_text)
+        if json_match:
+            response_text = json_match.group(0)
         
         data = json.loads(response_text)
         
+        # Validate category
+        valid_categories = ["furniture", "electronics", "appliances", "sports", "toys", "books", 
+                          "clothing", "garden", "kitchen", "tools", "e-waste", "scrap-metal", "cardboard", "general"]
+        category = data.get("category", "general").lower()
+        if category not in valid_categories:
+            category = "general"
+        
         return AIAnalysisResponse(
             title=data.get("title", "Unknown Item"),
-            category=data.get("category", "general"),
+            category=category,
             description=data.get("description", "No description available")
         )
     except Exception as e:
