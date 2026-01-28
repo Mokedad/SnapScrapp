@@ -117,6 +117,79 @@ h1, h2, h3, h4, h5, h6 {
   transform: scale(0.95);
 }
 
+/* My Location button */
+.my-location-btn {
+  position: fixed;
+  bottom: 7rem;
+  right: 1.5rem;
+  width: 48px;
+  height: 48px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #166534;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 30;
+  border: none;
+}
+
+.my-location-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.my-location-btn:active {
+  transform: scale(0.95);
+}
+
+.my-location-btn.locating {
+  color: #84cc16;
+}
+
+/* User location marker */
+.user-location-marker {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.user-location-marker .pulse-ring {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(22, 101, 52, 0.3);
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+.user-location-marker .center-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: #166534;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
 /* Bottom sheet styling */
 .bottom-sheet {
   background: white;
