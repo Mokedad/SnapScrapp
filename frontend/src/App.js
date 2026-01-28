@@ -421,7 +421,70 @@ function AppContent() {
     setFilteredPosts(posts);
     setSearchResults([]);
     setShowSearchResults(false);
+    setSelectedCategory(null);
   };
+
+  // Calculate distance between two points (Haversine formula)
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  // Check for nearby items notification
+  const [lastNotifiedPosts, setLastNotifiedPosts] = useState(new Set());
+  const [notificationPermission, setNotificationPermission] = useState('default');
+
+  // Request notification permission
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+      if (permission === 'granted') {
+        toast.success("Notifications enabled! You'll be alerted when new items appear nearby.");
+      }
+      return permission;
+    }
+    return 'denied';
+  };
+
+  // Check for nearby items
+  useEffect(() => {
+    if (!userLocation || posts.length === 0) return;
+    
+    const nearbyRadius = 5; // km
+    const newNearbyPosts = posts.filter(post => {
+      const distance = getDistance(
+        userLocation[0], userLocation[1],
+        post.latitude, post.longitude
+      );
+      return distance <= nearbyRadius && !lastNotifiedPosts.has(post.id);
+    });
+
+    if (newNearbyPosts.length > 0 && notificationPermission === 'granted') {
+      // Show browser notification
+      newNearbyPosts.forEach(post => {
+        new Notification('New item nearby! 🎁', {
+          body: `${post.title} - ${post.category}`,
+          icon: '/favicon.ico',
+          tag: post.id
+        });
+      });
+      
+      // Update notified posts
+      setLastNotifiedPosts(prev => {
+        const newSet = new Set(prev);
+        newNearbyPosts.forEach(p => newSet.add(p.id));
+        return newSet;
+      });
+    }
+  }, [posts, userLocation, lastNotifiedPosts, notificationPermission]);
 
   // Get user location on mount
   useEffect(() => {
