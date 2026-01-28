@@ -76,17 +76,30 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 ### P0 (Critical) - DONE
 - [x] Map view with posts as pins
 - [x] Post creation flow
-- [x] AI image analysis
+- [x] AI image analysis (Gemini 2.5 Flash)
 - [x] Auto-expiry system
 - [x] Mark as collected
 - [x] Report system
-- [x] Admin panel
+- [x] Admin panel (PIN: 9090)
 - [x] Share feature with shareable links
+- [x] Social sharing (WhatsApp, Facebook, Twitter)
+- [x] Geolocation with "My Location" button
+- [x] Search bar (keywords + locations)
+- [x] Image compression before upload
+- [x] Category filter chips
+- [x] Nearby items notifications
+- [x] PWA support (installable)
+- [x] SEO meta tags
 
 ### P1 (High Priority) - Future
-- [ ] Push notifications for nearby posts
-- [ ] Image compression for faster uploads
-- [ ] Search/filter by category
+- [ ] Email digest of nearby items
+- [ ] Photo gallery (multiple images per post)
+- [ ] Distance indicator on posts
+
+### P2 (Medium Priority) - Future
+- [ ] User favorites (local storage)
+- [ ] Post analytics for admins
+- [ ] Rate limiting for spam prevention
 
 ### P2 (Medium Priority) - Future
 - [ ] Share post link
