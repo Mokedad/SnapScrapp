@@ -390,9 +390,17 @@ function AppContent() {
 
     // Also search for location using Nominatim (OpenStreetMap geocoding)
     try {
+      // Use countrycodes=au for Australian addresses and add structured query hints
+      const searchParams = new URLSearchParams({
+        format: 'json',
+        q: query,
+        limit: '5',
+        countrycodes: 'au',
+        addressdetails: '1'
+      });
       const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`,
-        { headers: { 'Accept-Language': 'en' } }
+        `https://nominatim.openstreetmap.org/search?${searchParams.toString()}`,
+        { headers: { 'Accept-Language': 'en', 'User-Agent': 'UcycleApp/1.0' } }
       );
       
       const locationResults = response.data.map(item => ({
@@ -1638,13 +1646,24 @@ function AppContent() {
                   <p className="text-slate-600 mt-2">{selectedPost.description}</p>
                 </div>
                 
-                <div className="flex items-center gap-4 text-sm text-slate-500">
+                <div className="flex flex-col gap-2 text-sm text-slate-500">
                   <div className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
                     <span>
                       Expires {new Date(selectedPost.expires_at).toLocaleDateString()}
                     </span>
                   </div>
+                  <a 
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPost.latitude},${selectedPost.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-green-600 hover:text-green-700 hover:underline"
+                    data-testid="get-directions-link"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    <span>Get directions</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
 
                 {/* Safety Notice */}
@@ -1846,14 +1865,12 @@ function AppContent() {
       <Dialog open={showScrapYardAd} onOpenChange={setShowScrapYardAd}>
         <DialogContent className="max-w-sm text-center">
           <div className="pt-4">
-            <div className="w-16 h-16 mx-auto bg-blue-600 rounded-2xl flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="12" y1="18" x2="12" y2="12" />
-                <line x1="9" y1="15" x2="15" y2="15" />
-              </svg>
-            </div>
+            <img 
+              src={NORMAN_SCRAP_YARD.logo} 
+              alt="Norman's Scrap Metal"
+              className="w-24 h-24 mx-auto rounded-2xl object-cover mb-4 shadow-md"
+              data-testid="norman-scrapyard-logo"
+            />
             <h2 className="text-xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
               Got scrap metal? 🔧
             </h2>
@@ -2396,15 +2413,22 @@ function PostPage() {
             <p className="text-slate-600 mt-2">{post.description}</p>
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-slate-500">
+          <div className="flex flex-col gap-2 text-sm text-slate-500">
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
               <span>Expires {new Date(post.expires_at).toLocaleDateString()}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              <span>Tap to view on map</span>
-            </div>
+            <a 
+              href={`https://www.google.com/maps/dir/?api=1&destination=${post.latitude},${post.longitude}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-green-600 hover:text-green-700 hover:underline"
+              data-testid="get-directions-link"
+            >
+              <Navigation className="w-4 h-4" />
+              <span>Get directions</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
           </div>
 
           {/* Safety Notice */}
