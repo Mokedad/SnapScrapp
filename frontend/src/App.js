@@ -520,6 +520,38 @@ function AppContent() {
     fetchPosts();
   }, [fetchPosts]);
 
+  // Show welcome popup on first visit
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem('ucycle_welcome_seen');
+    if (!hasSeenWelcome) {
+      setTimeout(() => setShowWelcome(true), 1000);
+    }
+  }, []);
+
+  const dismissWelcome = () => {
+    localStorage.setItem('ucycle_welcome_seen', 'true');
+    setShowWelcome(false);
+  };
+
+  // Check if user is in Western Sydney/Penrith area (for Norman Scrap Yard ad)
+  const isInWesternSydney = useCallback(() => {
+    if (!userLocation) return false;
+    // Western Sydney / Penrith area: roughly -33.75, 150.69
+    // Check within ~50km radius
+    const penrithLat = -33.7507;
+    const penrithLng = 150.6944;
+    const distance = getDistance(userLocation[0], userLocation[1], penrithLat, penrithLng);
+    return distance <= 50; // Within 50km of Penrith
+  }, [userLocation, getDistance]);
+
+  // Norman Scrap Yard details
+  const NORMAN_SCRAP_YARD = {
+    name: "Norman Scrap Yard",
+    address: "Penrith, NSW",
+    phone: "Contact via Google Maps",
+    mapsUrl: "https://maps.app.goo.gl/6rz7ikg3avEyQyC27"
+  };
+
   // ============ CAMERA FUNCTIONS ============
   
   // Open camera
