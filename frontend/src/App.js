@@ -554,6 +554,11 @@ function AppContent() {
 
   // ============ CAMERA FUNCTIONS ============
   
+  // Camera zoom state
+  const [cameraZoom, setCameraZoom] = useState(1);
+  const [maxZoom, setMaxZoom] = useState(5);
+  const lastTouchDistance = useRef(0);
+  
   // Open camera
   const openCamera = async () => {
     try {
@@ -563,6 +568,14 @@ function AppContent() {
       });
       setCameraStream(stream);
       setShowCameraView(true);
+      setCameraZoom(1); // Reset zoom
+      
+      // Check if camera supports native zoom
+      const track = stream.getVideoTracks()[0];
+      const capabilities = track.getCapabilities?.();
+      if (capabilities?.zoom) {
+        setMaxZoom(capabilities.zoom.max || 5);
+      }
       
       // Connect stream to video element after render
       setTimeout(() => {
@@ -585,6 +598,59 @@ function AppContent() {
       setCameraStream(null);
     }
     setShowCameraView(false);
+    setCameraZoom(1);
+  };
+
+  // Apply zoom to camera
+  const applyCameraZoom = useCallback((newZoom) => {
+    const clampedZoom = Math.min(Math.max(newZoom, 1), maxZoom);
+    setCameraZoom(clampedZoom);
+    
+    // Try to apply native camera zoom if supported
+    if (cameraStream) {
+      const track = cameraStream.getVideoTracks()[0];
+      const capabilities = track.getCapabilities?.();
+      if (capabilities?.zoom) {
+        track.applyConstraints({ advanced: [{ zoom: clampedZoom }] }).catch(() => {});
+      }
+    }
+  }, [cameraStream, maxZoom]);
+
+  // Handle pinch zoom on camera
+  const handleCameraTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      lastTouchDistance.current = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+    }
+  };
+
+  const handleCameraTouchMove = (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const currentDistance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      
+      if (lastTouchDistance.current > 0) {
+        const scale = currentDistance / lastTouchDistance.current;
+        const newZoom = cameraZoom * scale;
+        applyCameraZoom(newZoom);
+      }
+      
+      lastTouchDistance.current = currentDistance;
+    }
+  };
+
+  const handleCameraTouchEnd = () => {
+    lastTouchDistance.current = 0;
   };
 
   // Capture photo from camera
@@ -598,9 +664,25 @@ function AppContent() {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     
-    // Draw video frame to canvas
+    // Draw video frame to canvas (with zoom crop if using CSS zoom)
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0);
+    
+    // If using CSS transform zoom, crop the center portion
+    if (cameraZoom > 1) {
+      const zoomFactor = cameraZoom;
+      const cropWidth = video.videoWidth / zoomFactor;
+      const cropHeight = video.videoHeight / zoomFactor;
+      const cropX = (video.videoWidth - cropWidth) / 2;
+      const cropY = (video.videoHeight - cropHeight) / 2;
+      
+      ctx.drawImage(
+        video,
+        cropX, cropY, cropWidth, cropHeight,  // Source crop
+        0, 0, canvas.width, canvas.height      // Destination
+      );
+    } else {
+      ctx.drawImage(video, 0, 0);
+    }
     
     // Get compressed base64
     const base64 = canvas.toDataURL('image/jpeg', 0.7);
