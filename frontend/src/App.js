@@ -2070,7 +2070,8 @@ function PostPage() {
   };
 
   const shareToFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(`Free: ${post.title}`)}`;
+    window.open(fbUrl, '_blank', 'width=600,height=400');
     setShowShareDialog(false);
   };
 
