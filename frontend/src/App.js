@@ -994,6 +994,27 @@ function AppContent() {
               <RefreshCw className="w-5 h-5 text-slate-600" />
               <span className="font-medium text-slate-900">Refresh Map</span>
             </button>
+            <button
+              onClick={async () => {
+                const permission = await requestNotificationPermission();
+                if (permission !== 'granted') {
+                  toast.error("Please enable notifications in your browser settings");
+                }
+              }}
+              className="w-full flex items-center gap-3 p-4 rounded-xl hover:bg-slate-100 transition-colors text-left"
+              data-testid="notifications-menu-btn"
+            >
+              <svg className="w-5 h-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              <div className="flex-1">
+                <span className="font-medium text-slate-900">Nearby Notifications</span>
+                <p className="text-xs text-slate-500">
+                  {notificationPermission === 'granted' ? '✓ Enabled' : 'Get alerts for nearby items'}
+                </p>
+              </div>
+            </button>
           </div>
           {/* Safety Notice */}
           <div className="mx-4 mb-4 safety-notice p-4">
