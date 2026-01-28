@@ -202,6 +202,7 @@ function AppContent() {
   
   // State
   const [posts, setPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showPostDrawer, setShowPostDrawer] = useState(false);
@@ -213,6 +214,14 @@ function AppContent() {
   const [locationError, setLocationError] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
   const mapRef = useRef(null);
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchInputRef = useRef(null);
   
   // Post form state
   const [newPost, setNewPost] = useState({
