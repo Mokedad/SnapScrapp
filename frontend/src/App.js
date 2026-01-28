@@ -1183,12 +1183,261 @@ function AdminPanel() {
   );
 }
 
+// Shared Post Page Component
+function PostPage() {
+  const navigate = useNavigate();
+  const { postId } = useParams();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [isReporting, setIsReporting] = useState(false);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(`${API}/posts/${postId}`);
+        setPost(response.data);
+      } catch (err) {
+        console.error("Failed to fetch post:", err);
+        setError("Post not found or has expired");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [postId]);
+
+  const handleMarkCollected = async () => {
+    try {
+      await axios.patch(`${API}/posts/${postId}/collected`);
+      toast.success("Marked as collected!");
+      setPost(prev => ({ ...prev, status: "collected" }));
+    } catch (err) {
+      toast.error("Failed to update");
+    }
+  };
+
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareData = {
+      title: `Free: ${post.title}`,
+      text: `Check out this free item on Ucycle: ${post.title}`,
+      url: shareUrl
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copied!");
+    } catch (err) {
+      toast.error("Failed to copy link");
+    }
+  };
+
+  const handleSubmitReport = async () => {
+    if (!reportReason) return;
+    setIsReporting(true);
+    try {
+      await axios.post(`${API}/reports`, { post_id: postId, reason: reportReason });
+      toast.success("Report submitted");
+      setShowReportDialog(false);
+      setReportReason("");
+    } catch (err) {
+      toast.error("Failed to submit report");
+    } finally {
+      setIsReporting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+      </div>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4" data-testid="post-not-found">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto bg-slate-200 rounded-full flex items-center justify-center mb-4">
+            <AlertTriangle className="w-8 h-8 text-slate-400" />
+          </div>
+          <h1 className="text-xl font-bold text-slate-900 mb-2">Post Not Found</h1>
+          <p className="text-slate-500 mb-6">{error || "This item may have been collected or expired."}</p>
+          <Button onClick={() => navigate('/')} className="bg-green-800 hover:bg-green-900" data-testid="go-to-map-btn">
+            <MapPin className="w-4 h-4 mr-2" />
+            Go to Map
+          </Button>
+        </div>
+        <Toaster position="top-center" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50" data-testid="shared-post-page">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
+        <button onClick={() => navigate('/')} className="p-2 hover:bg-slate-100 rounded-lg" data-testid="back-btn">
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-lime-500 rounded-lg flex items-center justify-center">
+            <RefreshCw className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-bold text-slate-900">Ucycle</span>
+        </div>
+      </header>
+
+      {/* Post Content */}
+      <div className="pb-8">
+        <div className="relative">
+          <img 
+            src={post.image_base64.startsWith('data:') ? post.image_base64 : `data:image/jpeg;base64,${post.image_base64}`}
+            alt={post.title}
+            className="w-full h-64 object-cover"
+          />
+          <div className="absolute top-3 left-3">
+            <CategoryBadge category={post.category} />
+          </div>
+          <div className="absolute top-3 right-3">
+            <StatusBadge status={post.status} />
+          </div>
+        </div>
+
+        <div className="p-4 space-y-4">
+          <div>
+            <h1 className="font-bold text-2xl text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              {post.title}
+            </h1>
+            <p className="text-slate-600 mt-2">{post.description}</p>
+          </div>
+
+          <div className="flex items-center gap-4 text-sm text-slate-500">
+            <div className="flex items-center gap-1">
+              <Clock className="w-4 h-4" />
+              <span>Expires {new Date(post.expires_at).toLocaleDateString()}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <MapPin className="w-4 h-4" />
+              <span>Tap to view on map</span>
+            </div>
+          </div>
+
+          {/* Safety Notice */}
+          <div className="safety-notice p-3">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <p className="text-amber-700 text-xs">
+                Public pickup only. Do not enter private property.
+              </p>
+            </div>
+          </div>
+
+          {/* Actions */}
+          {post.status === "active" && (
+            <div className="space-y-3 pt-2">
+              <Button
+                className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-5 rounded-full"
+                onClick={() => navigate(`/?lat=${post.latitude}&lng=${post.longitude}&post=${post.id}`)}
+                data-testid="view-on-map-btn"
+              >
+                <MapPin className="w-5 h-5 mr-2" />
+                View on Map
+              </Button>
+              <Button
+                className="w-full bg-lime-500 hover:bg-lime-600 text-slate-900 font-bold py-5 rounded-full"
+                onClick={handleMarkCollected}
+                data-testid="mark-collected-btn"
+              >
+                <CheckCircle className="w-5 h-5 mr-2" />
+                Mark as Collected
+              </Button>
+              <div className="grid grid-cols-2 gap-3">
+                <Button variant="outline" className="py-5 rounded-full" onClick={handleShare} data-testid="share-btn">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
+                <Button variant="outline" className="py-5 rounded-full" onClick={() => setShowReportDialog(true)} data-testid="report-btn">
+                  <Flag className="w-4 h-4 mr-2" />
+                  Report
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {post.status !== "active" && (
+            <div className="text-center py-6">
+              <p className="text-slate-500">
+                {post.status === "collected" ? "This item has been collected." : "This post has expired."}
+              </p>
+              <Button onClick={() => navigate('/')} variant="outline" className="mt-4" data-testid="browse-more-btn">
+                Browse More Items
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Report Dialog */}
+      <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Report an Issue</DialogTitle>
+            <DialogDescription>Help us keep Ucycle safe</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            {REPORT_REASONS.map(reason => (
+              <button
+                key={reason.value}
+                onClick={() => setReportReason(reason.value)}
+                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
+                  reportReason === reason.value 
+                    ? 'border-green-600 bg-green-50' 
+                    : 'border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                <span className={`font-medium ${reportReason === reason.value ? 'text-green-700' : 'text-slate-700'}`}>
+                  {reason.label}
+                </span>
+              </button>
+            ))}
+          </div>
+          <Button
+            className="w-full bg-green-800 hover:bg-green-900"
+            onClick={handleSubmitReport}
+            disabled={!reportReason || isReporting}
+          >
+            {isReporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+            Submit Report
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      <Toaster position="top-center" />
+    </div>
+  );
+}
+
 // Main App with Router
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<AppContent />} />
+        <Route path="/post/:postId" element={<PostPage />} />
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </BrowserRouter>
