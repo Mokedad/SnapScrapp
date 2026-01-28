@@ -282,6 +282,8 @@ function AppContent() {
       }));
       setPickingLocation(false);
       toast.success("Location set!");
+      // Reopen the post drawer
+      setTimeout(() => setShowPostDrawer(true), 100);
     }
   };
 
