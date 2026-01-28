@@ -999,46 +999,86 @@ function AppContent() {
               className="w-full bg-gradient-to-r from-green-600 to-lime-500 text-white font-bold py-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
               data-testid="empty-state-post-btn"
             >
-              <Plus className="w-5 h-5 inline mr-2" />
-              Post First Item
+              <Camera className="w-5 h-5 inline mr-2" />
+              Snap First Item
             </button>
           </div>
         </div>
       )}
 
-      {/* Category Filter Chips */}
-      {!showSearchBar && !pickingLocation && availableCategories.length > 0 && (
-        <div className="fixed top-16 left-0 right-0 z-15 px-4 py-2 overflow-x-auto hide-scrollbar">
-          <div className="flex gap-2 pb-1">
+      {/* Radius & Category Filters */}
+      {!showSearchBar && !pickingLocation && !showCameraView && (
+        <div className="fixed top-16 left-0 right-0 z-15 px-4 py-2">
+          {/* Radius Control */}
+          <div className="flex items-center gap-2 mb-2">
             <button
-              onClick={() => setSelectedCategory(null)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm ${
-                !selectedCategory 
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-white text-slate-700 hover:bg-slate-50'
-              }`}
-              data-testid="filter-all"
+              onClick={() => setShowRadiusSlider(!showRadiusSlider)}
+              className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm text-sm font-medium text-slate-700"
+              data-testid="radius-toggle"
             >
-              All ({posts.length})
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              {radiusKm}km
             </button>
-            {availableCategories.map(cat => {
-              const count = filteredPosts.filter(p => p.category === cat).length;
-              return (
+            {showRadiusSlider && (
+              <div className="flex-1 flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm animate-fade-in">
+                <span className="text-xs text-slate-500">1km</span>
+                <input
+                  type="range"
+                  min="1"
+                  max="100"
+                  value={radiusKm}
+                  onChange={(e) => setRadiusKm(parseInt(e.target.value))}
+                  className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
+                  data-testid="radius-slider"
+                />
+                <span className="text-xs text-slate-500">100km</span>
+              </div>
+            )}
+            {!showRadiusSlider && postsInRadius.length !== posts.length && (
+              <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-full shadow-sm">
+                {postsInRadius.length} nearby
+              </span>
+            )}
+          </div>
+          
+          {/* Category Chips - only show if there are posts in radius */}
+          {postsInRadius.length > 0 && (
+            <div className="overflow-x-auto hide-scrollbar">
+              <div className="flex gap-2 pb-1">
                 <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
+                  onClick={() => setSelectedCategory(null)}
                   className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm ${
-                    selectedCategory === cat 
+                    !selectedCategory 
                       ? 'bg-green-600 text-white' 
                       : 'bg-white text-slate-700 hover:bg-slate-50'
                   }`}
-                  data-testid={`filter-${cat}`}
+                  data-testid="filter-all"
                 >
-                  {cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' ')} ({count})
+                  All ({postsInRadius.length})
                 </button>
-              );
-            })}
-          </div>
+                {availableCategories.map(cat => {
+                  const count = postsInRadius.filter(p => p.category === cat).length;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
+                      className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm ${
+                        selectedCategory === cat 
+                          ? 'bg-green-600 text-white' 
+                          : 'bg-white text-slate-700 hover:bg-slate-50'
+                      }`}
+                      data-testid={`filter-${cat}`}
+                    >
+                      {cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' ')} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
