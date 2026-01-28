@@ -591,24 +591,123 @@ function AppContent() {
   return (
     <div className="h-screen w-screen overflow-hidden" data-testid="app-container">
       {/* Header */}
-      <header className="glass-header fixed top-0 left-0 right-0 z-20 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-lime-500 rounded-xl flex items-center justify-center">
-            <RefreshCw className="w-5 h-5 text-white" />
+      <header className="glass-header fixed top-0 left-0 right-0 z-20 px-4 py-3">
+        {!showSearchBar ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-lime-500 rounded-xl flex items-center justify-center">
+                <RefreshCw className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="font-bold text-xl text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                Ucycle
+              </h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => {
+                  setShowSearchBar(true);
+                  setTimeout(() => searchInputRef.current?.focus(), 100);
+                }}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
+                data-testid="search-button"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5 text-slate-700" />
+              </button>
+              <button 
+                onClick={() => setShowMenu(true)}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
+                data-testid="menu-button"
+                aria-label="Open menu"
+              >
+                <Menu className="w-5 h-5 text-slate-700" />
+              </button>
+            </div>
           </div>
-          <h1 className="font-bold text-xl text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            Ucycle
-          </h1>
-        </div>
-        <button 
-          onClick={() => setShowMenu(true)}
-          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
-          data-testid="menu-button"
-          aria-label="Open menu"
-        >
-          <Menu className="w-5 h-5 text-slate-700" />
-        </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search items or locations..."
+                className="w-full pl-10 pr-10 py-3 bg-white border border-slate-200 rounded-full text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                data-testid="search-input"
+              />
+              {searchQuery && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 rounded-full"
+                >
+                  <X className="w-4 h-4 text-slate-400" />
+                </button>
+              )}
+              {isSearching && (
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-600 animate-spin" />
+              )}
+            </div>
+            <button
+              onClick={() => {
+                setShowSearchBar(false);
+                clearSearch();
+              }}
+              className="px-3 py-2 text-slate-600 font-medium"
+              data-testid="cancel-search-btn"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </header>
+
+      {/* Search Results Dropdown */}
+      {showSearchResults && searchResults.length > 0 && (
+        <div className="fixed top-16 left-4 right-4 z-30 bg-white rounded-2xl shadow-lg border border-slate-200 max-h-80 overflow-y-auto animate-slide-up" data-testid="search-results">
+          {searchResults.map((result, index) => (
+            <button
+              key={index}
+              onClick={() => handleSearchResultClick(result)}
+              className="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0 text-left"
+              data-testid={`search-result-${index}`}
+            >
+              {result.type === 'location' ? (
+                <>
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-slate-900 truncate">{result.name.split(',')[0]}</p>
+                    <p className="text-xs text-slate-500 truncate">{result.name.split(',').slice(1, 3).join(',')}</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <img 
+                    src={result.image_base64?.startsWith('data:') ? result.image_base64 : `data:image/jpeg;base64,${result.image_base64}`}
+                    alt={result.title}
+                    className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-slate-900 truncate">{result.title}</p>
+                    <p className="text-xs text-slate-500 truncate">{result.category}</p>
+                  </div>
+                </>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* No Results Message */}
+      {showSearchBar && searchQuery && !isSearching && searchResults.length === 0 && (
+        <div className="fixed top-16 left-4 right-4 z-30 bg-white rounded-2xl shadow-lg border border-slate-200 p-6 text-center animate-slide-up">
+          <Search className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+          <p className="text-slate-500">No results found for "{searchQuery}"</p>
+        </div>
+      )}
 
       {/* Map */}
       <div className="map-container">
