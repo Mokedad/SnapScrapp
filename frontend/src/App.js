@@ -255,20 +255,45 @@ function AppContent() {
   
   const fileInputRef = useRef(null);
 
-  // Filter posts by category
+  // Calculate distance between two points (Haversine formula)
+  const getDistance = useCallback((lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }, []);
+
+  // Get posts within radius
+  const postsInRadius = useMemo(() => {
+    if (!userLocation) return filteredPosts;
+    return filteredPosts.filter(post => {
+      const distance = getDistance(
+        userLocation[0], userLocation[1],
+        post.latitude, post.longitude
+      );
+      return distance <= radiusKm;
+    });
+  }, [filteredPosts, userLocation, radiusKm, getDistance]);
+
+  // Filter posts by category (from radius-filtered posts)
   const getDisplayPosts = useCallback(() => {
-    let result = filteredPosts;
+    let result = postsInRadius;
     if (selectedCategory) {
       result = result.filter(post => post.category === selectedCategory);
     }
     return result;
-  }, [filteredPosts, selectedCategory]);
+  }, [postsInRadius, selectedCategory]);
 
-  // Get unique categories from posts
+  // Get unique categories from posts within radius only
   const availableCategories = useMemo(() => {
-    const cats = [...new Set(posts.map(p => p.category))];
+    const cats = [...new Set(postsInRadius.map(p => p.category))];
     return cats.sort();
-  }, [posts]);
+  }, [postsInRadius]);
 
   // Request user location
   const requestLocation = useCallback(() => {
