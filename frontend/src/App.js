@@ -1282,20 +1282,30 @@ function AppContent() {
 
       {/* Full Screen Camera View */}
       {showCameraView && (
-        <div className="fixed inset-0 z-50 bg-black" data-testid="camera-view">
-          {/* Camera Feed */}
+        <div 
+          className="fixed inset-0 z-50 bg-black touch-none" 
+          data-testid="camera-view"
+          onTouchStart={handleCameraTouchStart}
+          onTouchMove={handleCameraTouchMove}
+          onTouchEnd={handleCameraTouchEnd}
+        >
+          {/* Camera Feed - with zoom transform */}
           <video
             ref={videoRef}
             autoPlay
             playsInline
             muted
             className="w-full h-full object-cover"
+            style={{
+              transform: `scale(${cameraZoom})`,
+              transformOrigin: 'center center'
+            }}
           />
           
           {/* Camera UI Overlay */}
-          <div className="absolute inset-0 flex flex-col">
+          <div className="absolute inset-0 flex flex-col pointer-events-none">
             {/* Top Bar */}
-            <div className="flex items-center justify-between p-4 pt-12">
+            <div className="flex items-center justify-between p-4 pt-12 pointer-events-auto">
               <button
                 onClick={closeCamera}
                 className="w-12 h-12 bg-black/40 rounded-full flex items-center justify-center"
@@ -1305,16 +1315,40 @@ function AppContent() {
               </button>
               <div className="text-center">
                 <p className="text-white text-sm font-medium opacity-80">Ucycle</p>
-                <p className="text-white text-xs opacity-60">Snap a free item</p>
+                <p className="text-white text-xs opacity-60">Pinch to zoom</p>
               </div>
               <div className="w-12 h-12" /> {/* Spacer */}
             </div>
             
+            {/* Zoom Indicator - shows when zoomed */}
+            {cameraZoom > 1.1 && (
+              <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-full pointer-events-auto">
+                <p className="text-white text-sm font-medium">{cameraZoom.toFixed(1)}x</p>
+              </div>
+            )}
+            
             {/* Spacer */}
             <div className="flex-1" />
             
+            {/* Zoom Slider */}
+            <div className="px-8 mb-4 pointer-events-auto">
+              <div className="flex items-center gap-3 bg-black/40 rounded-full px-4 py-2">
+                <span className="text-white text-xs">1x</span>
+                <input
+                  type="range"
+                  min="1"
+                  max={maxZoom}
+                  step="0.1"
+                  value={cameraZoom}
+                  onChange={(e) => applyCameraZoom(parseFloat(e.target.value))}
+                  className="flex-1 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer accent-lime-400"
+                />
+                <span className="text-white text-xs">{maxZoom}x</span>
+              </div>
+            </div>
+            
             {/* Bottom Controls */}
-            <div className="p-6 pb-12">
+            <div className="p-6 pb-12 pointer-events-auto">
               <div className="flex items-center justify-center gap-8">
                 {/* Gallery Button */}
                 <button
