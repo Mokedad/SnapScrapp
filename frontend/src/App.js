@@ -727,8 +727,8 @@ function AppContent() {
           {/* User location marker */}
           <UserLocationMarker position={userLocation} />
           
-          {/* Post markers */}
-          {posts.map(post => (
+          {/* Post markers - use filteredPosts for search */}
+          {filteredPosts.map(post => (
             <Marker
               key={post.id}
               position={[post.latitude, post.longitude]}
@@ -748,6 +748,23 @@ function AppContent() {
           )}
         </MapContainer>
       </div>
+
+      {/* Search filter indicator */}
+      {searchQuery && filteredPosts.length !== posts.length && (
+        <div className="fixed top-20 left-4 right-4 z-20 animate-slide-up">
+          <div className="bg-green-600 text-white rounded-full px-4 py-2 flex items-center justify-between shadow-lg">
+            <span className="text-sm font-medium">
+              Showing {filteredPosts.length} of {posts.length} items
+            </span>
+            <button 
+              onClick={clearSearch}
+              className="ml-2 p-1 hover:bg-green-700 rounded-full"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* My Location button */}
       {!pickingLocation && (
