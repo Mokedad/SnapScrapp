@@ -415,8 +415,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Admin PIN pad */
 .pin-button {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   font-size: 24px;
   font-weight: 700;
@@ -425,6 +425,9 @@ h1, h2, h3, h4, h5, h6 {
   color: #0f172a;
   cursor: pointer;
   transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pin-button:hover {
@@ -435,6 +438,17 @@ h1, h2, h3, h4, h5, h6 {
 .pin-button:active {
   transform: scale(0.95);
   background: #e2e8f0;
+}
+
+.pin-button-del {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.pin-button-del:hover {
+  background: #fecaca;
+  border-color: #f87171;
 }
 
 /* Animations */
