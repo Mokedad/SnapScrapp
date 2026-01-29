@@ -38,7 +38,8 @@ logger = logging.getLogger(__name__)
 # ============ MODELS ============
 
 class PostCreate(BaseModel):
-    image_base64: str
+    image_base64: str  # Primary image (required)
+    images: Optional[List[str]] = None  # Additional images (optional)
     title: str
     category: str
     description: str
@@ -48,7 +49,8 @@ class PostCreate(BaseModel):
 
 class PostResponse(BaseModel):
     id: str
-    image_base64: str
+    image_base64: str  # Primary image for backwards compatibility
+    images: List[str] = []  # All images including primary
     title: str
     category: str
     description: str
