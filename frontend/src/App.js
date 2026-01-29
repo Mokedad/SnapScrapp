@@ -578,55 +578,6 @@ function AppContent() {
     setSelectedCategory(null);
   };
 
-  // Check for nearby items notification
-  const [lastNotifiedPosts, setLastNotifiedPosts] = useState(new Set());
-  const [notificationPermission, setNotificationPermission] = useState('default');
-
-  // Request notification permission
-  const requestNotificationPermission = async () => {
-    if ('Notification' in window) {
-      const permission = await Notification.requestPermission();
-      setNotificationPermission(permission);
-      if (permission === 'granted') {
-        toast.success("Notifications enabled! You'll be alerted when new items appear nearby.");
-      }
-      return permission;
-    }
-    return 'denied';
-  };
-
-  // Check for nearby items
-  useEffect(() => {
-    if (!userLocation || posts.length === 0) return;
-    
-    const nearbyRadius = 5; // km
-    const newNearbyPosts = posts.filter(post => {
-      const distance = getDistance(
-        userLocation[0], userLocation[1],
-        post.latitude, post.longitude
-      );
-      return distance <= nearbyRadius && !lastNotifiedPosts.has(post.id);
-    });
-
-    if (newNearbyPosts.length > 0 && notificationPermission === 'granted') {
-      // Show browser notification
-      newNearbyPosts.forEach(post => {
-        new Notification('New item nearby! 🎁', {
-          body: `${post.title} - ${post.category}`,
-          icon: '/favicon.ico',
-          tag: post.id
-        });
-      });
-      
-      // Update notified posts
-      setLastNotifiedPosts(prev => {
-        const newSet = new Set(prev);
-        newNearbyPosts.forEach(p => newSet.add(p.id));
-        return newSet;
-      });
-    }
-  }, [posts, userLocation, lastNotifiedPosts, notificationPermission, getDistance]);
-
   // Get user location on mount
   useEffect(() => {
     requestLocation();
@@ -636,6 +587,83 @@ function AppContent() {
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
+
+  // Polling for new nearby posts and collected items (every 30 seconds)
+  useEffect(() => {
+    if (!nearbyNotificationsEnabled) return;
+    
+    const checkForUpdates = async () => {
+      try {
+        const response = await axios.get(`${API}/posts`);
+        const currentPosts = response.data;
+        
+        // Check for new nearby posts (within 1km)
+        if (userLocation) {
+          const nearbyRadius = 1; // 1km
+          currentPosts.forEach(post => {
+            // Skip if we've already seen this post
+            if (lastSeenPostIds.includes(post.id)) return;
+            // Skip if this is user's own post
+            if (myPostIds.includes(post.id)) return;
+            
+            const distance = getDistance(
+              userLocation[0], userLocation[1],
+              post.latitude, post.longitude
+            );
+            
+            if (distance <= nearbyRadius && post.status === 'active') {
+              // New nearby item found!
+              showNotification(`New item nearby: ${post.title}`, 'nearby');
+              
+              // Mark as seen
+              setLastSeenPostIds(prev => {
+                const updated = [...prev, post.id];
+                localStorage.setItem('ucycle_seen_posts', JSON.stringify(updated));
+                return updated;
+              });
+            }
+          });
+        }
+        
+        // Check if any of user's own posts were collected
+        myPostIds.forEach(myPostId => {
+          const myPost = currentPosts.find(p => p.id === myPostId);
+          if (myPost && myPost.status === 'collected') {
+            // User's item was collected!
+            showNotification(`You helped a mate! Your "${myPost.title}" was collected 🎉`, 'collected');
+            
+            // Remove from my posts list (so we don't notify again)
+            setMyPostIds(prev => {
+              const updated = prev.filter(id => id !== myPostId);
+              localStorage.setItem('ucycle_my_posts', JSON.stringify(updated));
+              return updated;
+            });
+          }
+        });
+        
+        // Update posts state
+        setPosts(currentPosts);
+        setFilteredPosts(currentPosts);
+        
+      } catch (error) {
+        console.error('Failed to check for updates:', error);
+      }
+    };
+    
+    // Check every 30 seconds
+    const interval = setInterval(checkForUpdates, 30000);
+    
+    return () => clearInterval(interval);
+  }, [userLocation, myPostIds, lastSeenPostIds, nearbyNotificationsEnabled, getDistance, showNotification]);
+
+  // Mark initial posts as "seen" on first load
+  useEffect(() => {
+    if (posts.length > 0 && lastSeenPostIds.length === 0) {
+      const currentIds = posts.map(p => p.id);
+      setLastSeenPostIds(currentIds);
+      localStorage.setItem('ucycle_seen_posts', JSON.stringify(currentIds));
+    }
+  }, [posts, lastSeenPostIds.length]);
 
   // Show welcome popup on first visit
   useEffect(() => {
