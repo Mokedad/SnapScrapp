@@ -408,15 +408,38 @@ function AppContent() {
     return posts.filter(p => favorites.includes(p.id)).length;
   }, [posts, favorites]);
 
-  // Request user location
-  const requestLocation = useCallback(() => {
+  // Check if location permission is already granted
+  const checkLocationPermission = useCallback(async () => {
+    if (!navigator.permissions) return 'prompt'; // Fallback for older browsers
+    try {
+      const result = await navigator.permissions.query({ name: 'geolocation' });
+      return result.state; // 'granted', 'denied', or 'prompt'
+    } catch (e) {
+      return 'prompt';
+    }
+  }, []);
+
+  // Request user location (silent mode = no toast if already granted)
+  const requestLocation = useCallback(async (showToast = true) => {
     setIsLocating(true);
     setLocationError(null);
     
     if (!navigator.geolocation) {
       setLocationError("Geolocation is not supported by your browser");
       setIsLocating(false);
-      toast.error("Geolocation not supported");
+      if (showToast) toast.error("Geolocation not supported");
+      return;
+    }
+
+    // Check permission status first
+    const permissionStatus = await checkLocationPermission();
+    
+    // If denied, don't even try (avoid repeated prompts)
+    if (permissionStatus === 'denied') {
+      setIsLocating(false);
+      setLocationError("Location permission denied");
+      if (showToast) toast.error("Location permission denied. Please enable in browser settings.");
+      setMapCenter([51.505, -0.09]);
       return;
     }
 
@@ -426,7 +449,10 @@ function AppContent() {
         setUserLocation(loc);
         setMapCenter(loc);
         setIsLocating(false);
-        toast.success("Location found!");
+        // Only show toast if explicitly requested and permission was just granted
+        if (showToast && permissionStatus === 'prompt') {
+          toast.success("Location found!");
+        }
         
         // Fly to location if map is ready
         if (mapRef.current) {
@@ -450,7 +476,7 @@ function AppContent() {
             errorMsg = "Unknown location error";
         }
         setLocationError(errorMsg);
-        toast.error(errorMsg);
+        if (showToast) toast.error(errorMsg);
         // Keep default location
         setMapCenter([51.505, -0.09]);
       },
@@ -460,7 +486,7 @@ function AppContent() {
         maximumAge: 60000
       }
     );
-  }, []);
+  }, [checkLocationPermission]);
 
   // Fetch posts
   const fetchPosts = useCallback(async () => {
