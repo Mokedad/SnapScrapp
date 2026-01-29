@@ -257,6 +257,7 @@ function AppContent() {
   
   // Notification state
   const [notification, setNotification] = useState(null);
+  const [showNotificationBanner, setShowNotificationBanner] = useState(false);
   const [myPostIds, setMyPostIds] = useState(() => {
     const saved = localStorage.getItem('ucycle_my_posts');
     return saved ? JSON.parse(saved) : [];
@@ -265,7 +266,12 @@ function AppContent() {
     const saved = localStorage.getItem('ucycle_seen_posts');
     return saved ? JSON.parse(saved) : [];
   });
+  const [nearbyNotificationsEnabled, setNearbyNotificationsEnabled] = useState(() => {
+    const saved = localStorage.getItem('ucycle_nearby_notifications');
+    return saved === null ? true : saved === 'true'; // ON by default
+  });
   const notificationSound = useRef(null);
+  const lastFetchTime = useRef(Date.now());
   
   // Favorites state
   const [favorites, setFavorites] = useState(() => {
