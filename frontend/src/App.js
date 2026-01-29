@@ -591,6 +591,58 @@ function AppContent() {
     }
   }, []);
 
+  // PWA Install Prompt listener
+  useEffect(() => {
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      // Show install prompt after 30 seconds if not already installed
+      const hasDeclined = localStorage.getItem('ucycle_install_declined');
+      if (!hasDeclined) {
+        setTimeout(() => setShowInstallPrompt(true), 30000);
+      }
+    };
+    
+    const handleSwUpdate = (e) => {
+      setSwRegistration(e.detail);
+      setShowUpdateBanner(true);
+    };
+    
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('swUpdate', handleSwUpdate);
+    
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('swUpdate', handleSwUpdate);
+    };
+  }, []);
+
+  // Handle PWA install
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      toast.success("Ucycle installed! 🎉");
+    }
+    setDeferredPrompt(null);
+    setShowInstallPrompt(false);
+  };
+
+  const dismissInstallPrompt = () => {
+    localStorage.setItem('ucycle_install_declined', 'true');
+    setShowInstallPrompt(false);
+  };
+
+  // Handle app update
+  const handleUpdateClick = () => {
+    if (swRegistration && swRegistration.waiting) {
+      swRegistration.waiting.postMessage('skipWaiting');
+      window.location.reload();
+    }
+    setShowUpdateBanner(false);
+  };
+
   const dismissWelcome = () => {
     localStorage.setItem('ucycle_welcome_seen', 'true');
     setShowWelcome(false);
