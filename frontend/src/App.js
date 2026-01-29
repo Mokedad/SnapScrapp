@@ -2654,7 +2654,7 @@ function PostPage() {
               <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2zm4 8h-2v-4h2v4zm0-6h-2V9h2v2zm4 6h-2v-2h2v2zm0-4h-2v-2h2v2z"/>
               </svg>
-              FB Groups
+              Community
             </button>
             <button onClick={shareToGumtree} className="share-btn gumtree flex-col py-4" data-testid="share-gumtree">
               <svg className="w-6 h-6 mb-1" viewBox="0 0 24 24" fill="currentColor">
