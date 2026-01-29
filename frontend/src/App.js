@@ -1242,10 +1242,25 @@ function AppContent() {
           {postsInRadius.length > 0 && (
             <div className="overflow-x-auto hide-scrollbar">
               <div className="flex gap-2 pb-1">
+                {/* Favorites filter */}
+                {favoritesCount > 0 && (
+                  <button
+                    onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                    className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm flex items-center gap-1 ${
+                      showFavoritesOnly 
+                        ? 'bg-red-500 text-white' 
+                        : 'bg-white text-slate-700 hover:bg-slate-50'
+                    }`}
+                    data-testid="filter-favorites"
+                  >
+                    <Heart className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-white' : ''}`} />
+                    Saved ({favoritesCount})
+                  </button>
+                )}
                 <button
-                  onClick={() => setSelectedCategory(null)}
+                  onClick={() => { setSelectedCategory(null); setShowFavoritesOnly(false); }}
                   className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm ${
-                    !selectedCategory 
+                    !selectedCategory && !showFavoritesOnly
                       ? 'bg-green-600 text-white' 
                       : 'bg-white text-slate-700 hover:bg-slate-50'
                   }`}
