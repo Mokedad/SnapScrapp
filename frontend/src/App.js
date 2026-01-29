@@ -2343,17 +2343,17 @@ function AdminPanel() {
           {/* PIN Pad */}
           <div className="grid grid-cols-3 gap-4 justify-items-center">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, null, 0, 'del'].map((num, i) => (
-              num === null ? <div key={i} /> : (
+              num === null ? <div key={i} className="w-16 h-16" /> : (
                 <button
                   key={i}
-                  className="pin-button"
+                  className={`pin-button ${num === 'del' ? 'pin-button-del' : ''}`}
                   onClick={() => {
                     if (num === 'del') {
                       setPin(p => p.slice(0, -1));
-                    } else if (pin.length < 4) {
+                    } else if (pin.length < 8) {
                       const newPin = pin + num;
                       setPin(newPin);
-                      if (newPin.length === 4) {
+                      if (newPin.length === 8) {
                         setTimeout(() => {
                           setVerifying(true);
                           axios.post(`${API}/admin/verify`, { pin: newPin })
