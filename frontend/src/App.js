@@ -322,6 +322,14 @@ function AppContent() {
     return cats.sort();
   }, [postsInRadius]);
 
+  // Final filtered posts (including favorites filter)
+  const displayPosts = useMemo(() => {
+    if (showFavoritesOnly) {
+      return filteredPosts.filter(p => favorites.includes(p.id));
+    }
+    return filteredPosts;
+  }, [filteredPosts, showFavoritesOnly, favorites]);
+
   // Request user location
   const requestLocation = useCallback(() => {
     setIsLocating(true);
