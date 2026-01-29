@@ -285,13 +285,13 @@ h1, h2, h3, h4, h5, h6 {
   background: #0d65d9;
 }
 
-.share-btn.twitter {
-  background: #000000;
-  color: white;
+.share-btn.gumtree {
+  background: #72EF36;
+  color: #1a1a1a;
 }
 
-.share-btn.twitter:hover {
-  background: #333333;
+.share-btn.gumtree:hover {
+  background: #5bd62a;
 }
 
 .share-btn.copy {
