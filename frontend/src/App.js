@@ -2768,7 +2768,9 @@ function PostPage() {
                 <img 
                   src={imgSrc}
                   alt={post.title}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-cover touch-pan-y"
+                  onTouchStart={handleGalleryTouchStart}
+                  onTouchEnd={(e) => handleGalleryTouchEnd(e, images.length)}
                 />
                 
                 {/* Navigation arrows if multiple images */}
