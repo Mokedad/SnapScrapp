@@ -329,7 +329,6 @@ function AppContent() {
   const favoritesCount = useMemo(() => {
     return posts.filter(p => favorites.includes(p.id)).length;
   }, [posts, favorites]);
-  }, [filteredPosts, showFavoritesOnly, favorites]);
 
   // Request user location
   const requestLocation = useCallback(() => {
