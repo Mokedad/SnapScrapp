@@ -254,7 +254,14 @@ async def get_posts(include_expired: bool = False):
     query = {"status": "active"} if not include_expired else {}
     posts = await db.posts.find(query, {"_id": 0, "original_latitude": 0, "original_longitude": 0}).to_list(1000)
     
-    return [PostResponse(**p) for p in posts]
+    # Ensure backward compatibility - add images array if missing
+    result = []
+    for p in posts:
+        if "images" not in p:
+            p["images"] = [p["image_base64"]] if p.get("image_base64") else []
+        result.append(PostResponse(**p))
+    
+    return result
 
 @api_router.get("/posts/{post_id}", response_model=PostResponse)
 async def get_post(post_id: str):
@@ -262,6 +269,11 @@ async def get_post(post_id: str):
     post = await db.posts.find_one({"id": post_id}, {"_id": 0, "original_latitude": 0, "original_longitude": 0})
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
+    
+    # Ensure backward compatibility - add images array if missing
+    if "images" not in post:
+        post["images"] = [post["image_base64"]] if post.get("image_base64") else []
+    
     return PostResponse(**post)
 
 @api_router.patch("/posts/{post_id}/collected")
