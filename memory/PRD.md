@@ -80,7 +80,7 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - [x] Auto-expiry system
 - [x] Mark as collected
 - [x] Report system
-- [x] Admin panel (PIN: 9090)
+- [x] Admin panel (PIN: 26081992)
 - [x] Share feature with shareable links
 - [x] Social sharing (WhatsApp, Facebook, Twitter)
 - [x] Geolocation with "My Location" button
@@ -109,9 +109,11 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - [x] **Multiple images per post** - Up to 5 photos with gallery view + swipe gestures
 - [x] **Facebook Community sharing** - Direct link to Ucycle Facebook group
 - [x] **Distance indicator** - Shows "Xm" or "X.Xkm away" on posts
+- [x] **Fullscreen image viewer** - Swipeable gallery with swipe-down-to-close
+- [x] **AI Content Moderation** - Blocks inappropriate/unsafe images using Gemini
+- [x] **In-App Notification System** - Banner notifications with ding sound for nearby items and collected items
 
 ### P2 (Medium Priority) - Future
-- [ ] Push notifications for nearby items
 - [ ] Email digest of nearby items
 - [ ] Post analytics for admins
 - [ ] Rate limiting for spam prevention
@@ -130,6 +132,10 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 11. ✅ Multiple images per post (up to 5 photos with gallery view)
 12. ✅ Swipe gestures for image gallery on mobile
 13. ✅ Distance indicator showing how far each item is
+14. ✅ Fullscreen image viewer with swipe navigation
+15. ✅ AI content moderation for uploaded images
+16. ✅ In-app notification system with ding sound (nearby items within 1km, collected items)
+17. ✅ Notification toggle in menu (ON by default)
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
