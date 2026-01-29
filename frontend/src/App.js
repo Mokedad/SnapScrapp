@@ -2016,7 +2016,8 @@ function AppContent() {
                       <img 
                         src={imgSrc}
                         alt={selectedPost.title}
-                        className="w-full h-48 object-cover touch-pan-y"
+                        className="w-full h-48 object-cover touch-pan-y cursor-pointer"
+                        onClick={() => openFullscreenImage(images, currentImageIndex)}
                         onTouchStart={handleGalleryTouchStart}
                         onTouchEnd={(e) => handleGalleryTouchEnd(e, images.length)}
                       />
