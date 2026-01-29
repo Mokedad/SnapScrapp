@@ -97,25 +97,32 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - [x] **Norman Scrap Yard partner ad (Western Sydney only)**
 - [x] **Auto-dismiss popups (3 seconds)**
 - [x] **Centered share dialog (2x2 grid)**
+- [x] **Pinch-to-zoom on camera view**
+- [x] **Welcome popup only for first-time users** (uses localStorage)
+- [x] **Improved Australian address search** (countrycodes=au parameter)
+- [x] **Auto-set user location in post form** (from geolocation)
+- [x] **Norman's Scrap Metal logo in ad dialog**
+- [x] **Clickable "Get directions" link** (opens Google Maps)
 
 ### P1 (High Priority) - Future
-- [ ] Email digest of nearby items
-- [ ] Photo gallery (multiple images per post)
+- [ ] User Favorites - Save items to local storage
+- [ ] Multiple images per post
 - [ ] Distance indicator on posts
 
 ### P2 (Medium Priority) - Future
-- [ ] User favorites (local storage)
+- [ ] Push notifications for nearby items
+- [ ] Email digest of nearby items
 - [ ] Post analytics for admins
 - [ ] Rate limiting for spam prevention
 
-### P2 (Medium Priority) - Future
-- [ ] Share post link
-- [ ] Multiple images per post
-- [ ] Distance display on posts
-- [ ] Post analytics for admins
+## Completed Tasks (Jan 29, 2026)
+1. ✅ Welcome popup only shows to first-time users
+2. ✅ Fixed address search for Australian addresses
+3. ✅ Auto-set location from geolocation in post form
+4. ✅ Added Norman's Scrap Metal logo to partner ad
+5. ✅ Made location clickable with Google Maps directions
 
 ## Next Tasks
-1. Add image compression to reduce upload size
-2. Implement search/filter by category on map
-3. Add push notification support for nearby posts
-4. Improve mobile touch interactions
+1. Implement User Favorites feature (save items to local storage)
+2. Allow multiple images per post
+3. Add distance indicator on post cards
