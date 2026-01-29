@@ -138,6 +138,7 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 17. ✅ Notification toggle in menu (ON by default)
 18. ✅ Image interaction hints ("Tap to expand • Swipe to browse" on posts, exit instructions in fullscreen)
 19. ✅ Fresh GPS location on post - fetches current location when posting (not cached), with manual "Refresh" button
+20. ✅ Smart permission handling - checks permission status before requesting, no repeated prompts if already granted
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
