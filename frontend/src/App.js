@@ -2111,6 +2111,17 @@ function AppContent() {
                         onTouchEnd={(e) => handleGalleryTouchEnd(e, images.length)}
                       />
                       
+                      {/* Tap to expand hint */}
+                      <div 
+                        className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full pointer-events-none"
+                        data-testid="tap-to-expand-hint"
+                      >
+                        <p className="text-white text-xs font-medium flex items-center gap-1.5">
+                          <Eye className="w-3.5 h-3.5" />
+                          {images.length > 1 ? 'Tap to expand • Swipe to browse' : 'Tap to expand'}
+                        </p>
+                      </div>
+                      
                       {/* Navigation arrows if multiple images */}
                       {images.length > 1 && (
                         <>
@@ -2128,7 +2139,7 @@ function AppContent() {
                           </button>
                           
                           {/* Dots indicator */}
-                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-1">
                             {images.map((_, i) => (
                               <button
                                 key={i}
