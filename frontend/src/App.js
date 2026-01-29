@@ -2989,11 +2989,6 @@ function PostPage() {
     }
   };
 
-  // Get user location for distance calculation
-      }
-    }
-  };
-
   const shareUrl = window.location.href;
 
   const shareToWhatsApp = () => {
