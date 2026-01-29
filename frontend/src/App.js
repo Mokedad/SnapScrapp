@@ -2619,6 +2619,29 @@ function PostPage() {
     }
   };
 
+  // Swipe gesture handlers for image gallery
+  const touchStartX = useRef(0);
+  
+  const handleGalleryTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleGalleryTouchEnd = (e, imagesCount) => {
+    if (imagesCount <= 1) return;
+    
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX;
+    const threshold = 50;
+    
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        setCurrentImageIndex(i => i < imagesCount - 1 ? i + 1 : 0);
+      } else {
+        setCurrentImageIndex(i => i > 0 ? i - 1 : imagesCount - 1);
+      }
+    }
+  };
+
   const shareUrl = window.location.href;
 
   const shareToWhatsApp = () => {
