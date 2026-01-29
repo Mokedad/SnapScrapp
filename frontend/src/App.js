@@ -240,6 +240,13 @@ function AppContent() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showScrapYardAd, setShowScrapYardAd] = useState(false);
   
+  // Favorites state
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem('ucycle_favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  
   // Post form state
   const [newPost, setNewPost] = useState({
     image_base64: "",
@@ -259,6 +266,21 @@ function AppContent() {
   const [isReporting, setIsReporting] = useState(false);
   
   const fileInputRef = useRef(null);
+
+  // Favorites functions
+  const toggleFavorite = useCallback((postId) => {
+    setFavorites(prev => {
+      const newFavorites = prev.includes(postId) 
+        ? prev.filter(id => id !== postId)
+        : [...prev, postId];
+      localStorage.setItem('ucycle_favorites', JSON.stringify(newFavorites));
+      return newFavorites;
+    });
+  }, []);
+
+  const isFavorite = useCallback((postId) => {
+    return favorites.includes(postId);
+  }, [favorites]);
 
   // Calculate distance between two points (Haversine formula)
   const getDistance = useCallback((lat1, lon1, lat2, lon2) => {
