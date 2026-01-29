@@ -2344,9 +2344,27 @@ function PostPage() {
     setShowShareDialog(false);
   };
 
-  const shareToFacebook = () => {
-    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(`Free: ${post.title}`)}`;
-    window.open(fbUrl, '_blank', 'width=600,height=400');
+  const shareToMessenger = () => {
+    const messengerUrl = `fb-messenger://share?link=${encodeURIComponent(shareUrl)}`;
+    const webMessengerUrl = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&redirect_uri=${encodeURIComponent(window.location.origin)}&app_id=966242223397117`;
+    
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = messengerUrl;
+      setTimeout(() => {
+        window.open(webMessengerUrl, '_blank', 'width=600,height=400');
+      }, 1500);
+    } else {
+      window.open(webMessengerUrl, '_blank', 'width=600,height=400');
+    }
+    setShowShareDialog(false);
+  };
+
+  const shareToFacebookGroups = () => {
+    const text = `Free item available: ${post.title} 🎁\n\n${shareUrl}`;
+    const fbUrl = `https://www.facebook.com/groups/?ref=share&text=${encodeURIComponent(text)}`;
+    window.open(fbUrl, '_blank');
+    toast.success("Share to your local buy/sell groups!");
     setShowShareDialog(false);
   };
 
