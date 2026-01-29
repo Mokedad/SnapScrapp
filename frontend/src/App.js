@@ -2529,8 +2529,10 @@ function AppContent() {
           )}
           
           {/* Swipe hint */}
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-white/50 text-sm">
-            {fullscreenImages.length > 1 ? 'Swipe to navigate • Swipe down to close' : 'Swipe down to close'}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/40 px-4 py-2 rounded-full">
+            <p className="text-white/80 text-sm font-medium">
+              {fullscreenImages.length > 1 ? 'Swipe ← → to browse • Swipe ↓ or tap to exit' : 'Swipe ↓ or tap to exit'}
+            </p>
           </div>
         </div>
       )}
