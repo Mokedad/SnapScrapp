@@ -106,9 +106,10 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - [x] **User Favorites** - Save items to local storage with heart icon toggle
 - [x] **Updated share options** - WhatsApp, Messenger, FB Groups, Gumtree, Copy Link
 - [x] **Simplified camera UI** - Removed text, just camera icon
+- [x] **Multiple images per post** - Up to 5 photos with gallery view
+- [x] **Facebook Community sharing** - Direct link to Ucycle Facebook group
 
 ### P1 (High Priority) - Future
-- [ ] Multiple images per post
 - [ ] Distance indicator on posts
 
 ### P2 (Medium Priority) - Future
@@ -127,7 +128,8 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 7. ✅ Updated share options (Messenger, FB Groups, Gumtree instead of X)
 8. ✅ Simplified camera UI (removed text overlay)
 9. ✅ Added User Favorites feature with localStorage persistence
+10. ✅ Facebook Community share - opens Ucycle FB group directly
+11. ✅ Multiple images per post (up to 5 photos with gallery view)
 
 ## Next Tasks
-1. Allow multiple images per post
-2. Add distance indicator on post cards
+1. Add distance indicator on post cards
