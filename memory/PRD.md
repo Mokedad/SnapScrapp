@@ -103,9 +103,11 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - [x] **Auto-set user location in post form** (from geolocation)
 - [x] **Norman's Scrap Metal logo in ad dialog**
 - [x] **Clickable "Get directions" link** (opens Google Maps)
+- [x] **User Favorites** - Save items to local storage with heart icon toggle
+- [x] **Updated share options** - WhatsApp, Messenger, FB Groups, Gumtree, Copy Link
+- [x] **Simplified camera UI** - Removed text, just camera icon
 
 ### P1 (High Priority) - Future
-- [ ] User Favorites - Save items to local storage
 - [ ] Multiple images per post
 - [ ] Distance indicator on posts
 
@@ -121,8 +123,11 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 3. ✅ Auto-set location from geolocation in post form
 4. ✅ Added Norman's Scrap Metal logo to partner ad
 5. ✅ Made location clickable with Google Maps directions
+6. ✅ Moved camera/location buttons to bottom-left (away from Emergent logo)
+7. ✅ Updated share options (Messenger, FB Groups, Gumtree instead of X)
+8. ✅ Simplified camera UI (removed text overlay)
+9. ✅ Added User Favorites feature with localStorage persistence
 
 ## Next Tasks
-1. Implement User Favorites feature (save items to local storage)
-2. Allow multiple images per post
-3. Add distance indicator on post cards
+1. Allow multiple images per post
+2. Add distance indicator on post cards
