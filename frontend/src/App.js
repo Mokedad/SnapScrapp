@@ -2068,16 +2068,72 @@ function AppContent() {
             <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
               <MapPin className="w-5 h-5 text-green-600" />
               {newPost.latitude ? (
-                <span className="text-sm text-green-700 flex-1">Location set ✓</span>
+                <>
+                  <span className="text-sm text-green-700 flex-1">Location set ✓</span>
+                  <button
+                    onClick={() => {
+                      // Refresh to get fresh GPS location
+                      if (navigator.geolocation) {
+                        toast.loading("Getting fresh location...", { id: 'refresh-loc' });
+                        navigator.geolocation.getCurrentPosition(
+                          (position) => {
+                            setNewPost(prev => ({
+                              ...prev,
+                              latitude: position.coords.latitude,
+                              longitude: position.coords.longitude
+                            }));
+                            setUserLocation([position.coords.latitude, position.coords.longitude]);
+                            toast.success("Location refreshed!", { id: 'refresh-loc' });
+                          },
+                          (error) => {
+                            toast.error("Could not refresh location", { id: 'refresh-loc' });
+                          },
+                          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                        );
+                      }
+                    }}
+                    className="text-xs text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
+                    data-testid="refresh-location-btn"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Refresh
+                  </button>
+                </>
               ) : userLocation ? (
                 <button
                   onClick={() => {
-                    setNewPost(prev => ({
-                      ...prev,
-                      latitude: userLocation[0],
-                      longitude: userLocation[1]
-                    }));
-                    toast.success("Using your location!");
+                    // Get fresh location instead of using cached
+                    if (navigator.geolocation) {
+                      toast.loading("Getting location...", { id: 'get-loc' });
+                      navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                          setNewPost(prev => ({
+                            ...prev,
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                          }));
+                          setUserLocation([position.coords.latitude, position.coords.longitude]);
+                          toast.success("Location set!", { id: 'get-loc' });
+                        },
+                        (error) => {
+                          // Fallback to cached location
+                          setNewPost(prev => ({
+                            ...prev,
+                            latitude: userLocation[0],
+                            longitude: userLocation[1]
+                          }));
+                          toast.success("Using cached location", { id: 'get-loc' });
+                        },
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                      );
+                    } else {
+                      setNewPost(prev => ({
+                        ...prev,
+                        latitude: userLocation[0],
+                        longitude: userLocation[1]
+                      }));
+                      toast.success("Using your location!");
+                    }
                   }}
                   className="text-sm text-green-600 flex-1 text-left"
                 >
