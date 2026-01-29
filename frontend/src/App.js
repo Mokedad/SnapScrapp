@@ -255,7 +255,8 @@ function AppContent() {
     description: "",
     expiry_hours: 48,
     latitude: null,
-    longitude: null
+    longitude: null,
+    images: []  // Additional images beyond the primary one
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
@@ -265,7 +266,9 @@ function AppContent() {
   const [reportReason, setReportReason] = useState("");
   const [isReporting, setIsReporting] = useState(false);
   
+  // Additional images input ref
   const fileInputRef = useRef(null);
+  const additionalImagesRef = useRef(null);
 
   // Favorites functions
   const toggleFavorite = useCallback((postId) => {
