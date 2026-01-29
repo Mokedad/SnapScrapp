@@ -3275,8 +3275,11 @@ function PostPage() {
                 />
                 
                 {/* Tap to expand hint */}
-                <div className="absolute bottom-3 right-3 bg-black/50 px-2 py-1 rounded-full">
-                  <span className="text-white text-xs">Tap to expand</span>
+                <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                  <p className="text-white text-xs font-medium flex items-center gap-1.5">
+                    <Eye className="w-3.5 h-3.5" />
+                    {images.length > 1 ? 'Tap to expand • Swipe to browse' : 'Tap to expand'}
+                  </p>
                 </div>
                 
                 {/* Navigation arrows if multiple images */}
