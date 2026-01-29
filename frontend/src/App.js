@@ -2706,11 +2706,56 @@ function PostPage() {
       {/* Post Content */}
       <div className="pb-24">
         <div className="relative">
-          <img 
-            src={post.image_base64.startsWith('data:') ? post.image_base64 : `data:image/jpeg;base64,${post.image_base64}`}
-            alt={post.title}
-            className="w-full h-64 object-cover"
-          />
+          {/* Image Gallery */}
+          {(() => {
+            const images = post.images?.length > 0 ? post.images : [post.image_base64];
+            const currentImg = images[currentImageIndex] || images[0];
+            const imgSrc = currentImg?.startsWith('data:') 
+              ? currentImg 
+              : `data:image/jpeg;base64,${currentImg}`;
+            
+            return (
+              <>
+                <img 
+                  src={imgSrc}
+                  alt={post.title}
+                  className="w-full h-64 object-cover"
+                />
+                
+                {/* Navigation arrows if multiple images */}
+                {images.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setCurrentImageIndex(i => i > 0 ? i - 1 : images.length - 1)}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"
+                    >
+                      <ChevronLeft className="w-6 h-6 text-white" />
+                    </button>
+                    <button
+                      onClick={() => setCurrentImageIndex(i => i < images.length - 1 ? i + 1 : 0)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center rotate-180"
+                    >
+                      <ChevronLeft className="w-6 h-6 text-white" />
+                    </button>
+                    
+                    {/* Dots indicator */}
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                      {images.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setCurrentImageIndex(i)}
+                          className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                            i === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            );
+          })()}
+          
           <div className="absolute top-3 left-3">
             <CategoryBadge category={post.category} />
           </div>
