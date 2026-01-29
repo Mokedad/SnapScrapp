@@ -255,6 +255,18 @@ function AppContent() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showScrapYardAd, setShowScrapYardAd] = useState(false);
   
+  // Notification state
+  const [notification, setNotification] = useState(null);
+  const [myPostIds, setMyPostIds] = useState(() => {
+    const saved = localStorage.getItem('ucycle_my_posts');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [lastSeenPostIds, setLastSeenPostIds] = useState(() => {
+    const saved = localStorage.getItem('ucycle_seen_posts');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const notificationSound = useRef(null);
+  
   // Favorites state
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('ucycle_favorites');
