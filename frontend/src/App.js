@@ -2187,12 +2187,12 @@ function AppContent() {
 
       {/* Norman Scrap Yard Ad - Western Sydney Only */}
       <Dialog open={showScrapYardAd} onOpenChange={setShowScrapYardAd}>
-        <DialogContent className="max-w-sm text-center">
+        <DialogContent className="max-w-sm text-center rounded-3xl">
           <div className="pt-4">
             <img 
               src={NORMAN_SCRAP_YARD.logo} 
               alt="Norman's Scrap Metal"
-              className="w-24 h-24 mx-auto rounded-2xl object-cover mb-4 shadow-md"
+              className="w-full max-w-[200px] h-auto mx-auto mb-4"
               data-testid="norman-scrapyard-logo"
             />
             <h2 className="text-xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
@@ -2202,7 +2202,7 @@ function AppContent() {
               {NORMAN_SCRAP_YARD.name} in Penrith is a local legend for recycling!
             </p>
             
-            <div className="p-4 bg-slate-50 rounded-xl mb-6 text-left">
+            <div className="p-4 bg-slate-100 rounded-2xl mb-6 text-left">
               <p className="font-semibold text-slate-900">{NORMAN_SCRAP_YARD.name}</p>
               <p className="text-sm text-slate-600">{NORMAN_SCRAP_YARD.address}</p>
               <p className="text-xs text-slate-500 mt-2">
