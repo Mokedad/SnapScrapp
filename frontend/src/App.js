@@ -1118,9 +1118,11 @@ function AppContent() {
         {!showSearchBar ? (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-lime-500 rounded-xl flex items-center justify-center">
-                <RefreshCw className="w-5 h-5 text-white" />
-              </div>
+              <img 
+                src="https://static.prod-images.emergentagent.com/jobs/a1807c5d-0c47-4949-991c-6bf277dda598/images/0d901fd15e3e9b94f2129aa3238b6de15be635af96d6229d19a275e9082a2190.png"
+                alt="Ucycle"
+                className="w-10 h-10 rounded-xl"
+              />
               <h1 className="font-bold text-xl text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
                 Ucycle
               </h1>
