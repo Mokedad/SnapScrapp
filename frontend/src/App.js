@@ -1054,6 +1054,63 @@ function AppContent() {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [sharePost, setSharePost] = useState(null);
 
+  // ============ FULLSCREEN IMAGE VIEWER ============
+  
+  const openFullscreenImage = (images, startIndex = 0) => {
+    const imageArray = images?.length > 0 ? images : [];
+    if (imageArray.length === 0) return;
+    setFullscreenImages(imageArray);
+    setFullscreenIndex(startIndex);
+    setFullscreenSwipeY(0);
+    setShowFullscreenImage(true);
+  };
+
+  const closeFullscreenImage = () => {
+    setShowFullscreenImage(false);
+    setFullscreenSwipeY(0);
+  };
+
+  const handleFullscreenTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleFullscreenTouchMove = (e) => {
+    const currentY = e.touches[0].clientY;
+    const diffY = currentY - touchStartY.current;
+    // Only allow downward swipe
+    if (diffY > 0) {
+      setFullscreenSwipeY(diffY);
+    }
+  };
+
+  const handleFullscreenTouchEnd = (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartX.current - touchEndX;
+    const diffY = touchEndY - touchStartY.current;
+    
+    // Swipe down to close (threshold 100px)
+    if (diffY > 100 && Math.abs(diffX) < 50) {
+      closeFullscreenImage();
+      return;
+    }
+    
+    // Reset swipe position if not closing
+    setFullscreenSwipeY(0);
+    
+    // Horizontal swipe for navigation (threshold 50px)
+    if (Math.abs(diffX) > 50 && fullscreenImages.length > 1) {
+      if (diffX > 0) {
+        // Swipe left - next image
+        setFullscreenIndex(i => i < fullscreenImages.length - 1 ? i + 1 : 0);
+      } else {
+        // Swipe right - previous image
+        setFullscreenIndex(i => i > 0 ? i - 1 : fullscreenImages.length - 1);
+      }
+    }
+  };
+
   // Swipe gesture handlers for image gallery
   const handleGalleryTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
