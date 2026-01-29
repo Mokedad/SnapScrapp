@@ -1347,7 +1347,7 @@ function AppContent() {
           
           {/* Camera UI Overlay */}
           <div className="absolute inset-0 flex flex-col pointer-events-none">
-            {/* Top Bar */}
+            {/* Top Bar - just close button */}
             <div className="flex items-center justify-between p-4 pt-12 pointer-events-auto">
               <button
                 onClick={closeCamera}
@@ -1356,9 +1356,8 @@ function AppContent() {
               >
                 <X className="w-6 h-6 text-white" />
               </button>
-              <div className="text-center">
-                <p className="text-white text-sm font-medium opacity-80">Ucycle</p>
-                <p className="text-white text-xs opacity-60">Pinch to zoom</p>
+              <div className="w-10 h-10 bg-black/40 rounded-full flex items-center justify-center">
+                <Camera className="w-5 h-5 text-white" />
               </div>
               <div className="w-12 h-12" /> {/* Spacer */}
             </div>
