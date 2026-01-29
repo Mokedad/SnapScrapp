@@ -934,11 +934,15 @@ function AppContent() {
 
   const shareToFacebookGroups = (post) => {
     const url = getShareUrl(post);
-    const text = `Free item available: ${post.title} 🎁\n\n${url}`;
-    // Open Facebook with pre-filled post to share to groups
-    const fbUrl = `https://www.facebook.com/groups/?ref=share&text=${encodeURIComponent(text)}`;
-    window.open(fbUrl, '_blank');
-    toast.success("Share to your local buy/sell groups!");
+    // Direct link to Ucycle Facebook community group
+    const groupUrl = 'https://www.facebook.com/groups/1JeLHV4p3n';
+    window.open(groupUrl, '_blank');
+    // Copy link to clipboard for easy pasting
+    navigator.clipboard.writeText(`Free item: ${post.title} 🎁\n\n${url}`).then(() => {
+      toast.success("Link copied! Paste it in the group");
+    }).catch(() => {
+      toast.success("Share in the Ucycle community!");
+    });
     setShowShareDialog(false);
   };
 
