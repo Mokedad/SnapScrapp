@@ -219,6 +219,12 @@ function AppContent() {
   const [isLocating, setIsLocating] = useState(false);
   const mapRef = useRef(null);
   
+  // PWA Install & Update state
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const [showUpdateBanner, setShowUpdateBanner] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [swRegistration, setSwRegistration] = useState(null);
+  
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchBar, setShowSearchBar] = useState(false);
