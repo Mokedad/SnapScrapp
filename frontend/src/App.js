@@ -844,6 +844,70 @@ function AppContent() {
     }
   };
 
+  // Handle additional images selection
+  const handleAdditionalImages = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    
+    // Limit to 4 additional images (5 total including primary)
+    const maxAdditional = 4 - newPost.images.length;
+    const filesToProcess = files.slice(0, maxAdditional);
+    
+    if (files.length > maxAdditional) {
+      toast.info(`Only ${maxAdditional} more images allowed (max 5 total)`);
+    }
+    
+    // Compress each image
+    const compressImage = (file, maxWidth = 1200, quality = 0.7) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+    
+    try {
+      const compressedImages = await Promise.all(
+        filesToProcess.map(file => compressImage(file))
+      );
+      
+      setNewPost(prev => ({
+        ...prev,
+        images: [...prev.images, ...compressedImages]
+      }));
+      
+      toast.success(`Added ${compressedImages.length} image(s)`);
+    } catch (error) {
+      console.error("Failed to process images:", error);
+      toast.error("Could not process images");
+    }
+  };
+
+  // Remove additional image
+  const removeAdditionalImage = (index) => {
+    setNewPost(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
   // Submit post
   const handleSubmitPost = async () => {
     if (!newPost.image_base64 || !newPost.title || !newPost.latitude) {
@@ -854,9 +918,16 @@ function AppContent() {
     setIsPosting(true);
     try {
       const base64Data = newPost.image_base64.split(',')[1] || newPost.image_base64;
+      
+      // Process additional images (strip data URL prefix if present)
+      const additionalImages = newPost.images.map(img => 
+        img.includes(',') ? img.split(',')[1] : img
+      );
+      
       await axios.post(`${API}/posts`, {
         ...newPost,
-        image_base64: base64Data
+        image_base64: base64Data,
+        images: additionalImages.length > 0 ? additionalImages : null
       });
       toast.success("Item posted successfully!");
       setShowPostDrawer(false);
@@ -867,7 +938,8 @@ function AppContent() {
         description: "",
         expiry_hours: 48,
         latitude: null,
-        longitude: null
+        longitude: null,
+        images: []
       });
       fetchPosts();
     } catch (error) {
