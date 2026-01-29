@@ -214,10 +214,17 @@ function AppContent() {
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]); // Default: London
   const [currentImageIndex, setCurrentImageIndex] = useState(0);  // Image gallery index
   const touchStartX = useRef(0);  // For swipe gesture tracking
+  const touchStartY = useRef(0);  // For swipe down gesture
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
   const mapRef = useRef(null);
+  
+  // Fullscreen image viewer state
+  const [showFullscreenImage, setShowFullscreenImage] = useState(false);
+  const [fullscreenImages, setFullscreenImages] = useState([]);
+  const [fullscreenIndex, setFullscreenIndex] = useState(0);
+  const [fullscreenSwipeY, setFullscreenSwipeY] = useState(0);
   
   // PWA Install & Update state
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
