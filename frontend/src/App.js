@@ -1858,8 +1858,18 @@ function AppContent() {
               <div className="flex-1">
                 <span className="font-medium text-slate-900">Nearby Notifications</span>
                 <p className="text-xs text-slate-500">
-                  {notificationPermission === 'granted' ? '✓ Enabled' : 'Get alerts for nearby items'}
+                  {nearbyNotificationsEnabled ? '✓ Enabled (1km)' : 'Get alerts for nearby items'}
                 </p>
+              </div>
+              {/* Toggle switch */}
+              <div 
+                className={`w-11 h-6 rounded-full transition-colors ${nearbyNotificationsEnabled ? 'bg-green-600' : 'bg-slate-300'}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleNearbyNotifications();
+                }}
+              >
+                <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${nearbyNotificationsEnabled ? 'translate-x-5' : 'translate-x-0.5'} mt-0.5`} />
               </div>
             </button>
           </div>
