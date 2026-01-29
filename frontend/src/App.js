@@ -1262,7 +1262,18 @@ function AppContent() {
               eventHandlers={{
                 click: () => handleViewDetails(post)
               }}
-            />
+            >
+              {/* Popup with distance */}
+              <Popup className="custom-popup" closeButton={false}>
+                <div className="text-center p-1">
+                  <p className="font-semibold text-sm truncate max-w-[120px]">{post.title}</p>
+                  {formatDistance(post) && (
+                    <p className="text-xs text-green-600 font-medium">{formatDistance(post)} away</p>
+                  )}
+                  <p className="text-xs text-slate-500">Tap to view</p>
+                </div>
+              </Popup>
+            </Marker>
           ))}
           
           {/* Location picker */}
