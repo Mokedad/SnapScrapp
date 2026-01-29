@@ -2589,6 +2589,51 @@ function AppContent() {
         </div>
       )}
 
+      {/* In-App Notification Banner */}
+      {notification && (
+        <div 
+          className={`fixed top-0 left-0 right-0 z-[200] transition-transform duration-300 ${showNotificationBanner ? 'translate-y-0' : '-translate-y-full'}`}
+          data-testid="notification-banner"
+        >
+          <div className={`mx-4 mt-4 rounded-2xl shadow-xl p-4 ${
+            notification.type === 'collected' 
+              ? 'bg-gradient-to-r from-green-600 to-lime-500' 
+              : 'bg-gradient-to-r from-blue-600 to-cyan-500'
+          }`}>
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                notification.type === 'collected' ? 'bg-white/20' : 'bg-white/20'
+              }`}>
+                {notification.type === 'collected' ? (
+                  <CheckCircle className="w-6 h-6 text-white" />
+                ) : (
+                  <MapPin className="w-6 h-6 text-white" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-bold text-sm truncate">{notification.message}</p>
+                <p className="text-white/80 text-xs">
+                  {notification.type === 'collected' ? 'Your item was picked up!' : 'Tap to see on map'}
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowNotificationBanner(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30"
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notification Sound - using a base64 encoded simple ding sound */}
+      <audio 
+        ref={notificationSound}
+        preload="auto"
+        src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYxnQ5SAAAAAAAAAAAAAAAAAAAAAP/7kGQAAANUMEoFPeACNQV40KENABEY1g5GesOAKwPSyYTAbPkGBgYGBgYBhBAGHzP4kAQdBxnMEHw+9wMGDiCDoNwQcWqGU0QOqQ0ODfG+BAEHQOc3B0LgYNJOv/MDE1OXMQfBv8QBQHEHwfB8EAQPGdyYfE4Px+D4Pg+D4IAAA=="
+      />
+
       <Toaster position="top-center" duration={3000} />
     </div>
   );
