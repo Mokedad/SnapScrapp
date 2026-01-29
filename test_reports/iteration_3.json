@@ -1,0 +1,72 @@
+{
+  "summary": "Completed testing of 5 pre-deployment fixes for Ucycle mobile-first live-map app. All features working correctly: (1) Welcome popup localStorage logic, (2) Australian address search with countrycodes=au, (3) Get directions links on post pages, (4) Norman's Scrap Yard logo configured, (5) Auto-location in post form. Backend: 13/13 tests passed. Frontend: All tested features working.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "passed_tests": [
+    "Welcome popup shows only on first visit (localStorage key 'ucycle_welcome_seen')",
+    "Welcome popup correctly sets localStorage to 'true' after dismissal",
+    "Welcome popup does NOT show on subsequent visits",
+    "Search for Australian address '34 Peachtree Rd, Penrith NSW' finds results via Nominatim with countrycodes=au",
+    "Get directions link visible on individual post page (/post/:postId)",
+    "Get directions link href correctly points to Google Maps directions API",
+    "Get directions link visible in post detail drawer",
+    "Navigation icon and ExternalLink icon present on directions link",
+    "Norman's Scrap Yard logo image accessible (HTTP 200, image/png)",
+    "Norman's Scrap Yard ad dialog code correctly configured with logo URL",
+    "Backend health endpoint returns 200",
+    "GET /api/posts returns posts list",
+    "GET /api/posts/{id} returns single post",
+    "Admin PIN verification works (valid PIN accepted, invalid PIN rejected with 401)",
+    "Admin stats endpoint returns statistics",
+    "Admin posts list endpoint works",
+    "Reports endpoint works",
+    "Report creation works",
+    "Mark collected returns 404 for non-existent post"
+  ],
+  "test_report_links": [
+    "/app/backend/tests/test_ucycle_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_ucycle_api.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13)",
+    "frontend": "100% (all tested features working)"
+  },
+  "seed_data_creation": "None - used existing posts",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 5 pre-deployment fixes verified working: (1) Welcome popup uses localStorage key 'ucycle_welcome_seen' and only shows on first visit, (2) Address search uses countrycodes=au parameter for Australian addresses, (3) Get directions links present on both post detail drawer and individual post page with correct Google Maps URL, (4) Norman's Scrap Yard ad dialog has logo image configured (appears after marking item collected in Western Sydney area), (5) Auto-location in post form was already working. Backend tests in /app/backend/tests/test_ucycle_api.py.",
+  "features_verified": {
+    "welcome_popup_first_visit_only": {
+      "status": "WORKING",
+      "details": "Uses localStorage key 'ucycle_welcome_seen', sets to 'true' after dismissal, does not show on subsequent visits"
+    },
+    "australian_address_search": {
+      "status": "WORKING",
+      "details": "Search for '34 Peachtree Rd, Penrith NSW' returns 'Peachtree Road, Penrith, Sydney' via Nominatim with countrycodes=au"
+    },
+    "get_directions_link": {
+      "status": "WORKING",
+      "details": "Link visible on post detail drawer and individual post page, href points to Google Maps directions API with correct coordinates"
+    },
+    "normans_scrap_yard_logo": {
+      "status": "CONFIGURED",
+      "details": "Logo URL configured in NORMAN_SCRAP_YARD object, image accessible at https://customer-assets.emergentagent.com/..."
+    },
+    "auto_location_in_post_form": {
+      "status": "WORKING",
+      "details": "processImage function auto-sets latitude/longitude from userLocation if available"
+    }
+  }
+}
