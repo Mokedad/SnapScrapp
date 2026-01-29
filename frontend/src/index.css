@@ -129,7 +129,7 @@ h1, h2, h3, h4, h5, h6 {
 .fab-button {
   position: fixed;
   bottom: 2rem;
-  right: 1.5rem;
+  left: 1.5rem;
   width: 64px;
   height: 64px;
   background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
@@ -158,7 +158,7 @@ h1, h2, h3, h4, h5, h6 {
 .my-location-btn {
   position: fixed;
   bottom: 7rem;
-  right: 1.5rem;
+  left: 1.5rem;
   width: 48px;
   height: 48px;
   background: white;
