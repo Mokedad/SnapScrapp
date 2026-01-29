@@ -783,9 +783,29 @@ function AppContent() {
   const [maxZoom, setMaxZoom] = useState(5);
   const lastTouchDistance = useRef(0);
   
+  // Check camera permission status
+  const checkCameraPermission = useCallback(async () => {
+    if (!navigator.permissions) return 'prompt';
+    try {
+      const result = await navigator.permissions.query({ name: 'camera' });
+      return result.state;
+    } catch (e) {
+      return 'prompt'; // Some browsers don't support camera permission query
+    }
+  }, []);
+
   // Open camera
   const openCamera = async () => {
     try {
+      // Check permission status first
+      const permissionStatus = await checkCameraPermission();
+      
+      // If denied, skip to file picker without showing error
+      if (permissionStatus === 'denied') {
+        fileInputRef.current?.click();
+        return;
+      }
+      
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
         audio: false
@@ -809,7 +829,10 @@ function AppContent() {
       }, 100);
     } catch (error) {
       console.error("Camera error:", error);
-      toast.error("Could not access camera. Please check permissions.");
+      // Only show error toast if it's not a permission denial
+      if (error.name !== 'NotAllowedError') {
+        toast.error("Could not access camera");
+      }
       // Fallback to file picker
       fileInputRef.current?.click();
     }
