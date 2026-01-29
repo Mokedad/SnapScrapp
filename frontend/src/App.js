@@ -888,10 +888,11 @@ function AppContent() {
     setShowShareDialog(false);
   };
 
-  const shareToTwitter = (post) => {
-    const url = getShareUrl(post);
-    const text = `Free item available: ${post.title} 🎁`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  const shareToGumtree = (post) => {
+    // Gumtree doesn't have a direct share API, so we'll open Gumtree's post page
+    // User can then manually post their item there
+    window.open('https://www.gumtree.com.au/p-post-ad.html', '_blank');
+    toast.success("Post your item on Gumtree too!");
     setShowShareDialog(false);
   };
 
