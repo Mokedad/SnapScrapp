@@ -880,11 +880,34 @@ function AppContent() {
     setShowShareDialog(false);
   };
 
-  const shareToFacebook = (post) => {
+  const shareToMessenger = (post) => {
     const url = getShareUrl(post);
-    // Use Facebook's share dialog with quote
-    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(`Free: ${post.title}`)}`;
-    window.open(shareUrl, '_blank', 'width=600,height=400');
+    // Facebook Messenger share link
+    const messengerUrl = `fb-messenger://share?link=${encodeURIComponent(url)}`;
+    // Fallback for desktop/web
+    const webMessengerUrl = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(url)}&redirect_uri=${encodeURIComponent(window.location.origin)}&app_id=966242223397117`;
+    
+    // Try mobile app first, fallback to web
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = messengerUrl;
+      // Fallback after delay if app doesn't open
+      setTimeout(() => {
+        window.open(webMessengerUrl, '_blank', 'width=600,height=400');
+      }, 1500);
+    } else {
+      window.open(webMessengerUrl, '_blank', 'width=600,height=400');
+    }
+    setShowShareDialog(false);
+  };
+
+  const shareToFacebookGroups = (post) => {
+    const url = getShareUrl(post);
+    const text = `Free item available: ${post.title} 🎁\n\n${url}`;
+    // Open Facebook with pre-filled post to share to groups
+    const fbUrl = `https://www.facebook.com/groups/?ref=share&text=${encodeURIComponent(text)}`;
+    window.open(fbUrl, '_blank');
+    toast.success("Share to your local buy/sell groups!");
     setShowShareDialog(false);
   };
 
