@@ -951,39 +951,54 @@ function AppContent() {
     }));
     setShowPostDrawer(true);
     
-    // Get fresh GPS location for the post
+    // Get fresh GPS location for the post (check permission first)
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const freshLat = position.coords.latitude;
-          const freshLng = position.coords.longitude;
-          
-          // Update both the post form and the global user location
-          setNewPost(prev => ({
-            ...prev,
-            latitude: freshLat,
-            longitude: freshLng
-          }));
-          setUserLocation([freshLat, freshLng]);
-          toast.success("Location updated!");
-        },
-        (error) => {
-          console.log("Fresh location failed, using cached:", error);
-          // Fallback to cached location if fresh location fails
-          if (userLocation) {
+      const permissionStatus = await checkLocationPermission();
+      
+      // Only request location if not denied
+      if (permissionStatus !== 'denied') {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const freshLat = position.coords.latitude;
+            const freshLng = position.coords.longitude;
+            
+            // Update both the post form and the global user location
             setNewPost(prev => ({
               ...prev,
-              latitude: userLocation[0],
-              longitude: userLocation[1]
+              latitude: freshLat,
+              longitude: freshLng
             }));
+            setUserLocation([freshLat, freshLng]);
+            // Only show toast if this was first time granting permission
+            if (permissionStatus === 'prompt') {
+              toast.success("Location updated!");
+            }
+          },
+          (error) => {
+            console.log("Fresh location failed, using cached:", error);
+            // Fallback to cached location if fresh location fails
+            if (userLocation) {
+              setNewPost(prev => ({
+                ...prev,
+                latitude: userLocation[0],
+                longitude: userLocation[1]
+              }));
+            }
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0  // Force fresh location, don't use cache
           }
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0  // Force fresh location, don't use cache
-        }
-      );
+        );
+      } else if (userLocation) {
+        // Permission denied, use cached location silently
+        setNewPost(prev => ({
+          ...prev,
+          latitude: userLocation[0],
+          longitude: userLocation[1]
+        }));
+      }
     } else if (userLocation) {
       // Fallback if geolocation not supported
       setNewPost(prev => ({
