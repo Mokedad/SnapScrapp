@@ -34,7 +34,8 @@ import {
   Copy,
   ExternalLink,
   Navigation,
-  Search
+  Search,
+  Heart
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "@/index.css";
