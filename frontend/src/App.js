@@ -1842,12 +1842,7 @@ function AppContent() {
               <span className="font-medium text-slate-900">Refresh Map</span>
             </button>
             <button
-              onClick={async () => {
-                const permission = await requestNotificationPermission();
-                if (permission !== 'granted') {
-                  toast.error("Please enable notifications in your browser settings");
-                }
-              }}
+              onClick={toggleNearbyNotifications}
               className="w-full flex items-center gap-3 p-4 rounded-xl hover:bg-slate-100 transition-colors text-left"
               data-testid="notifications-menu-btn"
             >
