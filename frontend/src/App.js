@@ -2301,6 +2301,66 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
+      {/* PWA Install Prompt Banner */}
+      {showInstallPrompt && (
+        <div className="fixed bottom-20 left-4 right-4 z-50 animate-slide-up">
+          <div className="bg-white rounded-2xl shadow-xl p-4 border border-slate-200">
+            <div className="flex items-start gap-3">
+              <img 
+                src="https://static.prod-images.emergentagent.com/jobs/a1807c5d-0c47-4949-991c-6bf277dda598/images/0d901fd15e3e9b94f2129aa3238b6de15be635af96d6229d19a275e9082a2190.png"
+                alt="Ucycle"
+                className="w-12 h-12 rounded-xl"
+              />
+              <div className="flex-1">
+                <h3 className="font-bold text-slate-900">Install Ucycle</h3>
+                <p className="text-sm text-slate-600">Add to home screen for quick access</p>
+              </div>
+              <button onClick={dismissInstallPrompt} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex gap-2 mt-3">
+              <Button 
+                variant="outline" 
+                className="flex-1 rounded-full"
+                onClick={dismissInstallPrompt}
+              >
+                Not now
+              </Button>
+              <Button 
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-full"
+                onClick={handleInstallClick}
+                data-testid="install-app-btn"
+              >
+                Install
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* App Update Banner */}
+      {showUpdateBanner && (
+        <div className="fixed top-16 left-4 right-4 z-50 animate-slide-down">
+          <div className="bg-blue-600 text-white rounded-2xl shadow-xl p-4">
+            <div className="flex items-center gap-3">
+              <RefreshCw className="w-6 h-6" />
+              <div className="flex-1">
+                <h3 className="font-bold">Update Available</h3>
+                <p className="text-sm text-blue-100">Tap to get the latest features</p>
+              </div>
+              <Button 
+                className="bg-white text-blue-600 hover:bg-blue-50 rounded-full px-4"
+                onClick={handleUpdateClick}
+                data-testid="update-app-btn"
+              >
+                Update
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Toaster position="top-center" duration={3000} />
     </div>
   );
