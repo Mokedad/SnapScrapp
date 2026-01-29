@@ -604,9 +604,9 @@ function AppContent() {
     setSelectedCategory(null);
   };
 
-  // Get user location on mount
+  // Get user location on mount (silent - no toast unless first time)
   useEffect(() => {
-    requestLocation();
+    requestLocation(false); // Silent mode - no toast on initial load
   }, [requestLocation]);
 
   // Initial fetch
