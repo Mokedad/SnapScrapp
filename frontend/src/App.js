@@ -2640,6 +2640,39 @@ function PostPage() {
     fetchPost();
   }, [postId]);
 
+  // Get user location for distance calculation
+  const [userLocation, setUserLocation] = useState(null);
+  
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation([position.coords.latitude, position.coords.longitude]);
+        },
+        () => {} // Silently fail
+      );
+    }
+  }, []);
+
+  // Calculate and format distance
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  const formatDistance = () => {
+    if (!userLocation || !post?.latitude) return null;
+    const dist = getDistance(userLocation[0], userLocation[1], post.latitude, post.longitude);
+    if (dist < 1) return `${Math.round(dist * 1000)}m`;
+    return `${dist.toFixed(1)}km`;
+  };
+
   const handleMarkCollected = async () => {
     try {
       await axios.patch(`${API}/posts/${postId}/collected`);
