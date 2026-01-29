@@ -106,11 +106,9 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - [x] **User Favorites** - Save items to local storage with heart icon toggle
 - [x] **Updated share options** - WhatsApp, Messenger, FB Groups, Gumtree, Copy Link
 - [x] **Simplified camera UI** - Removed text, just camera icon
-- [x] **Multiple images per post** - Up to 5 photos with gallery view
+- [x] **Multiple images per post** - Up to 5 photos with gallery view + swipe gestures
 - [x] **Facebook Community sharing** - Direct link to Ucycle Facebook group
-
-### P1 (High Priority) - Future
-- [ ] Distance indicator on posts
+- [x] **Distance indicator** - Shows "Xm" or "X.Xkm away" on posts
 
 ### P2 (Medium Priority) - Future
 - [ ] Push notifications for nearby items
@@ -130,6 +128,8 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 9. ✅ Added User Favorites feature with localStorage persistence
 10. ✅ Facebook Community share - opens Ucycle FB group directly
 11. ✅ Multiple images per post (up to 5 photos with gallery view)
+12. ✅ Swipe gestures for image gallery on mobile
+13. ✅ Distance indicator showing how far each item is
 
 ## Next Tasks
-1. Add distance indicator on post cards
+- Deploy app and connect custom domain ucycle.com.au
