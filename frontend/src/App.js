@@ -1742,15 +1742,25 @@ function AppContent() {
                       <CheckCircle className="w-5 h-5 mr-2" />
                       Mark as Collected
                     </Button>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        variant="outline"
+                        className={`py-5 rounded-full ${isFavorite(selectedPost.id) ? 'bg-red-50 border-red-200 text-red-600' : ''}`}
+                        onClick={() => {
+                          toggleFavorite(selectedPost.id);
+                          toast.success(isFavorite(selectedPost.id) ? 'Removed from favorites' : 'Added to favorites');
+                        }}
+                        data-testid="favorite-btn"
+                      >
+                        <Heart className={`w-4 h-4 ${isFavorite(selectedPost.id) ? 'fill-red-500' : ''}`} />
+                      </Button>
                       <Button
                         variant="outline"
                         className="py-5 rounded-full"
                         onClick={() => handleSharePost(selectedPost)}
                         data-testid="share-post-btn"
                       >
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Share
+                        <Share2 className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="outline"
@@ -1761,8 +1771,7 @@ function AppContent() {
                         }}
                         data-testid="report-post-btn"
                       >
-                        <Flag className="w-4 h-4 mr-2" />
-                        Report
+                        <Flag className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
