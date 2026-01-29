@@ -65,6 +65,30 @@
                 document.head.appendChild(tailwindScript);
             }
         </script>
+        
+        <!-- Service Worker Registration -->
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                        console.log('ServiceWorker registered:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New version available - dispatch event for React to handle
+                                    window.dispatchEvent(new CustomEvent('swUpdate', { detail: registration }));
+                                }
+                            });
+                        });
+                    }).catch(function(err) {
+                        console.log('ServiceWorker registration failed:', err);
+                    });
+                });
+            }
+        </script>
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
