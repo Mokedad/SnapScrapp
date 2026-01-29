@@ -974,6 +974,29 @@ function AppContent() {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [sharePost, setSharePost] = useState(null);
 
+  // Swipe gesture handlers for image gallery
+  const handleGalleryTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleGalleryTouchEnd = (e, imagesCount) => {
+    if (imagesCount <= 1) return;
+    
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX;
+    const threshold = 50; // Minimum swipe distance
+    
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        // Swipe left - next image
+        setCurrentImageIndex(i => i < imagesCount - 1 ? i + 1 : 0);
+      } else {
+        // Swipe right - previous image
+        setCurrentImageIndex(i => i > 0 ? i - 1 : imagesCount - 1);
+      }
+    }
+  };
+
   const handleSharePost = (post) => {
     setSharePost(post);
     setShowShareDialog(true);
