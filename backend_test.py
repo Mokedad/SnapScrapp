@@ -10,7 +10,7 @@ from PIL import Image
 import time
 
 class UcycleAPITester:
-    def __init__(self, base_url="https://ucycle-app.preview.emergentagent.com"):
+    def __init__(self, base_url="https://freeitem-alert.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
