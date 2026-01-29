@@ -959,7 +959,9 @@ function AppContent() {
       fetchPosts();
     } catch (error) {
       console.error("Failed to post:", error);
-      toast.error("Failed to post item");
+      // Show specific error message from backend (content moderation warnings)
+      const errorMessage = error.response?.data?.detail || "Failed to post item";
+      toast.error(errorMessage, { duration: 5000 });
     } finally {
       setIsPosting(false);
     }
