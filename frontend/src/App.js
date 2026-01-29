@@ -1866,7 +1866,9 @@ function AppContent() {
                       <img 
                         src={imgSrc}
                         alt={selectedPost.title}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-48 object-cover touch-pan-y"
+                        onTouchStart={handleGalleryTouchStart}
+                        onTouchEnd={(e) => handleGalleryTouchEnd(e, images.length)}
                       />
                       
                       {/* Navigation arrows if multiple images */}
