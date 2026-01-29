@@ -3138,10 +3138,22 @@ function PostPage() {
                 <img 
                   src={imgSrc}
                   alt={post.title}
-                  className="w-full h-64 object-cover touch-pan-y"
-                  onTouchStart={handleGalleryTouchStart}
-                  onTouchEnd={(e) => handleGalleryTouchEnd(e, images.length)}
+                  className="w-full h-64 object-cover touch-pan-y cursor-pointer"
+                  onClick={() => openFullscreenImage(images, currentImageIndex)}
+                  onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+                  onTouchEnd={(e) => {
+                    const diffX = touchStartX.current - e.changedTouches[0].clientX;
+                    if (Math.abs(diffX) > 50 && images.length > 1) {
+                      if (diffX > 0) setCurrentImageIndex(i => i < images.length - 1 ? i + 1 : 0);
+                      else setCurrentImageIndex(i => i > 0 ? i - 1 : images.length - 1);
+                    }
+                  }}
                 />
+                
+                {/* Tap to expand hint */}
+                <div className="absolute bottom-3 right-3 bg-black/50 px-2 py-1 rounded-full">
+                  <span className="text-white text-xs">Tap to expand</span>
+                </div>
                 
                 {/* Navigation arrows if multiple images */}
                 {images.length > 1 && (
