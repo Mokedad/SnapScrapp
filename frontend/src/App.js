@@ -2365,6 +2365,75 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
+      {/* Fullscreen Image Viewer */}
+      {showFullscreenImage && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black"
+          style={{
+            opacity: fullscreenSwipeY > 0 ? Math.max(0.3, 1 - fullscreenSwipeY / 300) : 1
+          }}
+          onClick={closeFullscreenImage}
+        >
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{
+              transform: `translateY(${fullscreenSwipeY}px)`,
+              transition: fullscreenSwipeY === 0 ? 'transform 0.2s ease' : 'none'
+            }}
+            onTouchStart={handleFullscreenTouchStart}
+            onTouchMove={handleFullscreenTouchMove}
+            onTouchEnd={handleFullscreenTouchEnd}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Current Image */}
+            {fullscreenImages[fullscreenIndex] && (
+              <img
+                src={fullscreenImages[fullscreenIndex].startsWith('data:') 
+                  ? fullscreenImages[fullscreenIndex] 
+                  : `data:image/jpeg;base64,${fullscreenImages[fullscreenIndex]}`}
+                alt="Fullscreen view"
+                className="max-w-full max-h-full object-contain"
+                onClick={closeFullscreenImage}
+              />
+            )}
+          </div>
+          
+          {/* Close button */}
+          <button
+            className="absolute top-12 right-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center"
+            onClick={closeFullscreenImage}
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
+          
+          {/* Image counter */}
+          {fullscreenImages.length > 1 && (
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4">
+              {/* Dots */}
+              <div className="flex gap-2">
+                {fullscreenImages.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFullscreenIndex(i);
+                    }}
+                    className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                      i === fullscreenIndex ? 'bg-white' : 'bg-white/40'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Swipe hint */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-white/50 text-sm">
+            {fullscreenImages.length > 1 ? 'Swipe to navigate • Swipe down to close' : 'Swipe down to close'}
+          </div>
+        </div>
+      )}
+
       {/* PWA Install Prompt Banner */}
       {showInstallPrompt && (
         <div className="fixed bottom-20 left-4 right-4 z-50 animate-slide-up">
