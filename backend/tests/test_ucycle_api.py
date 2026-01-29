@@ -96,7 +96,7 @@ class TestAdminFeatures:
     
     def test_admin_reports_list(self):
         """Test admin reports list endpoint"""
-        response = requests.get(f"{BASE_URL}/api/admin/reports?pin=9090")
+        response = requests.get(f"{BASE_URL}/api/reports")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
