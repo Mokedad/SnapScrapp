@@ -2543,6 +2543,7 @@ function PostPage() {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [isReporting, setIsReporting] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);  // Image gallery index
   
   // Favorites state (local storage)
   const [isFavorited, setIsFavorited] = useState(() => {
