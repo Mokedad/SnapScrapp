@@ -66,20 +66,18 @@ class TestAdminFeatures:
         response = requests.post(f"{BASE_URL}/api/admin/verify", json={"pin": "9090"})
         assert response.status_code == 200
         data = response.json()
-        assert data.get("valid") == True
+        assert data.get("verified") == True
         print("✓ Valid admin PIN accepted")
     
     def test_admin_verify_invalid_pin(self):
         """Test admin PIN verification with invalid PIN"""
         response = requests.post(f"{BASE_URL}/api/admin/verify", json={"pin": "wrong"})
-        assert response.status_code == 200
-        data = response.json()
-        assert data.get("valid") == False
-        print("✓ Invalid admin PIN rejected")
+        assert response.status_code == 401
+        print("✓ Invalid admin PIN rejected with 401")
     
     def test_admin_stats(self):
         """Test admin statistics endpoint"""
-        response = requests.get(f"{BASE_URL}/api/admin/stats")
+        response = requests.get(f"{BASE_URL}/api/admin/stats?pin=9090")
         assert response.status_code == 200
         data = response.json()
         assert "total_posts" in data
@@ -90,7 +88,7 @@ class TestAdminFeatures:
     
     def test_admin_posts_list(self):
         """Test admin posts list endpoint"""
-        response = requests.get(f"{BASE_URL}/api/admin/posts")
+        response = requests.get(f"{BASE_URL}/api/admin/posts?pin=9090")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
@@ -98,7 +96,7 @@ class TestAdminFeatures:
     
     def test_admin_reports_list(self):
         """Test admin reports list endpoint"""
-        response = requests.get(f"{BASE_URL}/api/admin/reports")
+        response = requests.get(f"{BASE_URL}/api/admin/reports?pin=9090")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
