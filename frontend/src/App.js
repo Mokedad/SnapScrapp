@@ -1808,14 +1808,24 @@ function AppContent() {
               WhatsApp
             </button>
             <button
-              onClick={() => shareToFacebook(sharePost)}
-              className="share-btn facebook flex-col py-4"
-              data-testid="share-facebook"
+              onClick={() => shareToMessenger(sharePost)}
+              className="share-btn messenger flex-col py-4"
+              data-testid="share-messenger"
             >
               <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                <path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.242c1.092.301 2.246.464 3.443.464 6.627 0 12-4.974 12-11.111S18.627 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26L10.732 8l3.131 3.259L19.752 8l-6.561 6.963z"/>
               </svg>
-              Facebook
+              Messenger
+            </button>
+            <button
+              onClick={() => shareToFacebookGroups(sharePost)}
+              className="share-btn facebook flex-col py-4"
+              data-testid="share-fb-groups"
+            >
+              <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2zm4 8h-2v-4h2v4zm0-6h-2V9h2v2zm4 6h-2v-2h2v2zm0-4h-2v-2h2v2z"/>
+              </svg>
+              FB Groups
             </button>
             <button
               onClick={() => shareToGumtree(sharePost)}
@@ -1829,7 +1839,7 @@ function AppContent() {
             </button>
             <button
               onClick={() => copyShareLink(sharePost)}
-              className="share-btn copy flex-col py-4"
+              className="share-btn copy flex-col py-4 col-span-2"
               data-testid="share-copy-link"
             >
               <Copy className="w-6 h-6 mb-1" />
