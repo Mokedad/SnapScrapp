@@ -212,6 +212,7 @@ function AppContent() {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]); // Default: London
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);  // Image gallery index
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
