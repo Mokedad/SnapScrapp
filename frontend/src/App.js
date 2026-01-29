@@ -2330,12 +2330,12 @@ function AdminPanel() {
             <p className="text-slate-500 mt-2">Enter PIN to continue</p>
           </div>
 
-          {/* PIN Display */}
-          <div className="flex justify-center gap-3 mb-8">
-            {[0, 1, 2, 3].map(i => (
+          {/* PIN Display - 8 digits */}
+          <div className="flex justify-center gap-2 mb-8">
+            {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
               <div 
                 key={i}
-                className={`w-4 h-4 rounded-full ${pin.length > i ? 'bg-green-600' : 'bg-slate-200'}`}
+                className={`w-3 h-3 rounded-full transition-colors ${pin.length > i ? 'bg-green-600' : 'bg-slate-200'}`}
               />
             ))}
           </div>
