@@ -106,13 +106,65 @@ def to_iso(dt: datetime) -> str:
 def from_iso(s: str) -> datetime:
     return datetime.fromisoformat(s.replace('Z', '+00:00'))
 
-# Fuzzy location (offset by ~100-300m randomly)
+# Fuzzy location (offset by ~30-50m randomly for privacy, but still accurate)
 import random
 def fuzz_location(lat: float, lng: float) -> tuple:
-    # ~0.001 degree is about 100m
-    offset_lat = random.uniform(-0.003, 0.003)
-    offset_lng = random.uniform(-0.003, 0.003)
+    # ~0.0005 degree is about 50m - enough for privacy but still accurate area
+    offset_lat = random.uniform(-0.0005, 0.0005)
+    offset_lng = random.uniform(-0.0005, 0.0005)
     return (lat + offset_lat, lng + offset_lng)
+
+# ============ AI CONTENT MODERATION ============
+
+async def check_image_safety(image_base64: str) -> dict:
+    """Check if image contains inappropriate content using Gemini"""
+    import json
+    import re
+    
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"safety-{generate_id()}",
+            system_message="""You are a content moderation AI. Analyze this image and determine if it's appropriate for a community marketplace app where people give away unwanted household items.
+
+REJECT images that contain:
+- Sexual or adult content
+- Nudity or suggestive content
+- Violence or gore
+- Illegal items (drugs, weapons, stolen goods)
+- Dangerous items that could harm others
+- Explicit or offensive content
+
+APPROVE images that show:
+- Household items, furniture, electronics
+- Clothing, toys, books, sports equipment
+- Garden items, tools, appliances
+- Any normal item someone might give away
+
+Respond ONLY with JSON:
+{"safe": true/false, "reason": "brief reason if unsafe"}"""
+        ).with_model("gemini", "gemini-2.5-flash")
+        
+        image_content = ImageContent(image_base64=image_base64)
+        user_message = UserMessage(
+            text="Is this image safe and appropriate for a community item giveaway app?",
+            file_contents=[image_content]
+        )
+        
+        response = chat.send_message(user_message)
+        response_text = response.content.strip()
+        
+        # Parse JSON
+        json_match = re.search(r'\{[^{}]*\}', response_text, re.DOTALL)
+        if json_match:
+            result = json.loads(json_match.group())
+            return {"safe": result.get("safe", True), "reason": result.get("reason", "")}
+        
+        return {"safe": True, "reason": ""}
+    except Exception as e:
+        print(f"Safety check error: {e}")
+        # Default to safe if check fails (don't block legitimate posts)
+        return {"safe": True, "reason": ""}
 
 # ============ AI IMAGE ANALYSIS ============
 
