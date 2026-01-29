@@ -194,9 +194,15 @@ async def create_post(post: PostCreate):
     # Fuzz the location for privacy
     fuzzed_lat, fuzzed_lng = fuzz_location(post.latitude, post.longitude)
     
+    # Build images array - primary image first, then additional images
+    all_images = [post.image_base64]
+    if post.images:
+        all_images.extend(post.images)
+    
     post_doc = {
         "id": generate_id(),
-        "image_base64": post.image_base64,
+        "image_base64": post.image_base64,  # Keep for backwards compatibility
+        "images": all_images,  # All images array
         "title": post.title,
         "category": post.category,
         "description": post.description,
@@ -218,6 +224,7 @@ async def create_post(post: PostCreate):
     return PostResponse(
         id=post_doc["id"],
         image_base64=post_doc["image_base64"],
+        images=post_doc["images"],
         title=post_doc["title"],
         category=post_doc["category"],
         description=post_doc["description"],
