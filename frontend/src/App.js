@@ -2390,7 +2390,7 @@ function PostPage() {
       </header>
 
       {/* Post Content */}
-      <div className="pb-8">
+      <div className="pb-24">
         <div className="relative">
           <img 
             src={post.image_base64.startsWith('data:') ? post.image_base64 : `data:image/jpeg;base64,${post.image_base64}`}
@@ -2405,7 +2405,7 @@ function PostPage() {
           </div>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-4 pb-8 space-y-4">
           <div>
             <h1 className="font-bold text-2xl text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
               {post.title}
