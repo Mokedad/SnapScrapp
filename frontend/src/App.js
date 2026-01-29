@@ -1664,6 +1664,55 @@ function AppContent() {
             )}
           </div>
           
+          {/* Additional Images Section */}
+          {newPost.image_base64 && (
+            <div className="px-4 py-2 bg-slate-50 border-t">
+              <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
+                {/* Thumbnails of additional images */}
+                {newPost.images.map((img, index) => (
+                  <div key={index} className="relative flex-shrink-0">
+                    <img 
+                      src={img} 
+                      alt={`Photo ${index + 2}`}
+                      className="w-14 h-14 object-cover rounded-lg"
+                    />
+                    <button
+                      onClick={() => removeAdditionalImage(index)}
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
+                    >
+                      <X className="w-3 h-3 text-white" />
+                    </button>
+                  </div>
+                ))}
+                
+                {/* Add more button (if less than 4 additional) */}
+                {newPost.images.length < 4 && (
+                  <button
+                    onClick={() => additionalImagesRef.current?.click()}
+                    className="w-14 h-14 flex-shrink-0 bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center hover:border-green-500 transition-colors"
+                    data-testid="add-more-photos-btn"
+                  >
+                    <Plus className="w-5 h-5 text-slate-400" />
+                  </button>
+                )}
+                
+                <span className="text-xs text-slate-500 flex-shrink-0 ml-1">
+                  {newPost.images.length + 1}/5 photos
+                </span>
+              </div>
+              
+              {/* Hidden file input for additional images */}
+              <input
+                ref={additionalImagesRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleAdditionalImages}
+                className="hidden"
+              />
+            </div>
+          )}
+          
           {/* Compact Form */}
           <div className="p-4 pb-20 space-y-4">
             {/* Title - larger, prominent */}
