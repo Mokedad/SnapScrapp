@@ -2858,6 +2858,14 @@ function PostPage() {
   const [isReporting, setIsReporting] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);  // Image gallery index
   
+  // Fullscreen image viewer state
+  const [showFullscreenImage, setShowFullscreenImage] = useState(false);
+  const [fullscreenImages, setFullscreenImages] = useState([]);
+  const [fullscreenIndex, setFullscreenIndex] = useState(0);
+  const [fullscreenSwipeY, setFullscreenSwipeY] = useState(0);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  
   // Favorites state (local storage)
   const [isFavorited, setIsFavorited] = useState(() => {
     const saved = localStorage.getItem('ucycle_favorites');
@@ -2879,6 +2887,48 @@ function PostPage() {
     
     localStorage.setItem('ucycle_favorites', JSON.stringify(favorites));
     setIsFavorited(!isFavorited);
+  };
+
+  // Fullscreen image functions
+  const openFullscreenImage = (images, startIndex = 0) => {
+    setFullscreenImages(images);
+    setFullscreenIndex(startIndex);
+    setFullscreenSwipeY(0);
+    setShowFullscreenImage(true);
+  };
+
+  const closeFullscreenImage = () => {
+    setShowFullscreenImage(false);
+    setFullscreenSwipeY(0);
+  };
+
+  const handleFullscreenTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleFullscreenTouchMove = (e) => {
+    const diffY = e.touches[0].clientY - touchStartY.current;
+    if (diffY > 0) setFullscreenSwipeY(diffY);
+  };
+
+  const handleFullscreenTouchEnd = (e) => {
+    const diffX = touchStartX.current - e.changedTouches[0].clientX;
+    const diffY = e.changedTouches[0].clientY - touchStartY.current;
+    
+    if (diffY > 100 && Math.abs(diffX) < 50) {
+      closeFullscreenImage();
+      return;
+    }
+    setFullscreenSwipeY(0);
+    
+    if (Math.abs(diffX) > 50 && fullscreenImages.length > 1) {
+      if (diffX > 0) {
+        setFullscreenIndex(i => i < fullscreenImages.length - 1 ? i + 1 : 0);
+      } else {
+        setFullscreenIndex(i => i > 0 ? i - 1 : fullscreenImages.length - 1);
+      }
+    }
   };
 
   useEffect(() => {
