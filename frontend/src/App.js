@@ -318,6 +318,35 @@ function AppContent() {
     return favorites.includes(postId);
   }, [favorites]);
 
+  // Notification functions
+  const playNotificationSound = useCallback(() => {
+    if (notificationSound.current) {
+      notificationSound.current.currentTime = 0;
+      notificationSound.current.play().catch(() => {});
+    }
+  }, []);
+
+  const showNotification = useCallback((message, type = 'info') => {
+    setNotification({ message, type });
+    setShowNotificationBanner(true);
+    playNotificationSound();
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      setShowNotificationBanner(false);
+      setTimeout(() => setNotification(null), 300);
+    }, 5000);
+  }, [playNotificationSound]);
+
+  const toggleNearbyNotifications = useCallback(() => {
+    setNearbyNotificationsEnabled(prev => {
+      const newValue = !prev;
+      localStorage.setItem('ucycle_nearby_notifications', String(newValue));
+      toast.success(newValue ? 'Nearby notifications enabled!' : 'Nearby notifications disabled');
+      return newValue;
+    });
+  }, []);
+
   // Calculate distance between two points (Haversine formula)
   const getDistance = useCallback((lat1, lon1, lat2, lon2) => {
     const R = 6371; // Earth's radius in km
