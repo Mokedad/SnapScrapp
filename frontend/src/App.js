@@ -2317,9 +2317,9 @@ function PostPage() {
     setShowShareDialog(false);
   };
 
-  const shareToTwitter = () => {
-    const text = `Free item available: ${post.title} 🎁`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+  const shareToGumtree = () => {
+    window.open('https://www.gumtree.com.au/p-post-ad.html', '_blank');
+    toast.success("Post your item on Gumtree too!");
     setShowShareDialog(false);
   };
 
