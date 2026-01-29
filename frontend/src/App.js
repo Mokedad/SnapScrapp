@@ -1051,11 +1051,20 @@ function AppContent() {
         img.includes(',') ? img.split(',')[1] : img
       );
       
-      await axios.post(`${API}/posts`, {
+      const response = await axios.post(`${API}/posts`, {
         ...newPost,
         image_base64: base64Data,
         images: additionalImages.length > 0 ? additionalImages : null
       });
+      
+      // Track user's own post ID for "You helped a mate!" notification
+      const newPostId = response.data?.id;
+      if (newPostId) {
+        const updatedMyPosts = [...myPostIds, newPostId];
+        setMyPostIds(updatedMyPosts);
+        localStorage.setItem('ucycle_my_posts', JSON.stringify(updatedMyPosts));
+      }
+      
       toast.success("Item posted successfully!");
       setShowPostDrawer(false);
       setNewPost({
