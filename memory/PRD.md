@@ -136,6 +136,7 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 15. ✅ AI content moderation for uploaded images
 16. ✅ In-app notification system with ding sound (nearby items within 1km, collected items)
 17. ✅ Notification toggle in menu (ON by default)
+18. ✅ Image interaction hints ("Tap to expand • Swipe to browse" on posts, exit instructions in fullscreen)
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
