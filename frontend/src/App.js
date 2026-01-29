@@ -300,6 +300,19 @@ function AppContent() {
     return R * c;
   }, []);
 
+  // Format distance for display
+  const formatDistance = useCallback((post) => {
+    if (!userLocation || !post?.latitude) return null;
+    const dist = getDistance(
+      userLocation[0], userLocation[1],
+      post.latitude, post.longitude
+    );
+    if (dist < 1) {
+      return `${Math.round(dist * 1000)}m`;
+    }
+    return `${dist.toFixed(1)}km`;
+  }, [userLocation, getDistance]);
+
   // Get posts within radius
   const postsInRadius = useMemo(() => {
     if (!userLocation) return filteredPosts;
