@@ -313,8 +313,11 @@ function AppContent() {
     if (selectedCategory) {
       result = result.filter(post => post.category === selectedCategory);
     }
+    if (showFavoritesOnly) {
+      result = result.filter(post => favorites.includes(post.id));
+    }
     return result;
-  }, [postsInRadius, selectedCategory]);
+  }, [postsInRadius, selectedCategory, showFavoritesOnly, favorites]);
 
   // Get unique categories from posts within radius only
   const availableCategories = useMemo(() => {
@@ -322,12 +325,10 @@ function AppContent() {
     return cats.sort();
   }, [postsInRadius]);
 
-  // Final filtered posts (including favorites filter)
-  const displayPosts = useMemo(() => {
-    if (showFavoritesOnly) {
-      return filteredPosts.filter(p => favorites.includes(p.id));
-    }
-    return filteredPosts;
+  // Count of favorite posts
+  const favoritesCount = useMemo(() => {
+    return posts.filter(p => favorites.includes(p.id)).length;
+  }, [posts, favorites]);
   }, [filteredPosts, showFavoritesOnly, favorites]);
 
   // Request user location
