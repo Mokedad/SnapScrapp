@@ -1819,16 +1819,66 @@ function AppContent() {
       </Drawer>
 
       {/* Post Detail Drawer */}
-      <Drawer open={showDetailDrawer} onOpenChange={setShowDetailDrawer}>
+      <Drawer open={showDetailDrawer} onOpenChange={(open) => {
+        setShowDetailDrawer(open);
+        if (!open) setCurrentImageIndex(0);
+      }}>
         <DrawerContent className="max-h-[85vh]">
           {selectedPost && (
             <>
               <div className="relative">
-                <img 
-                  src={selectedPost.image_base64.startsWith('data:') ? selectedPost.image_base64 : `data:image/jpeg;base64,${selectedPost.image_base64}`}
-                  alt={selectedPost.title}
-                  className="w-full h-48 object-cover"
-                />
+                {/* Image Gallery */}
+                {(() => {
+                  const images = selectedPost.images?.length > 0 
+                    ? selectedPost.images 
+                    : [selectedPost.image_base64];
+                  const currentImg = images[currentImageIndex] || images[0];
+                  const imgSrc = currentImg?.startsWith('data:') 
+                    ? currentImg 
+                    : `data:image/jpeg;base64,${currentImg}`;
+                  
+                  return (
+                    <>
+                      <img 
+                        src={imgSrc}
+                        alt={selectedPost.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      
+                      {/* Navigation arrows if multiple images */}
+                      {images.length > 1 && (
+                        <>
+                          <button
+                            onClick={() => setCurrentImageIndex(i => i > 0 ? i - 1 : images.length - 1)}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center"
+                          >
+                            <ChevronLeft className="w-5 h-5 text-white" />
+                          </button>
+                          <button
+                            onClick={() => setCurrentImageIndex(i => i < images.length - 1 ? i + 1 : 0)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center rotate-180"
+                          >
+                            <ChevronLeft className="w-5 h-5 text-white" />
+                          </button>
+                          
+                          {/* Dots indicator */}
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                            {images.map((_, i) => (
+                              <button
+                                key={i}
+                                onClick={() => setCurrentImageIndex(i)}
+                                className={`w-2 h-2 rounded-full transition-colors ${
+                                  i === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
+                
                 <div className="absolute top-3 left-3">
                   <CategoryBadge category={selectedPost.category} />
                 </div>
