@@ -1517,7 +1517,7 @@ function AppContent() {
           </div>
           
           {/* Compact Form */}
-          <div className="p-4 space-y-4">
+          <div className="p-4 pb-20 space-y-4">
             {/* Title - larger, prominent */}
             <Input
               value={newPost.title}
