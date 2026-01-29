@@ -2365,6 +2365,29 @@ function PostPage() {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [isReporting, setIsReporting] = useState(false);
+  
+  // Favorites state (local storage)
+  const [isFavorited, setIsFavorited] = useState(() => {
+    const saved = localStorage.getItem('ucycle_favorites');
+    const favorites = saved ? JSON.parse(saved) : [];
+    return favorites.includes(postId);
+  });
+
+  const toggleFavorite = () => {
+    const saved = localStorage.getItem('ucycle_favorites');
+    let favorites = saved ? JSON.parse(saved) : [];
+    
+    if (isFavorited) {
+      favorites = favorites.filter(id => id !== postId);
+      toast.success('Removed from favorites');
+    } else {
+      favorites.push(postId);
+      toast.success('Added to favorites');
+    }
+    
+    localStorage.setItem('ucycle_favorites', JSON.stringify(favorites));
+    setIsFavorited(!isFavorited);
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
