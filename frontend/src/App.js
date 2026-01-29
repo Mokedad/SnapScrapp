@@ -2888,6 +2888,13 @@ function PostPage() {
           </div>
 
           <div className="flex flex-col gap-2 text-sm text-slate-500">
+            {/* Distance indicator */}
+            {formatDistance() && (
+              <div className="flex items-center gap-1 text-green-600 font-medium">
+                <MapPin className="w-4 h-4" />
+                <span>{formatDistance()} away</span>
+              </div>
+            )}
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
               <span>Expires {new Date(post.expires_at).toLocaleDateString()}</span>
