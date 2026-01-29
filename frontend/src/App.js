@@ -894,18 +894,55 @@ function AppContent() {
 
   // Process image (shared between camera capture and file upload)
   const processImage = async (base64) => {
-    // Auto-set location if available
-    const locationUpdate = userLocation ? {
-      latitude: userLocation[0],
-      longitude: userLocation[1]
-    } : {};
-    
     setNewPost(prev => ({ 
       ...prev, 
       image_base64: base64,
-      ...locationUpdate
+      latitude: null,  // Clear old location
+      longitude: null
     }));
     setShowPostDrawer(true);
+    
+    // Get fresh GPS location for the post
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const freshLat = position.coords.latitude;
+          const freshLng = position.coords.longitude;
+          
+          // Update both the post form and the global user location
+          setNewPost(prev => ({
+            ...prev,
+            latitude: freshLat,
+            longitude: freshLng
+          }));
+          setUserLocation([freshLat, freshLng]);
+          toast.success("Location updated!");
+        },
+        (error) => {
+          console.log("Fresh location failed, using cached:", error);
+          // Fallback to cached location if fresh location fails
+          if (userLocation) {
+            setNewPost(prev => ({
+              ...prev,
+              latitude: userLocation[0],
+              longitude: userLocation[1]
+            }));
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0  // Force fresh location, don't use cache
+        }
+      );
+    } else if (userLocation) {
+      // Fallback if geolocation not supported
+      setNewPost(prev => ({
+        ...prev,
+        latitude: userLocation[0],
+        longitude: userLocation[1]
+      }));
+    }
     
     // Analyze with AI
     setIsAnalyzing(true);
