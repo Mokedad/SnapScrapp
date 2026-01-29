@@ -240,10 +240,29 @@ IMPORTANT: Respond ONLY with valid JSON, no other text:
 @api_router.post("/posts", response_model=PostResponse)
 async def create_post(post: PostCreate):
     """Create a new post"""
+    
+    # Check image safety first
+    safety_result = await check_image_safety(post.image_base64)
+    if not safety_result["safe"]:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"⚠️ Image rejected: {safety_result['reason']}. Please only post appropriate household items."
+        )
+    
+    # Check additional images if present
+    if post.images:
+        for i, img in enumerate(post.images):
+            safety = await check_image_safety(img)
+            if not safety["safe"]:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"⚠️ Image {i+2} rejected: {safety['reason']}. Please only post appropriate items."
+                )
+    
     now = now_utc()
     expires = now + timedelta(hours=post.expiry_hours)
     
-    # Fuzz the location for privacy
+    # Fuzz the location slightly for privacy (but keep it accurate ~50m)
     fuzzed_lat, fuzzed_lng = fuzz_location(post.latitude, post.longitude)
     
     # Build images array - primary image first, then additional images
