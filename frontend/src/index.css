@@ -276,6 +276,15 @@ h1, h2, h3, h4, h5, h6 {
   background: #1da851;
 }
 
+.share-btn.messenger {
+  background: linear-gradient(135deg, #0099FF 0%, #A033FF 100%);
+  color: white;
+}
+
+.share-btn.messenger:hover {
+  background: linear-gradient(135deg, #0088ee 0%, #9020ee 100%);
+}
+
 .share-btn.facebook {
   background: #1877F2;
   color: white;
