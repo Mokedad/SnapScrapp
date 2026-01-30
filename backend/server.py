@@ -170,64 +170,61 @@ Respond ONLY with JSON:
 
 @api_router.post("/analyze-image", response_model=AIAnalysisResponse)
 async def analyze_image(request: AIAnalysisRequest):
-    """High-quality AI image analysis - let the AI think naturally"""
+    """Gemini 2.0 Flash - Image analysis with content moderation"""
     import json
     import re
     
     try:
-        # First, check for inappropriate content (Safety Guard)
+        # Step 1: Content Moderation (Safety Check)
         safety_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"safety-{generate_id()}",
-            system_message="You are a content safety checker. Analyze images for prohibited content."
-        ).with_model("gemini", "gemini-2.5-flash")
+            system_message="You are a content safety moderator. Your job is to identify inappropriate content in images."
+        ).with_model("gemini", "gemini-2.0-flash")
         
-        safety_check = UserMessage(
-            text="Does this image contain any of the following: nudity, sexual content, weapons, drugs, violence, or illegal activity? Reply with ONLY 'SAFE' or 'UNSAFE'.",
+        safety_message = UserMessage(
+            text="Analyze this image for safety. Does it contain nudity, sexual content, weapons, drugs, violence, gore, or illegal activity? Reply ONLY with 'SAFE' or 'UNSAFE'.",
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
-        safety_response = safety_chat.send_message(safety_check)
+        safety_response = safety_chat.send_message(safety_message)
         safety_text = safety_response.content.strip() if hasattr(safety_response, 'content') else str(safety_response).strip()
+        logger.info(f"Safety check result: {safety_text}")
         
         if "UNSAFE" in safety_text.upper():
             raise HTTPException(status_code=400, detail="Upload rejected: Inappropriate content detected.")
         
-        # Main analysis - natural, high-quality prompt
-        chat = LlmChat(
+        # Step 2: Image Analysis - Auto-fill title, category, description
+        analysis_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You are a helpful assistant that identifies items in photos for a free stuff giveaway app.
+            system_message="""You are an AI assistant for a free items giveaway app called Ucycle.
+Your job is to identify items in photos and provide helpful details.
 
-When you see an image, provide:
-1. A specific, descriptive Title for the item (be precise - what exactly is it?)
-2. A Category from: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
-3. A helpful Description of the item's condition and any notable features
+When analyzing an image, provide:
+1. TITLE: A clear, specific name for the item (what is it exactly?)
+2. CATEGORY: Choose one from: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+3. DESCRIPTION: A helpful description of the item's condition and features
 
-Respond in JSON format:
+Always respond in valid JSON format:
 {"title": "...", "category": "...", "description": "..."}"""
-        ).with_model("gemini", "gemini-2.5-flash")
-
-        image_content = ImageContent(image_base64=request.image_base64)
+        ).with_model("gemini", "gemini-2.0-flash")
         
-        user_message = UserMessage(
-            text="Analyze this image. What item is this? Provide a natural Title and a helpful Description.",
-            file_contents=[image_content]
+        analysis_message = UserMessage(
+            text="What item is in this photo? Identify it and describe its condition.",
+            file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
-        response = chat.send_message(user_message)
-        logger.info(f"AI Response: {response}")
-        
-        # Parse JSON from response
+        response = analysis_chat.send_message(analysis_message)
         response_text = response.content.strip() if hasattr(response, 'content') else str(response).strip()
+        logger.info(f"Analysis result: {response_text}")
         
-        # Remove markdown code blocks if present
+        # Parse JSON response
         if "```" in response_text:
             match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', response_text)
             if match:
                 response_text = match.group(1).strip()
         
-        # Try to find JSON object in response
         json_match = re.search(r'\{[^{}]*\}', response_text)
         if json_match:
             response_text = json_match.group(0)
@@ -244,8 +241,9 @@ Respond in JSON format:
         return AIAnalysisResponse(
             title=data.get("title", "Free Item"),
             category=category,
-            description=data.get("description", "Available for pickup")
+            description=data.get("description", "Available for free pickup")
         )
+        
     except HTTPException:
         raise
     except Exception as e:
@@ -253,7 +251,7 @@ Respond in JSON format:
         return AIAnalysisResponse(
             title="Free Item",
             category="general",
-            description="Please add your own description"
+            description="Please add a description"
         )
 
 # ============ POSTS ============
