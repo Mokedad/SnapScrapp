@@ -489,19 +489,42 @@ function AppContent() {
     );
   }, [checkLocationPermission]);
 
+  // Filter posts by radius from user location
+  const filterPostsByRadius = useCallback((allPosts, location, radius) => {
+    if (!location) return allPosts; // Show all if no location
+    return allPosts.filter(post => {
+      const distance = getDistance(location[0], location[1], post.latitude, post.longitude);
+      return distance <= radius;
+    });
+  }, [getDistance]);
+
   // Fetch posts
   const fetchPosts = useCallback(async () => {
     try {
       const response = await axios.get(`${API}/posts`);
       setPosts(response.data);
-      setFilteredPosts(response.data);
+      // Apply geo-filter immediately if we have user location
+      if (userLocation) {
+        const filtered = filterPostsByRadius(response.data, userLocation, radiusKm);
+        setFilteredPosts(filtered);
+      } else {
+        setFilteredPosts(response.data);
+      }
     } catch (error) {
       console.error("Failed to fetch posts:", error);
       toast.error("Failed to load posts");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userLocation, radiusKm, filterPostsByRadius]);
+
+  // Re-filter posts when radius or user location changes
+  useEffect(() => {
+    if (posts.length > 0 && userLocation) {
+      const filtered = filterPostsByRadius(posts, userLocation, radiusKm);
+      setFilteredPosts(filtered);
+    }
+  }, [userLocation, radiusKm, posts, filterPostsByRadius]);
 
   // Search functionality
   const handleSearch = useCallback(async (query) => {
