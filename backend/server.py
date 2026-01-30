@@ -151,8 +151,8 @@ Respond ONLY with JSON:
             file_contents=[image_content]
         )
         
-        response = chat.send_message(user_message)
-        response_text = response.content.strip()
+        response = await chat.send_message(user_message)
+        response_text = response.strip() if isinstance(response, str) else str(response).strip()
         
         # Parse JSON
         json_match = re.search(r'\{[^{}]*\}', response_text, re.DOTALL)
@@ -281,8 +281,8 @@ Provide your response as JSON with a HIGHLY SPECIFIC title, appropriate category
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
-        response = analysis_chat.send_message(analysis_message)
-        response_text = response.content.strip() if hasattr(response, 'content') else str(response).strip()
+        response = await analysis_chat.send_message(analysis_message)
+        response_text = response.strip() if isinstance(response, str) else str(response).strip()
         logger.info(f"AI Raw Response: {response_text[:500]}")
         
         # Parse JSON from response
@@ -354,8 +354,8 @@ Reply with ONLY a JSON object: {"title": "Your Specific Name Here"}""",
                 file_contents=[ImageContent(image_base64=request.image_base64)]
             )
             
-            retry_response = retry_chat.send_message(retry_message)
-            retry_text = retry_response.content.strip() if hasattr(retry_response, 'content') else str(retry_response).strip()
+            retry_response = await retry_chat.send_message(retry_message)
+            retry_text = retry_response.strip() if isinstance(retry_response, str) else str(retry_response).strip()
             logger.info(f"Retry response: {retry_text[:200]}")
             
             try:
