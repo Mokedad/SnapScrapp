@@ -1,0 +1,148 @@
+<analysis>**original_problem_statement:** The user wants to build a mobile-first live-map application called **Ucycle**. The app allows users to post unwanted items for public pickup. Key features include a live map showing item locations, a simple posting process, AI-powered image analysis to auto-fill item details, an admin panel, and a reporting system.
+
+**PRODUCT REQUIREMENTS:**
+- **Core Functionality:** Live map (Leaflet & OpenStreetMap) displaying items, ability to post items with photos, title, category, and description.
+- **AI Integration:** Use Gemini to analyze uploaded images, suggest a title, category, and description, and perform content moderation to block inappropriate images.
+- **Admin Features:** A PIN-protected admin panel to view statistics and manage reported posts.
+- **User Experience:** Mobile-first design, camera-first posting flow, geolocation, search, filters, user favorites, multiple images per post, and a fullscreen image viewer.
+- **Partner Integration:** Display a targeted ad for a scrap yard partner when an item is collected in a specific geographical area.
+- **Notifications**: Provide in-app banner notifications with a sound for when a user's item is collected and when new items are posted nearby.
+
+**User's preferred language**: English
+
+**what currently exists?**
+The application is a feature-rich Progressive Web App (PWA) with a React frontend and FastAPI backend. It includes a live map, a camera-first posting flow, an admin panel, and social sharing. Numerous UI/UX improvements have been made, including a redesigned search bar, enlarged buttons, and compact floating headers. A notification system, partner geofencing, and feed radius filtering have also been implemented. However, the core AI image analysis feature has suffered a significant quality regression, frequently generating generic titles like Free Item, which is the user's primary concern.
+
+**Last working item**:
+- **Last item agent was working:** The user issued a FULL FACTORY RESET command for the AI image analysis logic due to a severe drop in quality. The agent was tasked with reverting to a high-intelligence, high-quality vision model prompt that prioritizes accuracy over speed and strictly forbids generic titles like Item or Free Item.
+- **Status:** IN PROGRESS
+- **Agent Testing Done:** N
+- **Which testing method agent to use?** manual testing by curl
+- **User Testing Done:** N
+
+**All Pending/In progress Issue list**:
+- **Issue 1: Critical AI Quality Regression (P0)**
+  - **Description**: The AI image analysis is producing unacceptably generic titles (e.g., Free Item, Item) instead of specific, descriptive titles (e.g., Rusty Metal Garden Shed, Purple Neck Pillow). This is a regression from earlier versions and the user's top priority.
+  - **Attempted fixes**: The agent has attempted multiple prompt adjustments, oscillating between prioritizing speed and quality. The last few attempts to optimize for speed resulted in the current low-quality output. The user has now explicitly demanded a factory reset to the original, high-quality logic, sacrificing speed for accuracy.
+  - **Next debug checklist**:
+    1.  Locate the AI analysis prompt in  within the  endpoint.
+    2.  Delete all recent prompt modifications related to speed, brevity, or token limits.
+    3.  Implement a new, robust prompt that instructs the AI model (e.g., GPT-4o or the most powerful Gemini Vision model) to be extremely specific, look for brand names/materials, and use natural language for the description.
+    4.  Explicitly forbid the use of words like Item, Object, Stuff, and Free Item in the generated title.
+    5.  Ensure the existing content moderation/safety filter remains the first step before analysis.
+    6.  Restart the backend service.
+    7.  Manually test with one of the user-provided images (e.g., the purple neck pillow) to confirm it generates a specific, high-quality title.
+  - **Why fix this issue and what will be achieved with the fix?**: This is the core feature of the app. Fixing it will restore the primary value proposition and resolve the user's main source of frustration.
+  - **Status:** IN PROGRESS
+  - **Is recurring issue?** Y
+  - **Should Test frontend/backend/both after fix?** backend
+  - **Blocked on other issue:** None
+
+**In progress Task List**:
+- None. The focus is solely on fixing the P0 AI issue.
+
+**Upcoming and Future Tasks**
+- **Upcoming Tasks:**
+  - **P1:** Deploy the application. The user has requested this multiple times, but it is blocked by the critical AI quality issue.
+- **Future Tasks:**
+  - **P2:** Add support for more regional partners (e.g., Newcastle, Interstate).
+  - **P2:** Integrate Return and Earn locations or pallet recyclers.
+  - **P2:** Email digest of nearby items.
+  - **P2:** Post analytics for admins.
+  - Code refactoring: Break down the monolithic  into smaller, reusable components.
+
+**Completed work in this session**
+- **Notification System**: Implemented an in-app banner notification system for nearby items (10km radius) and when a user's own item is collected.
+- **Social Sharing**: Added a native share button to post details and a server-side endpoint () to generate dynamic Open Graph meta tags for rich social media previews.
+- **GPS & Permission Fixes**: Fixed a bug with stale GPS locations on new posts and improved permission requests to avoid asking on every app open.
+- **Partner Geofencing & Updates**: Updated the Norman Scrap Yard partner to accept WHITE GOODS and geofenced its visibility to the Sydney Metropolitan area.
+- **Feed Filtering**: Implemented a default 105km radius filter for the main post feed.
+- **Scrap Prices Feature**: Added a new Current Scrap Prices modal, geofenced to the Sydney Metro area.
+- **Extensive UI/UX Redesigns**:
+    - Redesigned the search bar to be a high-contrast floating component with a better placeholder, a GO button, and quick-search chips.
+    - Converted the header into a compact, floating pill bar to maximize map space.
+    - Enlarged the Camera and My Location FABs for better usability.
+    - Fixed multiple modal/popup UI issues by enforcing solid white backgrounds for readability.
+- **Image Interaction Hints**: Added Tap to expand and Swipe to browse hints on post images.
+
+**Earlier issues found/mentioned but not fixed**
+- **Issue 1: Facebook Sharing Policy**
+  - **Debug checklist**: An error (content reported as abusive) can occur when sharing. This is an external platform limitation by Facebook on new/unrecognized domains and is not a code bug.
+  - **Why to solve this issue and what will be achieved with this?**: This issue will likely resolve itself once the app is deployed to a final domain and gains reputation. No code changes are required.
+  - **Should Test frontend/backend/both after fix**: NA
+  - **Is recurring issue?** Y
+
+**Known issue recurrence from previous fork**
+- None.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+- **Frontend**: React, Leaflet.js, TailwindCSS, PWA (Service Workers)
+- **Backend**: FastAPI (Python)
+- **Database**: MongoDB
+- **Integrations**: Gemini API (AI analysis & content safety), OpenStreetMap (maps & geocoding)
+- **Architecture**: Monolithic frontend SPA ( > 3,800 lines) with a RESTful backend.
+
+**key DB schema**
+- **posts**: 
+
+**changes in tech stack**
+- The AI model used for image analysis has been a point of contention. The backend was updated to use  but the core issue lies in the prompt engineering, not the model itself.
+
+**All files of reference**
+- : The entire backend. The  endpoint contains the AI logic that needs a factory reset.
+- : The monolithic frontend, which has undergone significant UI/UX changes.
+- : Contains new styles for the enlarged FABs and other UI tweaks.
+- : Was modified to enforce a solid white background on modals.
+
+**Areas that need refactoring**
+- The  file is extremely large and complex, containing almost all frontend logic and UI. It is a significant source of technical debt and should be broken down into smaller components and hooks.
+
+**key api endpoints**
+- : The critical endpoint for the user. Its prompt logic needs to be reverted to a high-quality version.
+- : **New endpoint.** Serves an HTML page with dynamic Open Graph meta tags for social media link previews.
+- : Fetches all posts.
+- : Marks an item as collected.
+
+**Critical Info for New Agent**
+- **TOP PRIORITY IS AI QUALITY**: The user is extremely frustrated with the AI generating generic titles like Free Item. Your first and only task is to perform a FULL FACTORY RESET on the AI logic in . Prioritize accuracy and specificity over speed. The user has explicitly forbidden words like Item, Object, and Free Item.
+- **Do Not Optimize for Speed**: Previous attempts to speed up the AI have caused the quality regression. Avoid any changes that compromise the quality of the AI's output. The user is willing to wait a few extra seconds for a good result.
+- **Deployment is Blocked**: The user wants to deploy the app, but do not proceed with deployment until the AI quality issue is fixed and explicitly verified by the user.
+- **Deployment Agent False Positive**: The deployment agent previously reported missing  files. This was a false positive; the files exist and are correctly configured in the environment.
+
+**documents and test reports created in this job**
+-  (updated multiple times)
+- 
+- 
+
+**Last 10 User Messages and any pending HUMAN messages**
+1.  **User**: Requested to extend nearby notifications to 10km. (Completed)
+2.  **User**: Asked to reboot the Gemini AI integration. (Agent confirmed it's already using Gemini)
+3.  **User**: Insisted on reinstalling Gemini. (Agent reinstalled the integration via playbook)
+4.  **User**: Asked to call the deployment agent. (Agent called deployer, which reported false errors)
+5.  **User**: **CRITICAL**: Expressed extreme frustration with AI quality, providing screenshots showing Free item vs. a specific title. Demanded a FULL FACTORY RESET of the AI logic to prioritize quality and specificity above all else. (IN PROGRESS - THIS IS THE CURRENT TASK)
+6.  **Agent**: Acknowledged the user's frustration and the need for a full reset. (Last action)
+
+**Project Health Check:**
+- **Broken**: The core AI image analysis feature is functionally broken from a user-value perspective due to poor quality output.
+- **Mocked**: Geolocation and camera access have graceful fallbacks in the test environment.
+
+**3rd Party Integrations**
+- **Gemini (Image Analysis & Content Safety)** — uses Emergent LLM Key. The prompt engineering for this integration is the critical issue.
+- **OpenStreetMap (Map Tiles & Geocoding)** — Public API, no key required.
+
+**Testing status**
+- **Testing agent used after significant changes**: YES
+- **Troubleshoot agent used after agent stuck in loop**: NO
+- **Test files created**:
+    - 
+    - 
+- **Known regressions**: The AI image analysis quality is a major regression.
+
+**Credentials to test flow:**
+- **Admin PIN**: 
+
+**What agent forgot to execute**
+The agent repeatedly misunderstood the user's priority. While trying to be helpful by optimizing for speed, the agent degraded the core feature. The agent must now strictly adhere to the user's explicit instruction to prioritize quality over speed for the AI analysis.</analysis>
