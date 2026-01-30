@@ -139,6 +139,15 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 18. ✅ Image interaction hints ("Tap to expand • Swipe to browse" on posts, exit instructions in fullscreen)
 19. ✅ Fresh GPS location on post - fetches current location when posting (not cached), with manual "Refresh" button
 20. ✅ Smart permission handling - checks permission status before requesting, no repeated prompts if already granted
+21. ✅ Partner Update (Norman Scrap Yard) - Added White Goods to accepted items, geofenced to Sydney Metro (300km)
+22. ✅ Feed Geo-Filtering - Default 105km radius, dynamic filtering based on user location
+23. ✅ Scrap Market Rates - New menu item showing NSW scrap metal prices (8 materials)
+24. ✅ Toast Notifications - Moved to center-middle screen, 1.2 second duration
+
+## Partner System (Expandable)
+- **Norman's Scrap Metal** (Sydney Metro - 300km radius from Penrith)
+  - Accepted: Scrap Metal, White Goods, Car Batteries, Aluminium, Copper, Brass, Steel
+  - Future regions: Newcastle, Interstate partners, Return & Earn locations, Pallet recyclers
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
