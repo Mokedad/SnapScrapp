@@ -3442,6 +3442,20 @@ function PostPage() {
       try {
         const response = await axios.get(`${API}/posts/${postId}`);
         setPost(response.data);
+        
+        // Update page title and meta for sharing
+        document.title = `${response.data.title} - Free on Ucycle`;
+        
+        // Update OG meta tags dynamically
+        const updateMeta = (property, content) => {
+          let meta = document.querySelector(`meta[property="${property}"]`);
+          if (meta) meta.setAttribute('content', content);
+        };
+        
+        updateMeta('og:title', `${response.data.title} - Free on Ucycle`);
+        updateMeta('og:description', `Free pickup available! ${response.data.description || 'Grab it before it is gone!'}`);
+        updateMeta('og:image', `data:image/jpeg;base64,${response.data.image_base64?.substring(0, 100)}`);
+        
       } catch (err) {
         console.error("Failed to fetch post:", err);
         setError("Post not found or has expired");
@@ -3450,6 +3464,11 @@ function PostPage() {
       }
     };
     fetchPost();
+    
+    // Cleanup - reset title when leaving
+    return () => {
+      document.title = 'Ucycle - Free Items Near You';
+    };
   }, [postId]);
 
   // Get user location for distance calculation
