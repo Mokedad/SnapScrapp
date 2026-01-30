@@ -1712,20 +1712,20 @@ function AppContent() {
         </div>
       )}
 
-      {/* Radius & Category Filters */}
+      {/* Radius & Category Filters - Compact Strip */}
       {!showSearchBar && !pickingLocation && !showCameraView && (
-        <div className="fixed top-16 left-0 right-0 z-20 px-4 py-2">
-          {/* Solid white background card for filters - fully opaque */}
-          <div className="bg-white rounded-2xl shadow-xl p-3 border border-slate-200" style={{ backgroundColor: '#ffffff' }}>
+        <div className="fixed top-16 left-0 right-0 z-20 px-3 py-1">
+          {/* Compact white background card for filters */}
+          <div className="bg-white rounded-xl shadow-md px-2 py-1.5 border border-slate-200" style={{ backgroundColor: '#ffffff' }}>
             {/* Top row: Radius + Filter button + Nearby count */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {/* Radius button */}
               <button
                 onClick={() => setShowRadiusSlider(!showRadiusSlider)}
-                className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-full text-sm font-bold text-slate-800 hover:bg-slate-200 transition-colors"
+                className="flex items-center gap-1 px-2 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-800 hover:bg-slate-200 transition-colors"
                 data-testid="radius-toggle"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
@@ -1735,7 +1735,7 @@ function AppContent() {
               {/* Filter button (collapsible) */}
               <button
                 onClick={() => setShowCategoryFilter(!showCategoryFilter)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors ${
                   selectedCategory || showFavoritesOnly
                     ? 'bg-green-600 text-white'
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
