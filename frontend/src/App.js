@@ -1289,9 +1289,13 @@ function AppContent() {
       setShowDetailDrawer(false);
       fetchPosts();
       
-      // Show Norman Scrap Yard ad if user is in Western Sydney
+      // Show Norman Scrap Yard ad if user is in Western Sydney (auto-dismiss after 5 seconds)
       if (isInWesternSydney()) {
-        setTimeout(() => setShowScrapYardAd(true), 500);
+        setTimeout(() => {
+          setShowScrapYardAd(true);
+          // Auto-dismiss after 5 seconds
+          setTimeout(() => setShowScrapYardAd(false), 5000);
+        }, 500);
       }
     } catch (error) {
       console.error("Failed to mark collected:", error);
