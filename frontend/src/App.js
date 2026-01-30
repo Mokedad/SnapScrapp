@@ -1704,15 +1704,15 @@ function AppContent() {
 
       {/* Radius & Category Filters */}
       {!showSearchBar && !pickingLocation && !showCameraView && (
-        <div className="fixed top-16 left-0 right-0 z-15 px-4 py-2">
-          {/* White background card for filters */}
-          <div className="bg-white rounded-2xl shadow-lg p-3">
+        <div className="fixed top-16 left-0 right-0 z-20 px-4 py-2">
+          {/* Solid white background card for filters - fully opaque */}
+          <div className="bg-white rounded-2xl shadow-xl p-3 border border-slate-200" style={{ backgroundColor: '#ffffff' }}>
             {/* Top row: Radius + Filter button + Nearby count */}
             <div className="flex items-center gap-2">
               {/* Radius button */}
               <button
                 onClick={() => setShowRadiusSlider(!showRadiusSlider)}
-                className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-full text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-full text-sm font-bold text-slate-800 hover:bg-slate-200 transition-colors"
                 data-testid="radius-toggle"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
