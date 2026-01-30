@@ -2697,62 +2697,83 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
-      {/* Norman Scrap Yard Ad - Sydney Metro Only */}
-      <Dialog open={showScrapYardAd && isInSydneyMetro()} onOpenChange={setShowScrapYardAd}>
-        <DialogContent className="max-w-sm text-center rounded-3xl">
-          <div className="pt-4">
-            <img 
-              src={NORMAN_SCRAP_YARD.logo} 
-              alt="Norman's Scrap Metal"
-              className="w-full max-w-[200px] h-auto mx-auto mb-4"
-              data-testid="norman-scrapyard-logo"
-            />
-            <h2 className="text-xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              Got scrap metal? 🔧
-            </h2>
-            <p className="text-slate-600 mb-4">
-              {NORMAN_SCRAP_YARD.name} in Penrith is a local legend for recycling!
-            </p>
-            
-            <div className="p-4 bg-slate-100 rounded-2xl mb-4 text-left">
-              <p className="font-semibold text-slate-900">{NORMAN_SCRAP_YARD.name}</p>
-              <p className="text-sm text-slate-600">{NORMAN_SCRAP_YARD.address}</p>
-              <div className="mt-3 pt-3 border-t border-slate-200">
-                <p className="text-xs font-semibold text-green-700 mb-1">✓ Accepted Items:</p>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Scrap Metal • <strong>White Goods</strong> (Fridges, Washers, Dryers, Microwaves) • Car Batteries • Aluminium • Copper • Brass • Steel
-                </p>
+      {/* Norman Scrap Yard Ad - Sydney Metro Only - Swipe to dismiss */}
+      {showScrapYardAd && isInSydneyMetro() && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setShowScrapYardAd(false)}
+        >
+          <div 
+            className="bg-white max-w-sm mx-4 rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => {
+              e.currentTarget.dataset.touchStartY = e.touches[0].clientY;
+            }}
+            onTouchEnd={(e) => {
+              const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+              const endY = e.changedTouches[0].clientY;
+              if (Math.abs(endY - startY) > 80) {
+                setShowScrapYardAd(false);
+              }
+            }}
+          >
+            <div className="pt-6 px-6 text-center">
+              {/* Swipe indicator */}
+              <div className="w-10 h-1 bg-slate-300 rounded-full mx-auto mb-4" />
+              
+              <img 
+                src={NORMAN_SCRAP_YARD.logo} 
+                alt="Norman's Scrap Metal"
+                className="w-full max-w-[200px] h-auto mx-auto mb-4"
+                data-testid="norman-scrapyard-logo"
+              />
+              <h2 className="text-xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                Got scrap metal? 🔧
+              </h2>
+              <p className="text-slate-600 mb-4">
+                {NORMAN_SCRAP_YARD.name} in Penrith is a local legend for recycling!
+              </p>
+              
+              <div className="p-4 bg-slate-100 rounded-2xl mb-4 text-left">
+                <p className="font-semibold text-slate-900">{NORMAN_SCRAP_YARD.name}</p>
+                <p className="text-sm text-slate-600">{NORMAN_SCRAP_YARD.address}</p>
+                <div className="mt-3 pt-3 border-t border-slate-200">
+                  <p className="text-xs font-semibold text-green-700 mb-1">✓ Accepted Items:</p>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Scrap Metal • <strong>White Goods</strong> (Fridges, Washers, Dryers, Microwaves) • Car Batteries • Aluminium • Copper • Brass • Steel
+                  </p>
+                </div>
               </div>
-            </div>
             
-            <div className="grid grid-cols-2 gap-3">
-              <Button 
-                variant="outline"
-                className="py-4 rounded-full"
-                onClick={() => setShowScrapYardAd(false)}
-                data-testid="scrapyard-skip-btn"
-              >
-                Not now
-              </Button>
-              <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full"
-                onClick={() => {
-                  window.open(NORMAN_SCRAP_YARD.mapsUrl, '_blank');
-                  setShowScrapYardAd(false);
-                }}
-                data-testid="scrapyard-maps-btn"
-              >
-                <MapPin className="w-4 h-4 mr-2" />
-                Get directions
-              </Button>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <Button 
+                  variant="outline"
+                  className="py-4 rounded-full"
+                  onClick={() => setShowScrapYardAd(false)}
+                  data-testid="scrapyard-skip-btn"
+                >
+                  Not now
+                </Button>
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full"
+                  onClick={() => {
+                    window.open(NORMAN_SCRAP_YARD.mapsUrl, '_blank');
+                    setShowScrapYardAd(false);
+                  }}
+                  data-testid="scrapyard-maps-btn"
+                >
+                  <MapPin className="w-4 h-4 mr-2" />
+                  Get directions
+                </Button>
+              </div>
+              
+              <p className="text-xs text-slate-400 pb-4">
+                Swipe or tap outside to dismiss • Auto-closes in 5s
+              </p>
             </div>
-            
-            <p className="text-xs text-slate-400 mt-4">
-              Local partner • Sydney Metro Region
-            </p>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* Scrap Prices Modal */}
       <Dialog open={showScrapPrices} onOpenChange={setShowScrapPrices}>
