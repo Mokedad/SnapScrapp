@@ -147,6 +147,9 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 26. ✅ Partner Ad Improvements - Swipe/tap to dismiss, 5 second auto-timeout
 27. ✅ AI Analysis Quality - Specific titles (1-5 words like "Blue IKEA Bookshelf"), detailed descriptions (4-15 words with condition info)
 28. ✅ Filter Box Visibility - Solid white background with border and shadow, higher z-index
+29. ✅ AI Vision Restored - QUALITY over speed, strict "no Item" rules, category-based fallback titles
+30. ✅ Enlarged UI Elements - Floating pill bar (larger text/padding), Camera FAB (72px), Location button (56px)
+31. ✅ Redesigned Search - High contrast bar, "Search 'Fridge', 'Copper', 'St Marys'..." placeholder, green GO button, quick keyword chips
 
 ## Partner System (Expandable)
 - **Norman's Scrap Metal** (Sydney Metro - 300km radius from Penrith)
