@@ -242,18 +242,13 @@ Keep titles SHORT and PUNCHY. Users need to see action buttons on mobile screens
 
 ## DESCRIPTION GENERATION RULES
 
-Write a NATURAL, CONVERSATIONAL description as if you're a helpful neighbor describing what you see. Include:
+Write a SHORT, NATURAL description (2-3 sentences MAX, under 350 characters).
+Include: what it is, condition, and location context.
 
-1. WHAT IT IS: Confirm the item identity in natural language
-2. CONDITION: Describe the visible condition honestly (new, used, worn, rusty, dusty, damaged, working, etc.)
-3. CONTEXT: Mention where it appears to be (curbside, on lawn, in garage, by fence, etc.)
-4. NOTABLE FEATURES: Any interesting details, defects, or selling points
-5. USEFULNESS: A brief note on who might want this or what it could be used for
-
-### EXCELLENT DESCRIPTION EXAMPLES:
-- "A purple memory foam neck pillow, the U-shaped kind perfect for travel. Looks barely used with no visible stains. Sitting on what appears to be a concrete driveway. Great for long flights or road trips."
-- "Rusty old garden shed made of corrugated metal panels. Definitely seen better days - lots of rust and a few dents. Door seems intact though. Could work as storage with some TLC or good for scrap metal recycling."
-- "Vintage leather armchair with that classic recliner mechanism. The brown leather is cracked and worn on the armrests but the structure looks solid. Sitting on the grass near the curb. Would be perfect for someone who does furniture restoration."
+### GOOD DESCRIPTION EXAMPLES:
+- "Purple memory foam neck pillow, barely used. Sitting on concrete driveway. Great for travel."
+- "Rusty metal garden shed, lots of wear but door intact. Could work for storage or scrap."
+- "Vintage leather armchair, worn on armrests but solid structure. On grass near curb."
 
 ## CATEGORY SELECTION
 Choose the SINGLE most appropriate category:
