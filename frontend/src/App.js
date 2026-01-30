@@ -1701,21 +1701,48 @@ function AppContent() {
       {/* Radius & Category Filters */}
       {!showSearchBar && !pickingLocation && !showCameraView && (
         <div className="fixed top-16 left-0 right-0 z-15 px-4 py-2">
-          {/* Radius Control */}
-          <div className="flex items-center gap-2 mb-2">
-            <button
-              onClick={() => setShowRadiusSlider(!showRadiusSlider)}
-              className="flex items-center gap-2 px-3 py-2 bg-white rounded-full shadow-sm text-sm font-medium text-slate-700"
-              data-testid="radius-toggle"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-              {radiusKm}km
-            </button>
+          {/* White background card for filters */}
+          <div className="bg-white rounded-2xl shadow-lg p-3">
+            {/* Top row: Radius + Filter button + Nearby count */}
+            <div className="flex items-center gap-2">
+              {/* Radius button */}
+              <button
+                onClick={() => setShowRadiusSlider(!showRadiusSlider)}
+                className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-full text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors"
+                data-testid="radius-toggle"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                {radiusKm}km
+              </button>
+              
+              {/* Filter button (collapsible) */}
+              <button
+                onClick={() => setShowCategoryFilter(!showCategoryFilter)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedCategory || showFavoritesOnly
+                    ? 'bg-green-600 text-white'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+                data-testid="category-filter-toggle"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" />
+                </svg>
+                {selectedCategory ? selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1) : showFavoritesOnly ? 'Saved' : 'Filter'}
+              </button>
+              
+              {/* Nearby count */}
+              <span className="text-sm font-medium text-slate-600 ml-auto">
+                {postsInRadius.length} nearby
+              </span>
+            </div>
+            
+            {/* Radius slider (expandable) */}
             {showRadiusSlider && (
-              <div className="flex-1 flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm animate-fade-in">
+              <div className="mt-3 flex items-center gap-2 animate-fade-in">
                 <span className="text-xs text-slate-500">5km</span>
                 <input
                   type="range"
@@ -1725,7 +1752,6 @@ function AppContent() {
                   value={radiusKm}
                   onChange={(e) => {
                     setRadiusKm(parseInt(e.target.value));
-                    // Auto-close after 3 seconds
                     setTimeout(() => setShowRadiusSlider(false), 3000);
                   }}
                   className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
@@ -1734,63 +1760,74 @@ function AppContent() {
                 <span className="text-xs text-slate-500">200km</span>
               </div>
             )}
-            {!showRadiusSlider && (
-              <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-full shadow-sm">
-                {postsInRadius.length} nearby
-              </span>
+            
+            {/* Category filter chips (expandable) */}
+            {showCategoryFilter && postsInRadius.length > 0 && (
+              <div className="mt-3 animate-fade-in">
+                <div className="flex flex-wrap gap-2">
+                  {/* Clear filter */}
+                  <button
+                    onClick={() => { 
+                      setSelectedCategory(null); 
+                      setShowFavoritesOnly(false);
+                      setShowCategoryFilter(false);
+                    }}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                      !selectedCategory && !showFavoritesOnly
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                    data-testid="filter-all"
+                  >
+                    All ({postsInRadius.length})
+                  </button>
+                  
+                  {/* Favorites */}
+                  {favoritesCount > 0 && (
+                    <button
+                      onClick={() => {
+                        setShowFavoritesOnly(!showFavoritesOnly);
+                        setSelectedCategory(null);
+                        setShowCategoryFilter(false);
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${
+                        showFavoritesOnly 
+                          ? 'bg-red-500 text-white' 
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                      data-testid="filter-favorites"
+                    >
+                      <Heart className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-white' : ''}`} />
+                      Saved ({favoritesCount})
+                    </button>
+                  )}
+                  
+                  {/* Categories */}
+                  {availableCategories.map(cat => {
+                    const count = postsInRadius.filter(p => p.category === cat).length;
+                    return (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setSelectedCategory(selectedCategory === cat ? null : cat);
+                          setShowFavoritesOnly(false);
+                          setShowCategoryFilter(false);
+                        }}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                          selectedCategory === cat 
+                            ? 'bg-green-600 text-white' 
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                        data-testid={`filter-${cat}`}
+                      >
+                        {cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' ')} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </div>
-          
-          {/* Category Chips - only show if there are posts in radius */}
-          {postsInRadius.length > 0 && (
-            <div className="overflow-x-auto hide-scrollbar">
-              <div className="flex gap-2 pb-1">
-                {/* Favorites filter */}
-                {favoritesCount > 0 && (
-                  <button
-                    onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                    className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm flex items-center gap-1 ${
-                      showFavoritesOnly 
-                        ? 'bg-red-500 text-white' 
-                        : 'bg-white text-slate-700 hover:bg-slate-50'
-                    }`}
-                    data-testid="filter-favorites"
-                  >
-                    <Heart className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-white' : ''}`} />
-                    Saved ({favoritesCount})
-                  </button>
-                )}
-                <button
-                  onClick={() => { setSelectedCategory(null); setShowFavoritesOnly(false); }}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm ${
-                    !selectedCategory && !showFavoritesOnly
-                      ? 'bg-green-600 text-white' 
-                      : 'bg-white text-slate-700 hover:bg-slate-50'
-                  }`}
-                  data-testid="filter-all"
-                >
-                  All ({postsInRadius.length})
-                </button>
-                {availableCategories.map(cat => {
-                  const count = postsInRadius.filter(p => p.category === cat).length;
-                  return (
-                    <button
-                      key={cat}
-                      onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
-                      className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm ${
-                        selectedCategory === cat 
-                          ? 'bg-green-600 text-white' 
-                          : 'bg-white text-slate-700 hover:bg-slate-50'
-                      }`}
-                      data-testid={`filter-${cat}`}
-                    >
-                      {cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' ')} ({count})
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
       )}
 
