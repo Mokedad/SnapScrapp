@@ -143,6 +143,9 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 22. ✅ Feed Geo-Filtering - Default 105km radius, dynamic filtering based on user location
 23. ✅ Scrap Market Rates - New menu item showing NSW scrap metal prices (8 materials)
 24. ✅ Toast Notifications - Moved to center-middle screen, 1.2 second duration
+25. ✅ Filter UI Redesign - White background card, collapsible "Filter" button for categories
+26. ✅ Partner Ad Improvements - Swipe/tap to dismiss, 5 second auto-timeout
+27. ✅ AI Processing Optimized - Shortened prompts for faster response times
 
 ## Partner System (Expandable)
 - **Norman's Scrap Metal** (Sydney Metro - 300km radius from Penrith)
