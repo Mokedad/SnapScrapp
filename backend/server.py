@@ -362,6 +362,25 @@ async def get_post(post_id: str):
     
     return PostResponse(**post)
 
+@api_router.get("/og/{post_id}")
+async def get_og_meta(post_id: str):
+    """Get Open Graph meta data for a post (for social media previews)"""
+    post = await db.posts.find_one({"id": post_id}, {"_id": 0})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    # Create data URL for image (first 500 chars for preview)
+    image_preview = f"data:image/jpeg;base64,{post.get('image_base64', '')[:500]}..."
+    
+    return {
+        "title": f"{post.get('title', 'Free Item')} - Free on Ucycle",
+        "description": f"Free pickup available! {post.get('description', 'Grab it before it is gone!')}",
+        "image": post.get("image_base64", ""),
+        "category": post.get("category", "general"),
+        "status": post.get("status", "active"),
+        "url": f"/post/{post_id}"
+    }
+
 @api_router.patch("/posts/{post_id}/collected")
 async def mark_collected(post_id: str):
     """Mark a post as collected"""
