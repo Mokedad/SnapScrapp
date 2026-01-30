@@ -1304,10 +1304,12 @@ function AppContent() {
         img.includes(',') ? img.split(',')[1] : img
       );
       
+      // Post with minimal data (description is optional now)
       const response = await axios.post(`${API}/posts`, {
         ...newPost,
         image_base64: base64Data,
-        images: additionalImages.length > 0 ? additionalImages : null
+        images: additionalImages.length > 0 ? additionalImages : null,
+        description: newPost.description || ""  // Can be empty, will be filled in background
       });
       
       // Track user's own post ID for "You helped a mate!" notification
@@ -1316,9 +1318,19 @@ function AppContent() {
         const updatedMyPosts = [...myPostIds, newPostId];
         setMyPostIds(updatedMyPosts);
         localStorage.setItem('ucycle_my_posts', JSON.stringify(updatedMyPosts));
+        
+        // BACKGROUND: Trigger description generation (The Marathon)
+        // This runs silently - no need to wait for it
+        axios.post(`${API}/posts/${newPostId}/generate-description`)
+          .then(() => {
+            console.log("Background description generated for post:", newPostId);
+            // Refresh posts to show the new description
+            setTimeout(() => fetchPosts(), 2000);  // Small delay to let DB update
+          })
+          .catch(err => console.log("Background description error:", err));
       }
       
-      toast.success("Item posted successfully!");
+      toast.success("Item posted! 🎉");
       setShowPostDrawer(false);
       setNewPost({
         image_base64: "",
@@ -1328,7 +1340,8 @@ function AppContent() {
         expiry_hours: 48,
         latitude: null,
         longitude: null,
-        images: []
+        images: [],
+        address: ""
       });
       fetchPosts();
     } catch (error) {
