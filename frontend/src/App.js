@@ -2653,7 +2653,7 @@ function AppContent() {
 
       {/* Welcome Popup - First Visit */}
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
-        <DialogContent className="max-w-sm text-center">
+        <DialogContent className="max-w-sm text-center rounded-3xl" style={{ backgroundColor: '#ffffff' }}>
           <div className="pt-4">
             <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-600 to-lime-500 rounded-3xl flex items-center justify-center mb-4">
               <RefreshCw className="w-10 h-10 text-white" />
