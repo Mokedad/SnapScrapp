@@ -209,25 +209,27 @@ Examine the image with extreme attention to detail. Identify EXACTLY what the it
 
 ## TITLE GENERATION RULES (CRITICAL - READ CAREFULLY)
 
-### WHAT MAKES A GOOD TITLE:
-- Include the PRIMARY MATERIAL (wood, metal, plastic, fabric, leather, glass, ceramic)
-- Include the DOMINANT COLOR if distinctive
-- Include BRAND NAME if visible (Samsung, IKEA, Sony, Fisher-Price, etc.)
-- Include SIZE descriptors when relevant (large, compact, queen-size, etc.)
-- Include CONDITION indicators if obvious (vintage, rusty, weathered, etc.)
-- Include the SPECIFIC TYPE of item (not just "furniture" but "dining chair", "bookshelf", "coffee table")
+### TITLE LENGTH: 3-6 WORDS MAXIMUM
+Keep titles SHORT and PUNCHY. Users need to see action buttons on mobile screens.
 
-### EXCELLENT TITLE EXAMPLES:
-- "Purple U-Shaped Travel Neck Pillow" (NOT "Pillow" or "Item")
-- "Rusty Corrugated Metal Garden Shed" (NOT "Shed" or "Structure")
-- "White Samsung Front-Load Washing Machine" (NOT "Appliance")
-- "Solid Oak Queen Bed Frame with Headboard" (NOT "Bed" or "Furniture")
-- "Vintage Brown Leather Recliner Armchair" (NOT "Chair")
-- "Stack of Flattened Cardboard Moving Boxes" (NOT "Cardboard")
-- "Kids Pink Barbie Dream House Playset" (NOT "Toy")
-- "Tarnished Copper Pipes and Fittings Bundle" (NOT "Scrap Metal")
-- "Black Sony Bravia 42-inch Flat Screen TV" (NOT "Electronics")
-- "Worn Grey Fabric 3-Seater Couch" (NOT "Sofa" or "Furniture")
+### WHAT MAKES A GOOD TITLE:
+- MAXIMUM 6 WORDS - no exceptions!
+- Include PRIMARY identifying feature (color, material, brand OR type - not all)
+- Be specific but concise
+
+### EXCELLENT TITLE EXAMPLES (3-6 words):
+- "Purple Travel Neck Pillow"
+- "Rusty Metal Garden Shed"
+- "White Samsung Washing Machine"
+- "Oak Queen Bed Frame"
+- "Brown Leather Recliner"
+- "Flattened Cardboard Boxes"
+- "Pink Barbie Dream House"
+- "Copper Pipes Bundle"
+- "Sony 42-inch TV"
+- "Grey Fabric 3-Seater Couch"
+- "Curbside Electronics Pile"
+- "Mixed Household Rubbish"
 
 ### ABSOLUTELY FORBIDDEN TITLE WORDS (NEVER USE THESE):
 - "Item" or "Free Item"
@@ -236,8 +238,6 @@ Examine the image with extreme attention to detail. Identify EXACTLY what the it
 - "Thing"
 - "Unknown"
 - "Miscellaneous"
-- "Various"
-- "Assorted"
 - Just the category name alone (e.g., just "Furniture" or "Electronics")
 
 ## DESCRIPTION GENERATION RULES
