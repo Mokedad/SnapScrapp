@@ -168,6 +168,14 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
    - Clear "AI Analyzing" and "Identifying your item..." text
    - Gradient overlay for better visibility
 3. ✅ **Location Button Zoom** - Now zooms to level 18 (~1km radius view)
+4. ✅ **2-SPEED WORKFLOW (Fast Post Flow)** - Camera to Post in ~5 seconds
+   - **Instant GPS Stamp**: Fetches high-accuracy GPS immediately when photo taken
+   - **Reverse Geocoding**: Converts coordinates to human-readable address (e.g., "12 High St, St Marys")
+   - **Auto-fill Location**: Address field auto-populated, editable if GPS is off
+   - **Fast Title (The Sprinter)**: New `/api/analyze-image-fast` endpoint returns 2-4 word title in ~3-5 seconds
+   - **Background Description (The Marathon)**: `/api/posts/{id}/generate-description` runs AFTER post is created
+   - **Instant Posting**: User can post as soon as title is ready - no waiting for description
+   - GPS + AI Title run in PARALLEL for maximum speed
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
