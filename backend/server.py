@@ -171,9 +171,10 @@ Respond ONLY with JSON:
 @api_router.post("/analyze-image", response_model=AIAnalysisResponse)
 async def analyze_image(request: AIAnalysisRequest):
     """
-    FULL HIGH-INTELLIGENCE VISION PROTOCOL
-    - Maximum quality, NO speed optimizations
-    - STRICT prohibition on generic titles
+    FACTORY RESET: HIGH-QUALITY VISION ANALYSIS
+    - Prioritizes ACCURACY and SPECIFICITY over speed
+    - Uses powerful prompting for detailed, intelligent responses
+    - STRICTLY FORBIDS generic titles
     """
     import json
     import re
@@ -183,8 +184,8 @@ async def analyze_image(request: AIAnalysisRequest):
         safety_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"safety-{generate_id()}",
-            system_message="You are a content safety moderator."
-        ).with_model("gemini", "gemini-2.0-flash")
+            system_message="You are a content safety moderator for a community giveaway app."
+        ).with_model("gemini", "gemini-2.5-flash")
         
         safety_message = UserMessage(
             text="Does this image contain nudity, sexual content, drugs, weapons, violence, gore, hate symbols, or illegal activity? Reply ONLY 'SAFE' or 'UNSAFE'.",
@@ -197,133 +198,202 @@ async def analyze_image(request: AIAnalysisRequest):
         if "UNSAFE" in safety_text.upper():
             raise HTTPException(status_code=400, detail="Post rejected due to inappropriate content.")
         
-        # Step 2: HIGH-INTELLIGENCE Image Analysis
+        # Step 2: HIGH-QUALITY Image Analysis with detailed expert prompt
         analysis_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You are an expert item identifier for a free stuff giveaway app.
+            system_message="""You are a world-class item identification expert working for a curbside free stuff giveaway app called Ucycle. Your job is to analyze photos of items people are giving away and provide HIGHLY SPECIFIC, ACCURATE identification.
 
-YOUR MISSION: Identify items with EXTREME SPECIFICITY.
+## YOUR PRIMARY MISSION
+Examine the image with extreme attention to detail. Identify EXACTLY what the item is - not a vague category, but the SPECIFIC item with distinguishing characteristics.
 
-TITLE RULES (CRITICAL):
-- Look for: Brand names, materials, colors, shapes, sizes
-- Be SPECIFIC: "Samsung 60L Fridge" NOT "Appliance"
-- Be SPECIFIC: "Rusty Metal Garden Shed" NOT "Shed"
-- Be SPECIFIC: "Pile of Copper Pipes" NOT "Scrap Metal"
-- Be SPECIFIC: "Timber Bed Frame" NOT "Furniture"
-- Be SPECIFIC: "Purple U-Shaped Neck Pillow" NOT "Pillow"
+## TITLE GENERATION RULES (CRITICAL - READ CAREFULLY)
 
-FORBIDDEN TITLE WORDS (NEVER USE):
-- "Item" / "Free Item"
-- "Object"
+### WHAT MAKES A GOOD TITLE:
+- Include the PRIMARY MATERIAL (wood, metal, plastic, fabric, leather, glass, ceramic)
+- Include the DOMINANT COLOR if distinctive
+- Include BRAND NAME if visible (Samsung, IKEA, Sony, Fisher-Price, etc.)
+- Include SIZE descriptors when relevant (large, compact, queen-size, etc.)
+- Include CONDITION indicators if obvious (vintage, rusty, weathered, etc.)
+- Include the SPECIFIC TYPE of item (not just "furniture" but "dining chair", "bookshelf", "coffee table")
+
+### EXCELLENT TITLE EXAMPLES:
+- "Purple U-Shaped Travel Neck Pillow" (NOT "Pillow" or "Item")
+- "Rusty Corrugated Metal Garden Shed" (NOT "Shed" or "Structure")
+- "White Samsung Front-Load Washing Machine" (NOT "Appliance")
+- "Solid Oak Queen Bed Frame with Headboard" (NOT "Bed" or "Furniture")
+- "Vintage Brown Leather Recliner Armchair" (NOT "Chair")
+- "Stack of Flattened Cardboard Moving Boxes" (NOT "Cardboard")
+- "Kids Pink Barbie Dream House Playset" (NOT "Toy")
+- "Tarnished Copper Pipes and Fittings Bundle" (NOT "Scrap Metal")
+- "Black Sony Bravia 42-inch Flat Screen TV" (NOT "Electronics")
+- "Worn Grey Fabric 3-Seater Couch" (NOT "Sofa" or "Furniture")
+
+### ABSOLUTELY FORBIDDEN TITLE WORDS (NEVER USE THESE):
+- "Item" or "Free Item"
+- "Object" 
 - "Stuff"
 - "Thing"
 - "Unknown"
 - "Miscellaneous"
+- "Various"
+- "Assorted"
+- Just the category name alone (e.g., just "Furniture" or "Electronics")
 
-DESCRIPTION RULES:
-- Write natural, human-like sentences
-- Include: Condition (new/used/rusty/worn), Context (curbside/indoor/outdoor), distinct features
-- Example: "A vintage leather armchair. Leather is worn on the seat but structure looks solid. Sitting on the grass."
+## DESCRIPTION GENERATION RULES
 
-CATEGORY: Choose ONE from:
+Write a NATURAL, CONVERSATIONAL description as if you're a helpful neighbor describing what you see. Include:
+
+1. WHAT IT IS: Confirm the item identity in natural language
+2. CONDITION: Describe the visible condition honestly (new, used, worn, rusty, dusty, damaged, working, etc.)
+3. CONTEXT: Mention where it appears to be (curbside, on lawn, in garage, by fence, etc.)
+4. NOTABLE FEATURES: Any interesting details, defects, or selling points
+5. USEFULNESS: A brief note on who might want this or what it could be used for
+
+### EXCELLENT DESCRIPTION EXAMPLES:
+- "A purple memory foam neck pillow, the U-shaped kind perfect for travel. Looks barely used with no visible stains. Sitting on what appears to be a concrete driveway. Great for long flights or road trips."
+- "Rusty old garden shed made of corrugated metal panels. Definitely seen better days - lots of rust and a few dents. Door seems intact though. Could work as storage with some TLC or good for scrap metal recycling."
+- "Vintage leather armchair with that classic recliner mechanism. The brown leather is cracked and worn on the armrests but the structure looks solid. Sitting on the grass near the curb. Would be perfect for someone who does furniture restoration."
+
+## CATEGORY SELECTION
+Choose the SINGLE most appropriate category:
 furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
 
-RESPOND IN JSON ONLY:
-{"title": "SPECIFIC TITLE HERE", "category": "...", "description": "Natural description here..."}"""
-        ).with_model("gemini", "gemini-2.0-flash")
+## OUTPUT FORMAT
+You MUST respond with ONLY valid JSON in this exact format:
+{"title": "Your Specific Detailed Title Here", "category": "category-name", "description": "Your natural, detailed description here..."}
+
+Remember: QUALITY and SPECIFICITY are paramount. Take your time to identify the item correctly. A user who sees "Purple U-Shaped Travel Neck Pillow" will find the item. A user who sees "Item" will not."""
+        ).with_model("gemini", "gemini-2.5-flash")
         
         analysis_message = UserMessage(
-            text="Identify this item with EXTREME SPECIFICITY. What exactly is it? Look for brand, material, color, shape. Describe its condition naturally.",
+            text="""Analyze this image carefully and identify the item(s) with MAXIMUM SPECIFICITY.
+
+Look closely for:
+- What EXACTLY is this item? (Be specific - not just "chair" but "wooden dining chair" or "leather office chair")
+- What MATERIAL is it made of? (wood, metal, plastic, fabric, leather, etc.)
+- What COLOR is it? (if distinctive)
+- Any BRAND names visible?
+- What CONDITION is it in? (new, used, rusty, broken, etc.)
+- Where is it located? (curbside, lawn, garage, etc.)
+
+Provide your response as JSON with a HIGHLY SPECIFIC title, appropriate category, and detailed natural description.""",
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
         response = analysis_chat.send_message(analysis_message)
         response_text = response.content.strip() if hasattr(response, 'content') else str(response).strip()
-        logger.info(f"AI Analysis: {response_text}")
+        logger.info(f"AI Raw Response: {response_text[:500]}")
         
-        # Parse JSON
+        # Parse JSON from response
         if "```" in response_text:
             match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', response_text)
             if match:
                 response_text = match.group(1).strip()
         
-        json_match = re.search(r'\{[^{}]*\}', response_text)
+        # Find JSON object in response
+        json_match = re.search(r'\{[^{}]*"title"[^{}]*\}', response_text, re.DOTALL)
         if json_match:
             response_text = json_match.group(0)
         
         data = json.loads(response_text)
         
+        # Extract and validate fields
+        title = data.get("title", "").strip()
+        category = data.get("category", "general").lower().strip()
+        description = data.get("description", "").strip()
+        
         # Validate category
         valid_categories = ["furniture", "electronics", "appliances", "sports", "toys", "books", 
                           "clothing", "garden", "kitchen", "tools", "e-waste", "scrap-metal", "cardboard", "general"]
-        category = data.get("category", "general").lower()
         if category not in valid_categories:
             category = "general"
         
-        # STRICT TITLE VALIDATION - Reject generic titles
-        title = data.get("title", "")
-        forbidden_words = ["item", "object", "stuff", "thing", "unknown", "miscellaneous", "free item"]
-        title_lower = title.lower().strip()
+        # STRICT TITLE VALIDATION
+        forbidden_patterns = [
+            "item", "object", "stuff", "thing", "unknown", "miscellaneous", 
+            "various", "assorted", "free item", "free stuff"
+        ]
+        title_lower = title.lower()
         
-        # Check if title is generic/forbidden
-        is_generic = (
+        title_is_bad = (
             not title or 
-            len(title) < 3 or
-            title_lower in forbidden_words or
-            any(title_lower == fw for fw in forbidden_words) or
-            title_lower.startswith("free ") or
-            title_lower == "free"
+            len(title) < 5 or
+            any(bad == title_lower for bad in forbidden_patterns) or
+            any(bad == title_lower.replace("free ", "") for bad in forbidden_patterns) or
+            title_lower in valid_categories  # Just a bare category name
         )
         
-        if is_generic:
-            # Force a retry with stricter prompt
+        # If title is bad, do a focused retry
+        if title_is_bad:
+            logger.warning(f"Bad title detected: '{title}' - retrying with focused prompt")
+            
             retry_chat = LlmChat(
                 api_key=EMERGENT_LLM_KEY,
                 session_id=f"retry-{generate_id()}",
-                system_message="You MUST identify items specifically. NEVER say 'Item' or 'Free Item'."
-            ).with_model("gemini", "gemini-2.0-flash")
+                system_message="You are an expert at identifying objects. You must give SPECIFIC names, never generic words like 'item' or 'object'."
+            ).with_model("gemini", "gemini-2.5-flash")
             
             retry_message = UserMessage(
-                text="What SPECIFIC object is in this image? Give me a detailed name like 'White Bosch Washing Machine' or 'Wooden Dining Table'. DO NOT say 'Item' or 'Free Item'. JSON: {\"title\": \"...\"}",
+                text="""I need you to identify this item with a SPECIFIC name.
+
+RULES:
+- Include the material (wood, metal, plastic, fabric)
+- Include the color if visible
+- Include what type of item it is specifically
+- NEVER say "Item", "Object", "Thing", or "Stuff"
+
+Examples of GOOD names:
+- "Purple Travel Neck Pillow"
+- "Rusty Metal Garden Shed"
+- "Wooden Dining Table"
+- "Blue Fabric Office Chair"
+- "Stack of Cardboard Boxes"
+
+Reply with ONLY a JSON object: {"title": "Your Specific Name Here"}""",
                 file_contents=[ImageContent(image_base64=request.image_base64)]
             )
             
             retry_response = retry_chat.send_message(retry_message)
             retry_text = retry_response.content.strip() if hasattr(retry_response, 'content') else str(retry_response).strip()
+            logger.info(f"Retry response: {retry_text[:200]}")
             
             try:
-                if "{" in retry_text:
-                    retry_match = re.search(r'\{[^{}]*\}', retry_text)
-                    if retry_match:
-                        retry_data = json.loads(retry_match.group(0))
-                        title = retry_data.get("title", title)
-            except:
-                pass
+                retry_match = re.search(r'\{[^{}]*"title"[^{}]*\}', retry_text)
+                if retry_match:
+                    retry_data = json.loads(retry_match.group(0))
+                    new_title = retry_data.get("title", "").strip()
+                    if new_title and len(new_title) >= 5 and new_title.lower() not in forbidden_patterns:
+                        title = new_title
+            except Exception as retry_err:
+                logger.warning(f"Retry parsing failed: {retry_err}")
         
-        # Final fallback - use category-based descriptive title (NOT "Item")
-        if not title or title.lower() in forbidden_words or "item" in title.lower():
-            category_titles = {
-                "furniture": "Used Furniture Piece",
-                "electronics": "Electronic Device",
-                "appliances": "Home Appliance",
-                "sports": "Sports Equipment",
-                "toys": "Children's Toy",
-                "books": "Books Collection",
+        # Final fallback - create a descriptive title based on category (but NEVER "Item")
+        if not title or len(title) < 5 or title.lower() in forbidden_patterns or "item" in title.lower():
+            category_descriptive_fallbacks = {
+                "furniture": "Household Furniture Piece",
+                "electronics": "Electronic Device for Pickup",
+                "appliances": "Home Appliance Available",
+                "sports": "Sports Equipment Bundle",
+                "toys": "Kids Toy Collection",
+                "books": "Books Available for Pickup",
                 "clothing": "Clothing Bundle",
                 "garden": "Garden Equipment",
-                "kitchen": "Kitchen Items",
-                "tools": "Hand Tools",
-                "e-waste": "Electronic Waste",
-                "scrap-metal": "Scrap Metal Materials",
-                "cardboard": "Cardboard Boxes",
-                "general": "Household Goods"
+                "kitchen": "Kitchen Supplies",
+                "tools": "Tool Set Available",
+                "e-waste": "Electronic Waste for Recycling",
+                "scrap-metal": "Scrap Metal for Collection",
+                "cardboard": "Cardboard Boxes Bundle",
+                "general": "Curbside Pickup Available"
             }
-            title = category_titles.get(category, "Household Goods")
+            title = category_descriptive_fallbacks.get(category, "Curbside Pickup Available")
+            logger.warning(f"Using fallback title: {title}")
         
-        description = data.get("description", "")
-        if not description or len(description) < 10:
-            description = "Available for free pickup. Check the photo for condition details."
+        # Validate and enhance description
+        if not description or len(description) < 20:
+            description = f"Available for free pickup. Please check the photo carefully for condition and details. Located at the marked position on the map."
+        
+        logger.info(f"Final AI Analysis - Title: '{title}', Category: '{category}', Desc length: {len(description)}")
         
         return AIAnalysisResponse(
             title=title,
@@ -333,13 +403,19 @@ RESPOND IN JSON ONLY:
         
     except HTTPException:
         raise
-    except Exception as e:
-        logger.error(f"AI analysis error: {e}")
-        # Even on error, don't return "Free Item"
+    except json.JSONDecodeError as je:
+        logger.error(f"JSON parsing error: {je}")
         return AIAnalysisResponse(
             title="Curbside Pickup Available",
             category="general",
-            description="Please check the photo and add your own description."
+            description="Item available for free pickup. Please review the photo for details."
+        )
+    except Exception as e:
+        logger.error(f"AI analysis error: {e}")
+        return AIAnalysisResponse(
+            title="Curbside Pickup Available",
+            category="general",
+            description="Item available for free pickup. Please review the photo for details."
         )
 
 # ============ POSTS ============
