@@ -445,6 +445,159 @@ Reply with ONLY a JSON object: {"title": "Your Specific Name Here"}""",
             description="Item available for free pickup. Please review the photo for details."
         )
 
+# ============ FAST TITLE-ONLY ANALYSIS (The Sprinter) ============
+
+@api_router.post("/analyze-image-fast", response_model=FastTitleResponse)
+async def analyze_image_fast(request: FastTitleRequest):
+    """
+    FAST TITLE-ONLY ANALYSIS - The Sprinter
+    Returns title + category in under 1 second
+    Skips description for speed - that comes later in background
+    """
+    import json
+    import re
+    
+    try:
+        # Quick safety check
+        safety_chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"fast-safety-{generate_id()}",
+            system_message="Content safety check. Reply SAFE or UNSAFE only."
+        ).with_model("gemini", "gemini-2.5-flash")
+        
+        safety_response = await safety_chat.send_message(UserMessage(
+            text="Is this image appropriate? Reply SAFE or UNSAFE.",
+            file_contents=[ImageContent(image_base64=request.image_base64)]
+        ))
+        safety_text = safety_response.strip() if isinstance(safety_response, str) else str(safety_response).strip()
+        
+        if "UNSAFE" in safety_text.upper():
+            raise HTTPException(status_code=400, detail="Image rejected - inappropriate content.")
+        
+        # FAST title generation - minimal prompt for speed
+        fast_chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"fast-title-{generate_id()}",
+            system_message="""Identify items in 2-4 words. Be specific.
+Good: "Rusty Metal Shed", "White Washing Machine", "Cardboard Boxes"
+Bad: "Item", "Object", "Stuff", "Thing"
+Reply JSON: {"title": "2-4 words", "category": "furniture/electronics/appliances/sports/toys/books/clothing/garden/kitchen/tools/e-waste/scrap-metal/cardboard/general"}"""
+        ).with_model("gemini", "gemini-2.5-flash")
+        
+        response = await fast_chat.send_message(UserMessage(
+            text="What is this? 2-4 word title + category. JSON only.",
+            file_contents=[ImageContent(image_base64=request.image_base64)]
+        ))
+        response_text = response.strip() if isinstance(response, str) else str(response).strip()
+        logger.info(f"Fast AI Response: {response_text[:200]}")
+        
+        # Parse JSON
+        json_match = re.search(r'\{[^{}]*\}', response_text)
+        if json_match:
+            data = json.loads(json_match.group(0))
+            title = data.get("title", "").strip()
+            category = data.get("category", "general").lower().strip()
+            
+            # Validate
+            valid_categories = ["furniture", "electronics", "appliances", "sports", "toys", "books", 
+                              "clothing", "garden", "kitchen", "tools", "e-waste", "scrap-metal", "cardboard", "general"]
+            if category not in valid_categories:
+                category = "general"
+            
+            # Ensure title is not generic
+            forbidden = ["item", "object", "stuff", "thing", "unknown"]
+            if not title or title.lower() in forbidden or len(title) < 3:
+                title = "Curbside Pickup"
+            
+            # Enforce 4 word limit
+            words = title.split()
+            if len(words) > 4:
+                title = " ".join(words[:4])
+            
+            return FastTitleResponse(title=title, category=category)
+        
+        return FastTitleResponse(title="Curbside Pickup", category="general")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Fast analysis error: {e}")
+        return FastTitleResponse(title="Curbside Pickup", category="general")
+
+# ============ BACKGROUND DESCRIPTION GENERATION (The Marathon) ============
+
+@api_router.post("/posts/{post_id}/generate-description")
+async def generate_description_background(post_id: str):
+    """
+    BACKGROUND DESCRIPTION - The Marathon
+    Called after post is created to add detailed description
+    Updates the post silently in the database
+    """
+    import json
+    import re
+    from fastapi import BackgroundTasks
+    
+    # Get the post
+    post = await db.posts.find_one({"id": post_id}, {"_id": 0})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    # If description already exists and is good, skip
+    existing_desc = post.get("description", "")
+    if existing_desc and len(existing_desc) > 50:
+        return {"status": "already_has_description", "description": existing_desc}
+    
+    try:
+        # Generate detailed description
+        desc_chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"desc-{generate_id()}",
+            system_message="""Write a brief 2-3 sentence description for a curbside giveaway item.
+Include: what it is, condition, and who might want it.
+Keep it under 300 characters. Be natural and helpful."""
+        ).with_model("gemini", "gemini-2.5-flash")
+        
+        image_base64 = post.get("image_base64", "")
+        title = post.get("title", "Item")
+        
+        response = await desc_chat.send_message(UserMessage(
+            text=f"This is a '{title}'. Write a brief 2-3 sentence description. Include condition and who might want it.",
+            file_contents=[ImageContent(image_base64=image_base64)] if image_base64 else []
+        ))
+        description = response.strip() if isinstance(response, str) else str(response).strip()
+        
+        # Clean up - remove any JSON formatting if present
+        if description.startswith('{') or description.startswith('```'):
+            try:
+                json_match = re.search(r'"description"\s*:\s*"([^"]+)"', description)
+                if json_match:
+                    description = json_match.group(1)
+            except:
+                pass
+        
+        # Limit length
+        if len(description) > 350:
+            description = description[:350].rsplit('.', 1)[0] + '.'
+        
+        # Update the post
+        await db.posts.update_one(
+            {"id": post_id},
+            {"$set": {"description": description}}
+        )
+        
+        logger.info(f"Background description added for post {post_id}: {description[:100]}...")
+        return {"status": "success", "description": description}
+        
+    except Exception as e:
+        logger.error(f"Background description error for {post_id}: {e}")
+        # Set a default description on error
+        default_desc = "Available for free pickup. Check the photo for condition details."
+        await db.posts.update_one(
+            {"id": post_id},
+            {"$set": {"description": default_desc}}
+        )
+        return {"status": "fallback", "description": default_desc}
+
 # ============ POSTS ============
 
 @api_router.post("/posts", response_model=PostResponse)
