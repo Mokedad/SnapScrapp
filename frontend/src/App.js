@@ -1017,93 +1017,141 @@ function AppContent() {
     await processImage(base64);
   };
 
+  // Reverse geocode coordinates to human-readable address
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const addr = response.data?.address;
+      if (addr) {
+        // Build a short, readable address like "12 High St, St Marys"
+        const parts = [];
+        if (addr.house_number) parts.push(addr.house_number);
+        if (addr.road) parts.push(addr.road);
+        const suburb = addr.suburb || addr.town || addr.city || addr.village || '';
+        if (suburb) parts.push(suburb);
+        return parts.length > 0 ? parts.join(', ') : response.data.display_name?.split(',').slice(0, 2).join(',');
+      }
+      return null;
+    } catch (e) {
+      console.log("Reverse geocode failed:", e);
+      return null;
+    }
+  };
+
   // Process image (shared between camera capture and file upload)
+  // NEW: 2-SPEED WORKFLOW - Instant GPS + Fast Title
   const processImage = async (base64) => {
+    // Immediately show the post drawer with image
     setNewPost(prev => ({ 
       ...prev, 
       image_base64: base64,
-      latitude: null,  // Clear old location
-      longitude: null
+      latitude: null,
+      longitude: null,
+      address: "",
+      title: "",
+      description: ""  // Description will be generated in background after post
     }));
     setShowPostDrawer(true);
     
-    // Get fresh GPS location for the post (check permission first)
-    if (navigator.geolocation) {
-      const permissionStatus = await checkLocationPermission();
+    // ========== PARALLEL: GPS + Fast AI Title ==========
+    // Start both tasks simultaneously for maximum speed
+    
+    // TASK 1: Instant GPS Stamp with Address
+    const gpsPromise = new Promise(async (resolve) => {
+      if (!navigator.geolocation) {
+        if (userLocation) {
+          resolve({ lat: userLocation[0], lng: userLocation[1] });
+        } else {
+          resolve(null);
+        }
+        return;
+      }
       
-      // Only request location if not denied
-      if (permissionStatus !== 'denied') {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const freshLat = position.coords.latitude;
-            const freshLng = position.coords.longitude;
-            
-            // Update both the post form and the global user location
+      const permissionStatus = await checkLocationPermission();
+      if (permissionStatus === 'denied') {
+        if (userLocation) {
+          resolve({ lat: userLocation[0], lng: userLocation[1] });
+        } else {
+          resolve(null);
+        }
+        return;
+      }
+      
+      setIsGettingAddress(true);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const freshLat = position.coords.latitude;
+          const freshLng = position.coords.longitude;
+          
+          // Immediately set coordinates
+          setNewPost(prev => ({
+            ...prev,
+            latitude: freshLat,
+            longitude: freshLng
+          }));
+          setUserLocation([freshLat, freshLng]);
+          
+          // Reverse geocode to get address
+          const address = await reverseGeocode(freshLat, freshLng);
+          if (address) {
+            setNewPost(prev => ({ ...prev, address: address }));
+          }
+          setIsGettingAddress(false);
+          resolve({ lat: freshLat, lng: freshLng, address });
+        },
+        (error) => {
+          console.log("GPS failed:", error);
+          setIsGettingAddress(false);
+          // Fallback to cached
+          if (userLocation) {
             setNewPost(prev => ({
               ...prev,
-              latitude: freshLat,
-              longitude: freshLng
+              latitude: userLocation[0],
+              longitude: userLocation[1]
             }));
-            setUserLocation([freshLat, freshLng]);
-            // Only show toast if this was first time granting permission
-            if (permissionStatus === 'prompt') {
-              toast.success("Location updated!");
-            }
-          },
-          (error) => {
-            console.log("Fresh location failed, using cached:", error);
-            // Fallback to cached location if fresh location fails
-            if (userLocation) {
-              setNewPost(prev => ({
-                ...prev,
-                latitude: userLocation[0],
-                longitude: userLocation[1]
-              }));
-            }
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0  // Force fresh location, don't use cache
+            // Try to get address for cached location too
+            reverseGeocode(userLocation[0], userLocation[1]).then(addr => {
+              if (addr) setNewPost(prev => ({ ...prev, address: addr }));
+            });
+            resolve({ lat: userLocation[0], lng: userLocation[1] });
+          } else {
+            resolve(null);
           }
-        );
-      } else if (userLocation) {
-        // Permission denied, use cached location silently
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    });
+    
+    // TASK 2: Fast AI Title (The Sprinter - < 1 second)
+    const aiPromise = (async () => {
+      setIsAnalyzing(true);
+      try {
+        const base64Data = base64.split(',')[1] || base64;
+        const response = await axios.post(`${API}/analyze-image-fast`, {
+          image_base64: base64Data
+        }, { timeout: 10000 });  // 10s timeout for fast endpoint
+        
         setNewPost(prev => ({
           ...prev,
-          latitude: userLocation[0],
-          longitude: userLocation[1]
+          title: response.data.title,
+          category: response.data.category
+          // NO description - that comes in background after post
         }));
+        return response.data;
+      } catch (error) {
+        console.error("Fast AI failed:", error);
+        // Don't show error toast - user can still fill manually
+        return null;
+      } finally {
+        setIsAnalyzing(false);
       }
-    } else if (userLocation) {
-      // Fallback if geolocation not supported
-      setNewPost(prev => ({
-        ...prev,
-        latitude: userLocation[0],
-        longitude: userLocation[1]
-      }));
-    }
+    })();
     
-    // Analyze with AI
-    setIsAnalyzing(true);
-    try {
-      const base64Data = base64.split(',')[1] || base64;
-      const response = await axios.post(`${API}/analyze-image`, {
-        image_base64: base64Data
-      });
-      setNewPost(prev => ({
-        ...prev,
-        title: response.data.title,
-        category: response.data.category,
-        description: response.data.description
-      }));
-      toast.success("AI analysis complete!");
-    } catch (error) {
-      console.error("AI analysis failed:", error);
-      toast.error("Could not analyze image. Please fill in details manually.");
-    } finally {
-      setIsAnalyzing(false);
-    }
+    // Wait for both to complete (they run in parallel)
+    await Promise.all([gpsPromise, aiPromise]);
   };
 
   // Handle album/gallery selection
