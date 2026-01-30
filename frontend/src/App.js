@@ -291,11 +291,13 @@ function AppContent() {
     expiry_hours: 48,
     latitude: null,
     longitude: null,
-    images: []  // Additional images beyond the primary one
+    images: [],  // Additional images beyond the primary one
+    address: ""  // Human-readable address from reverse geocoding
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [pickingLocation, setPickingLocation] = useState(false);
+  const [isGettingAddress, setIsGettingAddress] = useState(false);  // For address lookup loading
   
   // Report state
   const [reportReason, setReportReason] = useState("");
