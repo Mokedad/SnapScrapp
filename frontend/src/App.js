@@ -1313,9 +1313,36 @@ function AppContent() {
     }
   };
 
-  // Share post - show share dialog
+  // Share post - native share API
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [sharePost, setSharePost] = useState(null);
+  
+  const handleNativeShare = async (post) => {
+    const shareUrl = `${window.location.origin}/post/${post.id}`;
+    const shareTitle = `Check out this ${post.title} on Ucycle`;
+    const shareText = `Free pickup available! Grab it before it's gone!`;
+    
+    // Try native share first
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl
+        });
+        toast.success("Shared!");
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.log("Native share failed, showing dialog");
+        }
+      }
+    }
+    
+    // Fallback to share dialog
+    setSharePost(post);
+    setShowShareDialog(true);
+  };
 
   // ============ FULLSCREEN IMAGE VIEWER ============
   
