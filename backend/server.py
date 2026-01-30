@@ -261,23 +261,20 @@ furniture, electronics, appliances, sports, toys, books, clothing, garden, kitch
 
 ## OUTPUT FORMAT
 You MUST respond with ONLY valid JSON in this exact format:
-{"title": "Your Specific Detailed Title Here", "category": "category-name", "description": "Your natural, detailed description here..."}
+{"title": "Short 3-6 Word Title", "category": "category-name", "description": "Your natural, detailed description here..."}
 
-Remember: QUALITY and SPECIFICITY are paramount. Take your time to identify the item correctly. A user who sees "Purple U-Shaped Travel Neck Pillow" will find the item. A user who sees "Item" will not."""
+CRITICAL: Title must be 3-6 words MAXIMUM. Put extra details in description, not title."""
         ).with_model("gemini", "gemini-2.5-flash")
         
         analysis_message = UserMessage(
-            text="""Analyze this image carefully and identify the item(s) with MAXIMUM SPECIFICITY.
+            text="""Analyze this image and identify the item(s).
 
-Look closely for:
-- What EXACTLY is this item? (Be specific - not just "chair" but "wooden dining chair" or "leather office chair")
-- What MATERIAL is it made of? (wood, metal, plastic, fabric, leather, etc.)
-- What COLOR is it? (if distinctive)
-- Any BRAND names visible?
-- What CONDITION is it in? (new, used, rusty, broken, etc.)
-- Where is it located? (curbside, lawn, garage, etc.)
+IMPORTANT: Title must be SHORT (3-6 words max). Put details in description.
 
-Provide your response as JSON with a HIGHLY SPECIFIC title, appropriate category, and detailed natural description.""",
+Good titles: "Rusty Metal Shed", "White Washing Machine", "Cardboard Box Pile"
+Bad titles: "Large Used Metal and Glass Double-Door Commercial Display Refrigerator" (too long!)
+
+Provide JSON with: short title (3-6 words), category, and detailed description.""",
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
