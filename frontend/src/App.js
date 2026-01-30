@@ -781,6 +781,16 @@ function AppContent() {
     setShowWelcome(false);
   };
 
+  // Auto-dismiss welcome popup after 10 seconds
+  useEffect(() => {
+    if (showWelcome) {
+      const timer = setTimeout(() => {
+        dismissWelcome();
+      }, 10000); // 10 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [showWelcome]);
+
   // Check if user is in Sydney Metropolitan Region (~300km from Penrith/St Marys)
   // This is used to show/hide regional partners like Norman Scrap Yard
   const isInSydneyMetro = useCallback(() => {
