@@ -145,7 +145,8 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 24. ✅ Toast Notifications - Moved to center-middle screen, 1.2 second duration
 25. ✅ Filter UI Redesign - White background card, collapsible "Filter" button for categories
 26. ✅ Partner Ad Improvements - Swipe/tap to dismiss, 5 second auto-timeout
-27. ✅ AI Processing Optimized - Shortened prompts for faster response times
+27. ✅ AI Analysis Quality - Specific titles (1-5 words like "Blue IKEA Bookshelf"), detailed descriptions (4-15 words with condition info)
+28. ✅ Filter Box Visibility - Solid white background with border and shadow, higher z-index
 
 ## Partner System (Expandable)
 - **Norman's Scrap Metal** (Sydney Metro - 300km radius from Penrith)
