@@ -2112,7 +2112,7 @@ function AppContent() {
               <div className="flex-1">
                 <span className="font-medium text-slate-900">Nearby Notifications</span>
                 <p className="text-xs text-slate-500">
-                  {nearbyNotificationsEnabled ? '✓ Enabled (1km)' : 'Get alerts for nearby items'}
+                  {nearbyNotificationsEnabled ? '✓ Enabled (10km)' : 'Get alerts for nearby items'}
                 </p>
               </div>
               {/* Toggle switch */}
