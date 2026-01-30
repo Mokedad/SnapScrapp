@@ -170,7 +170,7 @@ Respond ONLY with JSON:
 
 @api_router.post("/analyze-image", response_model=AIAnalysisResponse)
 async def analyze_image(request: AIAnalysisRequest):
-    """Use Gemini to analyze an image and generate quality title, category, description"""
+    """Use Gemini to analyze an image and generate title, category, description"""
     import json
     import re
     
@@ -178,29 +178,20 @@ async def analyze_image(request: AIAnalysisRequest):
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You analyze photos of items being given away for free. Be specific and descriptive.
+            system_message="""You are an AI that analyzes images of items being given away for free.
+Your task is to identify the item and provide:
+1. A short, descriptive title (2-5 words) - Be specific! Include color, brand, or material when visible.
+2. A category from this list ONLY: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+3. A brief description (1-2 sentences) about the item's apparent condition and any notable features.
 
-TITLE RULES (1-5 words):
-- Be SPECIFIC: "Vintage Wooden Dining Chair" not "Chair" or "Item"
-- Include: color, material, brand, or style when visible
-- Examples: "Blue IKEA Bookshelf", "Kids Pink Bicycle", "Samsung 55inch TV", "Leather Office Chair"
-
-CATEGORY (pick one):
-furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
-
-DESCRIPTION RULES (4-15 words):
-- Mention visible condition: scratches, wear, working status
-- Include size/dimensions if apparent
-- Examples: "Good condition with minor scratches on legs, sturdy and functional"
-- Examples: "Working condition, remote included, small crack on corner of screen"
-
-Return ONLY JSON: {"title": "...", "category": "...", "description": "..."}"""
+IMPORTANT: Respond ONLY with valid JSON, no other text:
+{"title": "...", "category": "...", "description": "..."}"""
         ).with_model("gemini", "gemini-2.5-flash")
 
         image_content = ImageContent(image_base64=request.image_base64)
         
         user_message = UserMessage(
-            text="Identify this item specifically. What is it? What condition? JSON only.",
+            text="Analyze this item image. Return only JSON with title, category, and description.",
             file_contents=[image_content]
         )
         
