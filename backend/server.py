@@ -42,7 +42,7 @@ class PostCreate(BaseModel):
     images: Optional[List[str]] = None  # Additional images (optional)
     title: str
     category: str
-    description: str
+    description: Optional[str] = ""  # NOW OPTIONAL for fast posting
     expiry_hours: int = 48
     latitude: float
     longitude: float
