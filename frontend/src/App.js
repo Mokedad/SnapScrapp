@@ -242,7 +242,7 @@ function AppContent() {
   
   // Category filter state
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [radiusKm, setRadiusKm] = useState(10); // Default 10km radius
+  const [radiusKm, setRadiusKm] = useState(105); // Default 105km radius for geo-filtering
   const [showRadiusSlider, setShowRadiusSlider] = useState(false);
   
   // Camera state
@@ -254,6 +254,7 @@ function AppContent() {
   // Welcome & Scrap Yard state
   const [showWelcome, setShowWelcome] = useState(false);
   const [showScrapYardAd, setShowScrapYardAd] = useState(false);
+  const [showScrapPrices, setShowScrapPrices] = useState(false); // Scrap prices modal
   
   // Notification state
   const [notification, setNotification] = useState(null);
