@@ -157,16 +157,17 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
   - Future regions: Newcastle, Interstate partners, Return & Earn locations, Pallet recyclers
 
 ## Completed Tasks (Jan 30, 2026)
-1. ✅ **AI Factory Reset (P0 Critical Fix)** - Complete rewrite of AI image analysis with high-intelligence prompts
-   - Uses Gemini 2.5 Flash with detailed expert prompting
-   - **Title length limit enforced: 3-6 words maximum** for mobile UI fit
-   - Natural, conversational descriptions including condition, context, and usefulness
+1. ✅ **AI Factory Reset (P0 Critical Fix)** - Complete rewrite of AI image analysis
+   - **Title length limit: 3-6 words MAX** for mobile UI fit
+   - **Description length limit: ~350 chars MAX** (2-3 sentences, ~8 lines)
    - Strict prohibition on generic words ("Item", "Object", "Stuff", "Thing")
-   - Fallback retry mechanism for bad titles
-   - Example outputs verified:
-     - "Double Glass Door Refrigerator" (4 words)
-     - "Cream Tufted Accent Armchair" (4 words)
-2. ✅ **Location Button Zoom Enhancement** - My Location button now zooms to level 18 (~1km radius view) instead of 15
+   - Example outputs: "Double Glass Door Refrigerator" (4 words, 147 char desc)
+2. ✅ **AI Analyzing UI Enhancement** - Much larger, more visible processing indicator
+   - Expanded image area during analysis (h-40 → h-56)
+   - Large animated spinner with pulsing ring
+   - Clear "AI Analyzing" and "Identifying your item..." text
+   - Gradient overlay for better visibility
+3. ✅ **Location Button Zoom** - Now zooms to level 18 (~1km radius view)
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
