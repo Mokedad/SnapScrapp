@@ -648,9 +648,9 @@ function AppContent() {
         const response = await axios.get(`${API}/posts`);
         const currentPosts = response.data;
         
-        // Check for new nearby posts (within 1km)
+        // Check for new nearby posts (within 10km)
         if (userLocation) {
-          const nearbyRadius = 1; // 1km
+          const nearbyRadius = 10; // 10km
           currentPosts.forEach(post => {
             // Skip if we've already seen this post
             if (lastSeenPostIds.includes(post.id)) return;
