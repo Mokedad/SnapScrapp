@@ -170,35 +170,55 @@ Respond ONLY with JSON:
 
 @api_router.post("/analyze-image", response_model=AIAnalysisResponse)
 async def analyze_image(request: AIAnalysisRequest):
-    """Use Gemini to analyze an image and generate title, category, description"""
+    """High-quality AI image analysis - let the AI think naturally"""
     import json
     import re
     
     try:
+        # First, check for inappropriate content (Safety Guard)
+        safety_chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"safety-{generate_id()}",
+            system_message="You are a content safety checker. Analyze images for prohibited content."
+        ).with_model("gemini", "gemini-2.5-flash")
+        
+        safety_check = UserMessage(
+            text="Does this image contain any of the following: nudity, sexual content, weapons, drugs, violence, or illegal activity? Reply with ONLY 'SAFE' or 'UNSAFE'.",
+            file_contents=[ImageContent(image_base64=request.image_base64)]
+        )
+        
+        safety_response = safety_chat.send_message(safety_check)
+        safety_text = safety_response.content.strip() if hasattr(safety_response, 'content') else str(safety_response).strip()
+        
+        if "UNSAFE" in safety_text.upper():
+            raise HTTPException(status_code=400, detail="Upload rejected: Inappropriate content detected.")
+        
+        # Main analysis - natural, high-quality prompt
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You are an AI that analyzes images of items being given away for free.
-Your task is to identify the item and provide:
-1. A short, descriptive title (2-5 words)
-2. A category from this list ONLY: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
-3. A brief description (1-2 sentences) about the item's apparent condition
+            system_message="""You are a helpful assistant that identifies items in photos for a free stuff giveaway app.
 
-IMPORTANT: Respond ONLY with valid JSON, no other text:
+When you see an image, provide:
+1. A specific, descriptive Title for the item (be precise - what exactly is it?)
+2. A Category from: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+3. A helpful Description of the item's condition and any notable features
+
+Respond in JSON format:
 {"title": "...", "category": "...", "description": "..."}"""
         ).with_model("gemini", "gemini-2.5-flash")
 
         image_content = ImageContent(image_base64=request.image_base64)
         
         user_message = UserMessage(
-            text="Analyze this item image. Return only JSON with title, category, and description.",
+            text="Analyze this image. What item is this? Provide a natural Title and a helpful Description.",
             file_contents=[image_content]
         )
         
         response = chat.send_message(user_message)
         logger.info(f"AI Response: {response}")
         
-        # Parse JSON from response - handle various formats
+        # Parse JSON from response
         response_text = response.content.strip() if hasattr(response, 'content') else str(response).strip()
         
         # Remove markdown code blocks if present
@@ -222,17 +242,18 @@ IMPORTANT: Respond ONLY with valid JSON, no other text:
             category = "general"
         
         return AIAnalysisResponse(
-            title=data.get("title", "Unknown Item"),
+            title=data.get("title", "Free Item"),
             category=category,
-            description=data.get("description", "No description available")
+            description=data.get("description", "Available for pickup")
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"AI analysis error: {e}")
-        # Return defaults on error
         return AIAnalysisResponse(
-            title="Unknown Item",
+            title="Free Item",
             category="general",
-            description="Unable to analyze image automatically. Please add details manually."
+            description="Please add your own description"
         )
 
 # ============ POSTS ============
