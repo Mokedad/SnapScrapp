@@ -394,9 +394,18 @@ Reply with ONLY a JSON object: {"title": "Your Specific Name Here"}""",
             title = category_descriptive_fallbacks.get(category, "Curbside Pickup Available")
             logger.warning(f"Using fallback title: {title}")
         
-        # Validate and enhance description
+        # Validate and LIMIT description length (max ~350 chars for mobile display)
         if not description or len(description) < 20:
-            description = f"Available for free pickup. Please check the photo carefully for condition and details. Located at the marked position on the map."
+            description = "Available for free pickup. Check the photo for condition details."
+        elif len(description) > 350:
+            # Truncate at sentence boundary if possible
+            truncated = description[:350]
+            last_period = truncated.rfind('.')
+            if last_period > 200:
+                description = truncated[:last_period + 1]
+            else:
+                description = truncated.rsplit(' ', 1)[0] + '...'
+            logger.info(f"Description truncated to {len(description)} chars")
         
         logger.info(f"Final AI Analysis - Title: '{title}', Category: '{category}', Desc length: {len(description)}")
         
