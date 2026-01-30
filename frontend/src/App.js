@@ -1811,7 +1811,7 @@ function AppContent() {
                       }`}
                       data-testid="filter-favorites"
                     >
-                      <Heart className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-white' : ''}`} />
+                      <Heart className={`w-3 h-3 ${showFavoritesOnly ? 'fill-white' : ''}`} />
                       Saved ({favoritesCount})
                     </button>
                   )}
@@ -1827,7 +1827,7 @@ function AppContent() {
                           setShowFavoritesOnly(false);
                           setShowCategoryFilter(false);
                         }}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                        className={`px-2 py-1 rounded-full text-xs font-medium transition-all ${
                           selectedCategory === cat 
                             ? 'bg-green-600 text-white' 
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
