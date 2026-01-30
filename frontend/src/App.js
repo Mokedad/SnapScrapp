@@ -1742,15 +1742,15 @@ function AppContent() {
       {/* Radius & Category Filters - Floating Pill Bar */}
       {!showSearchBar && !pickingLocation && !showCameraView && (
         <div className="fixed top-[68px] left-1/2 -translate-x-1/2 z-20">
-          {/* Floating pill-shaped compact bar */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-full shadow-lg px-2 py-0.5 border border-slate-200 flex items-center gap-1" style={{ backgroundColor: 'rgba(255,255,255,0.95)' }}>
+          {/* Floating pill-shaped bar - slightly larger for easy tapping */}
+          <div className="bg-white rounded-full shadow-lg px-3 py-1.5 border border-slate-200 flex items-center gap-2" style={{ backgroundColor: '#ffffff' }}>
             {/* Radius button */}
             <button
               onClick={() => setShowRadiusSlider(!showRadiusSlider)}
-              className="flex items-center gap-1 px-2 py-0.5 bg-slate-100 rounded-full text-xs font-bold text-slate-800 hover:bg-slate-200 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full text-sm font-bold text-slate-800 hover:bg-slate-200 transition-colors"
               data-testid="radius-toggle"
             >
-              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <circle cx="12" cy="12" r="3" />
               </svg>
@@ -1760,22 +1760,22 @@ function AppContent() {
             {/* Filter button */}
             <button
               onClick={() => setShowCategoryFilter(!showCategoryFilter)}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                 selectedCategory || showFavoritesOnly
                   ? 'bg-green-600 text-white'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
               data-testid="category-filter-toggle"
             >
-              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" />
               </svg>
               {selectedCategory ? selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1) : showFavoritesOnly ? 'Saved' : 'Filter'}
             </button>
             
             {/* Nearby count */}
-            <span className="text-xs text-slate-500 px-1">
-              {postsInRadius.length}
+            <span className="text-sm font-medium text-slate-600 px-1">
+              {postsInRadius.length} nearby
             </span>
           </div>
           
