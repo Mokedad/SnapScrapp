@@ -256,20 +256,21 @@ furniture, electronics, appliances, sports, toys, books, clothing, garden, kitch
 
 ## OUTPUT FORMAT
 You MUST respond with ONLY valid JSON in this exact format:
-{"title": "Short 3-6 Word Title", "category": "category-name", "description": "Your natural, detailed description here..."}
+{"title": "Short 3-6 Word Title", "category": "category-name", "description": "Brief 2-3 sentence description"}
 
-CRITICAL: Title must be 3-6 words MAXIMUM. Put extra details in description, not title."""
+CRITICAL: 
+- Title: 3-6 words MAX
+- Description: 2-3 sentences MAX (under 350 characters)"""
         ).with_model("gemini", "gemini-2.5-flash")
         
         analysis_message = UserMessage(
             text="""Analyze this image and identify the item(s).
 
-IMPORTANT: Title must be SHORT (3-6 words max). Put details in description.
+RULES:
+- Title: 3-6 words MAX (e.g. "Rusty Metal Shed")
+- Description: 2-3 sentences MAX, brief and natural
 
-Good titles: "Rusty Metal Shed", "White Washing Machine", "Cardboard Box Pile"
-Bad titles: "Large Used Metal and Glass Double-Door Commercial Display Refrigerator" (too long!)
-
-Provide JSON with: short title (3-6 words), category, and detailed description.""",
+Provide JSON: {"title": "...", "category": "...", "description": "..."}""",
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
