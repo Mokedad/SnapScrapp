@@ -170,7 +170,7 @@ Respond ONLY with JSON:
 
 @api_router.post("/analyze-image", response_model=AIAnalysisResponse)
 async def analyze_image(request: AIAnalysisRequest):
-    """Use Gemini to analyze an image and generate title, category, description"""
+    """Use Gemini to analyze an image - QUALITY over SPEED. Never return 'Item'."""
     import json
     import re
     
@@ -178,28 +178,28 @@ async def analyze_image(request: AIAnalysisRequest):
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You analyze photos of items being given away for free.
+            system_message="""You are a professional item identifier for a recycling app. Be SPECIFIC and ACCURATE.
 
-CRITICAL RULES:
-1. TITLE (2-4 words): Be SPECIFIC. Identify the exact object.
-   - GOOD: "Rusty Metal Frame", "Old Washing Machine", "Wooden Dining Chair", "Kids Pink Bicycle"
-   - BAD: "Item", "Object", "Thing", "Unknown" - NEVER use these words
-   - Include: color, material, brand, condition when visible
+TITLE (2-4 words): Identify the EXACT object. Include brand, color, or material if visible.
+✓ GOOD: "Samsung Fridge", "Scrap Copper Wire", "Wooden Pallets", "Blue Kids Bike", "Rusty BBQ Grill"
+✗ BAD: "Item", "Object", "Thing", "Unknown Item" - ABSOLUTELY FORBIDDEN
 
-2. CATEGORY: Pick ONE from this list ONLY:
-   furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+CATEGORY: Choose ONE:
+furniture | electronics | appliances | sports | toys | books | clothing | garden | kitchen | tools | e-waste | scrap-metal | cardboard | general
 
-3. DESCRIPTION (1-2 sentences): Describe condition and notable features.
-   - Example: "Appears to be in working condition with minor surface rust. Would suit DIY project."
+DESCRIPTION: ONE sentence about condition. Be brief but informative.
+✓ GOOD: "Working condition, minor scratches on side."
+✓ GOOD: "Surface rust but structurally solid, ideal for scrap."
+✗ BAD: Long paragraphs or generic fluff.
 
-RESPOND WITH JSON ONLY:
+OUTPUT FORMAT - JSON ONLY:
 {"title": "...", "category": "...", "description": "..."}"""
         ).with_model("gemini", "gemini-2.5-flash")
 
         image_content = ImageContent(image_base64=request.image_base64)
         
         user_message = UserMessage(
-            text="Identify this specific object in 3 words or less (e.g., 'Rusty Bike Frame', 'Old Fridge'). Do not use generic words like 'Item' or 'Object'. Return JSON.",
+            text="Identify this object specifically in 2-4 words. What exactly is it? What brand/color/material? ONE sentence on condition. JSON only.",
             file_contents=[image_content]
         )
         
@@ -229,15 +229,41 @@ RESPOND WITH JSON ONLY:
         if category not in valid_categories:
             category = "general"
         
-        # Get title - NEVER allow "Item", "Object", "Unknown"
+        # Get title - STRICT: NEVER allow generic words
         title = data.get("title", "")
-        bad_titles = ["item", "object", "thing", "unknown", "unidentified"]
-        if not title or title.lower() in bad_titles or "item" in title.lower():
-            # Fallback to category name as title
-            title = category.replace("-", " ").title()
+        forbidden_words = ["item", "object", "thing", "unknown", "unidentified", "misc", "miscellaneous", "stuff"]
+        title_lower = title.lower() if title else ""
+        
+        # Check if title contains any forbidden word
+        is_bad_title = not title or any(word in title_lower for word in forbidden_words)
+        
+        if is_bad_title:
+            # Fallback: Use category as title (formatted nicely)
+            category_titles = {
+                "furniture": "Used Furniture",
+                "electronics": "Electronic Device", 
+                "appliances": "Home Appliance",
+                "sports": "Sports Equipment",
+                "toys": "Kids Toy",
+                "books": "Books Collection",
+                "clothing": "Clothing Items",
+                "garden": "Garden Supplies",
+                "kitchen": "Kitchen Goods",
+                "tools": "Hand Tools",
+                "e-waste": "Electronic Waste",
+                "scrap-metal": "Scrap Metal",
+                "cardboard": "Cardboard Boxes",
+                "general": "Free Pickup"
+            }
+            title = category_titles.get(category, "Free Pickup")
         
         return AIAnalysisResponse(
             title=title,
+            category=category,
+            description=data.get("description", "Available for free pickup. Good condition.")
+        )
+    except Exception as e:
+        logger.error(f"AI analysis error: {e}")
             category=category,
             description=data.get("description", "Free to good home. Pickup only.")
         )
