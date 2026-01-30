@@ -1742,22 +1742,22 @@ function AppContent() {
                 }`}
                 data-testid="category-filter-toggle"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" />
                 </svg>
                 {selectedCategory ? selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1) : showFavoritesOnly ? 'Saved' : 'Filter'}
               </button>
               
               {/* Nearby count */}
-              <span className="text-sm font-medium text-slate-600 ml-auto">
+              <span className="text-xs font-medium text-slate-600 ml-auto">
                 {postsInRadius.length} nearby
               </span>
             </div>
             
             {/* Radius slider (expandable) */}
             {showRadiusSlider && (
-              <div className="mt-3 flex items-center gap-2 animate-fade-in">
-                <span className="text-xs text-slate-500">5km</span>
+              <div className="mt-2 flex items-center gap-2 animate-fade-in">
+                <span className="text-xs text-slate-500">5</span>
                 <input
                   type="range"
                   min="5"
@@ -1768,7 +1768,7 @@ function AppContent() {
                     setRadiusKm(parseInt(e.target.value));
                     setTimeout(() => setShowRadiusSlider(false), 3000);
                   }}
-                  className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
+                  className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
                   data-testid="radius-slider"
                 />
                 <span className="text-xs text-slate-500">200km</span>
@@ -1777,8 +1777,8 @@ function AppContent() {
             
             {/* Category filter chips (expandable) */}
             {showCategoryFilter && postsInRadius.length > 0 && (
-              <div className="mt-3 animate-fade-in">
-                <div className="flex flex-wrap gap-2">
+              <div className="mt-2 animate-fade-in">
+                <div className="flex flex-wrap gap-1.5">
                   {/* Clear filter */}
                   <button
                     onClick={() => { 
@@ -1786,7 +1786,7 @@ function AppContent() {
                       setShowFavoritesOnly(false);
                       setShowCategoryFilter(false);
                     }}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    className={`px-2 py-1 rounded-full text-xs font-medium transition-all ${
                       !selectedCategory && !showFavoritesOnly
                         ? 'bg-green-600 text-white' 
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -1804,7 +1804,7 @@ function AppContent() {
                         setSelectedCategory(null);
                         setShowCategoryFilter(false);
                       }}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${
+                      className={`px-2 py-1 rounded-full text-xs font-medium transition-all flex items-center gap-1 ${
                         showFavoritesOnly 
                           ? 'bg-red-500 text-white' 
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
