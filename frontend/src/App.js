@@ -2654,8 +2654,8 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
-      {/* Norman Scrap Yard Ad - Western Sydney Only */}
-      <Dialog open={showScrapYardAd} onOpenChange={setShowScrapYardAd}>
+      {/* Norman Scrap Yard Ad - Sydney Metro Only */}
+      <Dialog open={showScrapYardAd && isInSydneyMetro()} onOpenChange={setShowScrapYardAd}>
         <DialogContent className="max-w-sm text-center rounded-3xl">
           <div className="pt-4">
             <img 
@@ -2671,12 +2671,15 @@ function AppContent() {
               {NORMAN_SCRAP_YARD.name} in Penrith is a local legend for recycling!
             </p>
             
-            <div className="p-4 bg-slate-100 rounded-2xl mb-6 text-left">
+            <div className="p-4 bg-slate-100 rounded-2xl mb-4 text-left">
               <p className="font-semibold text-slate-900">{NORMAN_SCRAP_YARD.name}</p>
               <p className="text-sm text-slate-600">{NORMAN_SCRAP_YARD.address}</p>
-              <p className="text-xs text-slate-500 mt-2">
-                ♻️ Cash for scrap • Batteries • E-waste • Copper
-              </p>
+              <div className="mt-3 pt-3 border-t border-slate-200">
+                <p className="text-xs font-semibold text-green-700 mb-1">✓ Accepted Items:</p>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Scrap Metal • <strong>White Goods</strong> (Fridges, Washers, Dryers, Microwaves) • Car Batteries • Aluminium • Copper • Brass • Steel
+                </p>
+              </div>
             </div>
             
             <div className="grid grid-cols-2 gap-3">
