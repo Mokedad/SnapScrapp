@@ -156,5 +156,17 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
   - Accepted: Scrap Metal, White Goods, Car Batteries, Aluminium, Copper, Brass, Steel
   - Future regions: Newcastle, Interstate partners, Return & Earn locations, Pallet recyclers
 
+## Completed Tasks (Jan 30, 2026)
+1. ✅ **AI Factory Reset (P0 Critical Fix)** - Complete rewrite of AI image analysis with high-intelligence prompts
+   - Uses Gemini 2.5 Flash with detailed expert prompting
+   - Generates highly specific titles (e.g., "Large Used Metal and Glass Double-Door Commercial Display Refrigerator")
+   - Natural, conversational descriptions including condition, context, and usefulness
+   - Strict prohibition on generic words ("Item", "Object", "Stuff", "Thing")
+   - Fallback retry mechanism for bad titles
+   - Example outputs verified:
+     - "New Cream Fabric Tufted Accent Armchair with Bobbin Legs"
+     - "Used White Metal Front-Load Dishwasher"
+2. ✅ **Location Button Zoom Enhancement** - My Location button now zooms to level 18 (~1km radius view) instead of 15
+
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
