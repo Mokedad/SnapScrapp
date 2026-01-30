@@ -1565,35 +1565,47 @@ function AppContent() {
           </div>
         ) : (
           <div className="flex items-center gap-2">
+            {/* High Contrast Search Bar */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search items or locations..."
-                className="w-full pl-10 pr-10 py-3 bg-white border border-slate-200 rounded-full text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                data-testid="search-input"
-              />
-              {searchQuery && (
+              <div className="flex items-center bg-white border-2 border-slate-300 rounded-full shadow-lg overflow-hidden" style={{ minHeight: '48px', backgroundColor: '#ffffff' }}>
+                <Search className="ml-4 w-5 h-5 text-slate-400 flex-shrink-0" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch(searchQuery)}
+                  placeholder="Search 'Fridge', 'Copper', 'St Marys'..."
+                  className="flex-1 px-3 py-3 bg-transparent text-slate-900 placeholder-slate-400 focus:outline-none"
+                  data-testid="search-input"
+                />
+                {searchQuery && !isSearching && (
+                  <button
+                    onClick={clearSearch}
+                    className="p-2 hover:bg-slate-100 rounded-full mr-1"
+                  >
+                    <X className="w-4 h-4 text-slate-400" />
+                  </button>
+                )}
+                {isSearching && (
+                  <Loader2 className="w-5 h-5 text-green-600 animate-spin mr-3" />
+                )}
+                {/* GO Button */}
                 <button
-                  onClick={clearSearch}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 rounded-full"
+                  onClick={() => handleSearch(searchQuery)}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 mr-1 rounded-full font-bold text-sm transition-colors"
+                  data-testid="search-go-btn"
                 >
-                  <X className="w-4 h-4 text-slate-400" />
+                  GO
                 </button>
-              )}
-              {isSearching && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-600 animate-spin" />
-              )}
+              </div>
             </div>
             <button
               onClick={() => {
                 setShowSearchBar(false);
                 clearSearch();
               }}
-              className="px-3 py-2 text-slate-600 font-medium"
+              className="px-2 py-2 text-slate-600 font-medium text-sm"
               data-testid="cancel-search-btn"
             >
               Cancel
@@ -1601,6 +1613,27 @@ function AppContent() {
           </div>
         )}
       </header>
+
+      {/* Quick Search Chips - show when search bar is open */}
+      {showSearchBar && !showSearchResults && (
+        <div className="fixed top-16 left-0 right-0 z-25 px-4 py-2 bg-white border-b border-slate-200 animate-fade-in">
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar">
+            {['Fridges', 'Washing Machines', 'Scrap Metal', 'Furniture', 'Electronics'].map(chip => (
+              <button
+                key={chip}
+                onClick={() => {
+                  setSearchQuery(chip);
+                  handleSearch(chip);
+                }}
+                className="flex-shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-green-100 text-slate-700 text-sm font-medium rounded-full transition-colors"
+                data-testid={`quick-chip-${chip.toLowerCase().replace(' ', '-')}`}
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Search Results Dropdown */}
       {showSearchResults && searchResults.length > 0 && (
