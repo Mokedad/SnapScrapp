@@ -154,16 +154,16 @@ h1, h2, h3, h4, h5, h6 {
   transform: scale(0.95);
 }
 
-/* My Location button */
+/* My Location button - enlarged for easy tapping */
 .my-location-btn {
   position: fixed;
-  bottom: 7rem;
+  bottom: 7.5rem;
   left: 1.5rem;
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   background: white;
   border-radius: 50%;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
