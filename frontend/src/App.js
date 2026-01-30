@@ -255,6 +255,7 @@ function AppContent() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [showScrapYardAd, setShowScrapYardAd] = useState(false);
   const [showScrapPrices, setShowScrapPrices] = useState(false); // Scrap prices modal
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false); // Collapsible category filter
   
   // Notification state
   const [notification, setNotification] = useState(null);
