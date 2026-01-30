@@ -170,7 +170,7 @@ Respond ONLY with JSON:
 
 @api_router.post("/analyze-image", response_model=AIAnalysisResponse)
 async def analyze_image(request: AIAnalysisRequest):
-    """Use Gemini to analyze an image and generate title, category, description - optimized for speed"""
+    """Use Gemini to analyze an image and generate quality title, category, description"""
     import json
     import re
     
@@ -178,14 +178,29 @@ async def analyze_image(request: AIAnalysisRequest):
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""Analyze item image. Return JSON only:
-{"title": "2-5 word name", "category": "one of: furniture/electronics/appliances/sports/toys/books/clothing/garden/kitchen/tools/e-waste/scrap-metal/cardboard/general", "description": "1 short sentence about condition"}"""
+            system_message="""You analyze photos of items being given away for free. Be specific and descriptive.
+
+TITLE RULES (1-5 words):
+- Be SPECIFIC: "Vintage Wooden Dining Chair" not "Chair" or "Item"
+- Include: color, material, brand, or style when visible
+- Examples: "Blue IKEA Bookshelf", "Kids Pink Bicycle", "Samsung 55inch TV", "Leather Office Chair"
+
+CATEGORY (pick one):
+furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+
+DESCRIPTION RULES (4-15 words):
+- Mention visible condition: scratches, wear, working status
+- Include size/dimensions if apparent
+- Examples: "Good condition with minor scratches on legs, sturdy and functional"
+- Examples: "Working condition, remote included, small crack on corner of screen"
+
+Return ONLY JSON: {"title": "...", "category": "...", "description": "..."}"""
         ).with_model("gemini", "gemini-2.5-flash")
 
         image_content = ImageContent(image_base64=request.image_base64)
         
         user_message = UserMessage(
-            text="What is this item? JSON only.",
+            text="Identify this item specifically. What is it? What condition? JSON only.",
             file_contents=[image_content]
         )
         
