@@ -2799,34 +2799,34 @@ function AppContent() {
             <p className="text-green-100 text-sm mt-1">NSW Market Rates (indicative)</p>
           </div>
           
-          <div className="p-4 max-h-[50vh] overflow-y-auto bg-white">
-            <table className="w-full text-sm">
+          <div className="px-3 py-2 bg-white">
+            <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-slate-200">
-                  <th className="text-left py-2 font-semibold text-slate-700">Material</th>
-                  <th className="text-right py-2 font-semibold text-slate-700">Price/kg</th>
+                  <th className="text-left py-1 font-semibold text-slate-700">Material</th>
+                  <th className="text-right py-1 font-semibold text-slate-700">Price/kg</th>
                 </tr>
               </thead>
               <tbody>
                 {SCRAP_PRICES.map((item, index) => (
                   <tr key={index} className={`border-b border-slate-100 ${index % 2 === 0 ? 'bg-slate-50' : 'bg-white'}`}>
-                    <td className="py-3 text-slate-800">{item.material}</td>
-                    <td className="py-3 text-right font-medium text-green-700">{item.price}</td>
+                    <td className="py-1.5 text-slate-800">{item.material}</td>
+                    <td className="py-1.5 text-right font-medium text-green-700">{item.price}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
             
-            <div className="mt-4 p-3 bg-amber-50 rounded-xl">
+            <div className="mt-2 p-2 bg-amber-50 rounded-lg">
               <p className="text-xs text-amber-700">
-                <strong>Note:</strong> Prices are indicative and vary by scrap yard, quantity, and quality. Contact your local yard for exact rates.
+                Prices vary by yard, quantity & quality.
               </p>
             </div>
           </div>
           
-          <div className="p-4 border-t bg-white">
+          <div className="px-3 pb-3 bg-white">
             <Button 
-              className="w-full bg-green-600 hover:bg-green-700 text-white rounded-full"
+              className="w-full bg-green-600 hover:bg-green-700 text-white rounded-full text-sm py-2"
               onClick={() => setShowScrapPrices(false)}
               data-testid="scrap-prices-close-btn"
             >
