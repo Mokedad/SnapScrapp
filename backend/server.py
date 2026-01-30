@@ -69,6 +69,18 @@ class AIAnalysisResponse(BaseModel):
     category: str
     description: str
 
+# NEW: Fast title-only response for 2-speed workflow
+class FastTitleRequest(BaseModel):
+    image_base64: str
+
+class FastTitleResponse(BaseModel):
+    title: str
+    category: str
+
+# NEW: Background description generation
+class GenerateDescriptionRequest(BaseModel):
+    post_id: str
+
 class ReportCreate(BaseModel):
     post_id: str
     reason: str  # "item_gone", "incorrect_location", "unsafe", "spam"
