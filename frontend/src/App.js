@@ -2441,7 +2441,15 @@ function AppContent() {
                 <div className="absolute top-3 left-3">
                   <CategoryBadge category={selectedPost.category} />
                 </div>
-                <div className="absolute top-3 right-3">
+                <div className="absolute top-3 right-3 flex gap-2">
+                  {/* Share button */}
+                  <button
+                    onClick={() => handleNativeShare(selectedPost)}
+                    className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg"
+                    data-testid="share-post-btn"
+                  >
+                    <Share2 className="w-4 h-4 text-slate-700" />
+                  </button>
                   <StatusBadge status={selectedPost.status} />
                 </div>
               </div>
