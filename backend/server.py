@@ -306,6 +306,19 @@ Provide JSON with: short title (3-6 words), category, and detailed description."
         if category not in valid_categories:
             category = "general"
         
+        # ENFORCE TITLE LENGTH LIMIT (max 6 words / ~50 chars)
+        title_words = title.split()
+        if len(title_words) > 6:
+            # Take first 6 words
+            title = " ".join(title_words[:6])
+            logger.info(f"Title truncated to 6 words: '{title}'")
+        
+        # Also enforce character limit as backup
+        if len(title) > 50:
+            # Find a natural break point
+            title = title[:50].rsplit(' ', 1)[0]
+            logger.info(f"Title truncated to ~50 chars: '{title}'")
+        
         # STRICT TITLE VALIDATION
         forbidden_patterns = [
             "item", "object", "stuff", "thing", "unknown", "miscellaneous", 
