@@ -2152,14 +2152,22 @@ function AppContent() {
                 <img 
                   src={newPost.image_base64} 
                   alt="Preview" 
-                  className="w-full h-40 object-cover"
+                  className={`w-full ${isAnalyzing ? 'h-56' : 'h-40'} object-cover transition-all duration-300`}
                 />
                 {isAnalyzing && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <div className="flex items-center gap-2 text-white">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span className="text-sm font-medium">AI analyzing...</span>
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/90 flex flex-col items-center justify-center">
+                    <div className="relative mb-4">
+                      {/* Outer pulsing ring */}
+                      <div className="absolute inset-0 w-20 h-20 border-4 border-green-400/30 rounded-full animate-ping" />
+                      {/* Middle rotating ring */}
+                      <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-t-green-500 border-r-green-500 rounded-full animate-spin" style={{animationDuration: '1s'}} />
+                      {/* Inner circle with icon */}
+                      <div className="w-20 h-20 bg-green-600/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-green-500/50">
+                        <Eye className="w-8 h-8 text-green-400 animate-pulse" />
+                      </div>
                     </div>
+                    <p className="text-white text-lg font-bold tracking-wide">AI Analyzing</p>
+                    <p className="text-green-400 text-sm mt-1 animate-pulse">Identifying your item...</p>
                   </div>
                 )}
                 <button
