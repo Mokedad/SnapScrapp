@@ -178,27 +178,35 @@ async def analyze_image(request: AIAnalysisRequest):
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You are an AI that analyzes images of items being given away for free.
-Your task is to identify the item and provide:
-1. A short, descriptive title (2-5 words) - Be specific! Include color, brand, or material when visible.
-2. A category from this list ONLY: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
-3. A brief description (1-2 sentences) about the item's apparent condition and any notable features.
+            system_message="""You analyze photos of items being given away for free.
 
-IMPORTANT: Respond ONLY with valid JSON, no other text:
+CRITICAL RULES:
+1. TITLE (2-4 words): Be SPECIFIC. Identify the exact object.
+   - GOOD: "Rusty Metal Frame", "Old Washing Machine", "Wooden Dining Chair", "Kids Pink Bicycle"
+   - BAD: "Item", "Object", "Thing", "Unknown" - NEVER use these words
+   - Include: color, material, brand, condition when visible
+
+2. CATEGORY: Pick ONE from this list ONLY:
+   furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+
+3. DESCRIPTION (1-2 sentences): Describe condition and notable features.
+   - Example: "Appears to be in working condition with minor surface rust. Would suit DIY project."
+
+RESPOND WITH JSON ONLY:
 {"title": "...", "category": "...", "description": "..."}"""
         ).with_model("gemini", "gemini-2.5-flash")
 
         image_content = ImageContent(image_base64=request.image_base64)
         
         user_message = UserMessage(
-            text="Analyze this item image. Return only JSON with title, category, and description.",
+            text="Identify this specific object in 3 words or less (e.g., 'Rusty Bike Frame', 'Old Fridge'). Do not use generic words like 'Item' or 'Object'. Return JSON.",
             file_contents=[image_content]
         )
         
         response = chat.send_message(user_message)
         logger.info(f"AI Response: {response}")
         
-        # Parse JSON from response - handle various formats
+        # Parse JSON from response
         response_text = response.content.strip() if hasattr(response, 'content') else str(response).strip()
         
         # Remove markdown code blocks if present
@@ -221,10 +229,17 @@ IMPORTANT: Respond ONLY with valid JSON, no other text:
         if category not in valid_categories:
             category = "general"
         
+        # Get title - NEVER allow "Item", "Object", "Unknown"
+        title = data.get("title", "")
+        bad_titles = ["item", "object", "thing", "unknown", "unidentified"]
+        if not title or title.lower() in bad_titles or "item" in title.lower():
+            # Fallback to category name as title
+            title = category.replace("-", " ").title()
+        
         return AIAnalysisResponse(
-            title=data.get("title", "Unknown Item"),
+            title=title,
             category=category,
-            description=data.get("description", "No description available")
+            description=data.get("description", "Free to good home. Pickup only.")
         )
     except Exception as e:
         logger.error(f"AI analysis error: {e}")
