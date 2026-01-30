@@ -1977,11 +1977,11 @@ function AppContent() {
 
       {/* Menu Drawer */}
       <Drawer open={showMenu} onOpenChange={setShowMenu}>
-        <DrawerContent className="max-h-[50vh]">
+        <DrawerContent className="max-h-[60vh]">
           <DrawerHeader>
             <DrawerTitle>Menu</DrawerTitle>
           </DrawerHeader>
-          <div className="p-4 space-y-2">
+          <div className="p-4 space-y-2 overflow-y-auto">
             <button
               onClick={() => {
                 setShowMenu(false);
@@ -1993,6 +1993,28 @@ function AppContent() {
               <Shield className="w-5 h-5 text-slate-600" />
               <span className="font-medium text-slate-900">Admin Panel</span>
             </button>
+            
+            {/* Scrap Prices - Only show in Sydney Metro */}
+            {isInSydneyMetro() && (
+              <button
+                onClick={() => {
+                  setShowMenu(false);
+                  setShowScrapPrices(true);
+                }}
+                className="w-full flex items-center gap-3 p-4 rounded-xl hover:bg-slate-100 transition-colors text-left"
+                data-testid="scrap-prices-menu-btn"
+              >
+                <svg className="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 6v12M9 9h6M9 15h6" />
+                </svg>
+                <div className="flex-1">
+                  <span className="font-medium text-slate-900">Current Scrap Prices</span>
+                  <p className="text-xs text-green-600">NSW market rates</p>
+                </div>
+              </button>
+            )}
+            
             <button
               onClick={() => {
                 setShowMenu(false);
