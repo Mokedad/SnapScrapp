@@ -2935,7 +2935,7 @@ function AppContent() {
         src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYxnQ5SAAAAAAAAAAAAAAAAAAAAAP/7kGQAAANUMEoFPeACNQV40KENABEY1g5GesOAKwPSyYTAbPkGBgYGBgYBhBAGHzP4kAQdBxnMEHw+9wMGDiCDoNwQcWqGU0QOqQ0ODfG+BAEHQOc3B0LgYNJOv/MDE1OXMQfBv8QBQHEHwfB8EAQPGdyYfE4Px+D4Pg+D4IAAA=="
       />
 
-      <Toaster position="top-center" duration={3000} />
+      <Toaster position="top-center" duration={1200} toastOptions={{ style: { marginTop: '40vh' } }} />
     </div>
   );
 }
@@ -3086,7 +3086,7 @@ function AdminPanel() {
             Back to map
           </button>
         </div>
-        <Toaster position="top-center" duration={3000} />
+        <Toaster position="top-center" duration={1200} toastOptions={{ style: { marginTop: '40vh' } }} />
       </div>
     );
   }
@@ -3280,7 +3280,7 @@ function AdminPanel() {
         )}
       </div>
 
-      <Toaster position="top-center" duration={3000} />
+      <Toaster position="top-center" duration={1200} toastOptions={{ style: { marginTop: '40vh' } }} />
     </div>
   );
 }
@@ -3519,7 +3519,7 @@ function PostPage() {
             Go to Map
           </Button>
         </div>
-        <Toaster position="top-center" duration={3000} />
+        <Toaster position="top-center" duration={1200} toastOptions={{ style: { marginTop: '40vh' } }} />
       </div>
     );
   }
@@ -3843,7 +3843,7 @@ function PostPage() {
         </div>
       )}
 
-      <Toaster position="top-center" duration={3000} />
+      <Toaster position="top-center" duration={1200} toastOptions={{ style: { marginTop: '40vh' } }} />
     </div>
   );
 }
