@@ -757,25 +757,64 @@ function AppContent() {
     setShowWelcome(false);
   };
 
-  // Check if user is in Western Sydney/Penrith area (for Norman Scrap Yard ad)
-  const isInWesternSydney = useCallback(() => {
+  // Check if user is in Sydney Metropolitan Region (~300km from Penrith/St Marys)
+  // This is used to show/hide regional partners like Norman Scrap Yard
+  const isInSydneyMetro = useCallback(() => {
     if (!userLocation) return false;
-    // Western Sydney / Penrith area: roughly -33.75, 150.69
-    // Check within ~50km radius
+    // Penrith/St Marys area coordinates (center of Western Sydney)
     const penrithLat = -33.7507;
     const penrithLng = 150.6944;
     const distance = getDistance(userLocation[0], userLocation[1], penrithLat, penrithLng);
-    return distance <= 50; // Within 50km of Penrith
+    return distance <= 300; // Within 300km of Sydney Metro (covers greater Sydney region)
   }, [userLocation, getDistance]);
 
-  // Norman Scrap Yard details
-  const NORMAN_SCRAP_YARD = {
-    name: "Norman's Scrap Metal",
-    address: "34 Peachtree Rd, Penrith NSW 2750",
-    phone: "Contact via Google Maps",
-    mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=34+Peachtree+Rd,+Penrith+NSW+2750",
-    logo: "https://customer-assets.emergentagent.com/job_43339dc9-f006-41e6-8de9-36afdf0eb8cc/artifacts/tuki91fg_IMG_4869.png"
+  // Check if user is in Western Sydney area (closer proximity for partner ads)
+  const isInWesternSydney = useCallback(() => {
+    if (!userLocation) return false;
+    const penrithLat = -33.7507;
+    const penrithLng = 150.6944;
+    const distance = getDistance(userLocation[0], userLocation[1], penrithLat, penrithLng);
+    return distance <= 50; // Within 50km of Penrith for targeted ads
+  }, [userLocation, getDistance]);
+
+  // Partner Configuration - Expandable for future regional partners
+  const PARTNERS = {
+    sydney_metro: {
+      norman_scrap_yard: {
+        name: "Norman's Scrap Metal",
+        address: "34 Peachtree Rd, Penrith NSW 2750",
+        phone: "Contact via Google Maps",
+        mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=34+Peachtree+Rd,+Penrith+NSW+2750",
+        logo: "https://customer-assets.emergentagent.com/job_43339dc9-f006-41e6-8de9-36afdf0eb8cc/artifacts/tuki91fg_IMG_4869.png",
+        acceptedItems: [
+          "Scrap Metal",
+          "White Goods (Fridges, Washing Machines, Dryers, Microwaves)",
+          "Car Batteries",
+          "Aluminium",
+          "Copper",
+          "Brass",
+          "Steel"
+        ],
+        region: "Sydney Metropolitan"
+      }
+    }
+    // Future: newcastle_region, interstate_partners, etc.
   };
+
+  // Legacy reference for backward compatibility
+  const NORMAN_SCRAP_YARD = PARTNERS.sydney_metro.norman_scrap_yard;
+
+  // Scrap Metal Prices (NSW)
+  const SCRAP_PRICES = [
+    { material: "Copper (Bright/Clean)", price: "$10.50 - $12.00 / kg" },
+    { material: "Copper (Mixed/Burnt)", price: "$9.00 - $10.00 / kg" },
+    { material: "Brass (Mixed)", price: "$6.00 - $6.50 / kg" },
+    { material: "Insulated Copper Wire (40%)", price: "$2.50 - $3.50 / kg" },
+    { material: "Aluminium (Clean Extrusion)", price: "$2.00 - $2.50 / kg" },
+    { material: "Aluminium Cans", price: "$1.20 - $1.50 / kg" },
+    { material: "Stainless Steel", price: "$1.20 - $1.60 / kg" },
+    { material: "White Goods", price: "$0.25 - $0.45 / kg" }
+  ];
 
   // ============ CAMERA FUNCTIONS ============
   
