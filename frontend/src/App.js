@@ -2357,35 +2357,56 @@ function AppContent() {
               </div>
             </div>
             
-            {/* Location - auto-use current if available */}
+            {/* Location - auto-use current if available with human-readable address */}
             <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
-              <MapPin className="w-5 h-5 text-green-600" />
-              {newPost.latitude ? (
+              <MapPin className="w-5 h-5 text-green-600 flex-shrink-0" />
+              {isGettingAddress ? (
+                <span className="text-sm text-slate-500 flex items-center gap-2 flex-1">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Getting location...
+                </span>
+              ) : newPost.latitude ? (
                 <>
-                  <span className="text-sm text-green-700 flex-1">Location set ✓</span>
+                  <div className="flex-1 min-w-0">
+                    {newPost.address ? (
+                      <span className="text-sm text-green-700 font-medium truncate block">{newPost.address}</span>
+                    ) : (
+                      <span className="text-sm text-green-700">Location set ✓</span>
+                    )}
+                  </div>
                   <button
-                    onClick={() => {
-                      // Refresh to get fresh GPS location
+                    onClick={async () => {
+                      // Refresh to get fresh GPS location + new address
                       if (navigator.geolocation) {
-                        toast.loading("Getting fresh location...", { id: 'refresh-loc' });
+                        toast.loading("Refreshing...", { id: 'refresh-loc' });
+                        setIsGettingAddress(true);
                         navigator.geolocation.getCurrentPosition(
-                          (position) => {
+                          async (position) => {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
                             setNewPost(prev => ({
                               ...prev,
-                              latitude: position.coords.latitude,
-                              longitude: position.coords.longitude
+                              latitude: lat,
+                              longitude: lng
                             }));
-                            setUserLocation([position.coords.latitude, position.coords.longitude]);
-                            toast.success("Location refreshed!", { id: 'refresh-loc' });
+                            setUserLocation([lat, lng]);
+                            // Get new address
+                            const addr = await reverseGeocode(lat, lng);
+                            if (addr) {
+                              setNewPost(prev => ({ ...prev, address: addr }));
+                            }
+                            setIsGettingAddress(false);
+                            toast.success("Location updated!", { id: 'refresh-loc' });
                           },
                           (error) => {
+                            setIsGettingAddress(false);
                             toast.error("Could not refresh location", { id: 'refresh-loc' });
                           },
                           { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                         );
                       }
                     }}
-                    className="text-xs text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
+                    className="text-xs text-green-600 hover:text-green-700 font-medium flex items-center gap-1 flex-shrink-0"
                     data-testid="refresh-location-btn"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
@@ -2394,27 +2415,36 @@ function AppContent() {
                 </>
               ) : userLocation ? (
                 <button
-                  onClick={() => {
-                    // Get fresh location instead of using cached
+                  onClick={async () => {
+                    // Get fresh location with address
                     if (navigator.geolocation) {
                       toast.loading("Getting location...", { id: 'get-loc' });
+                      setIsGettingAddress(true);
                       navigator.geolocation.getCurrentPosition(
-                        (position) => {
+                        async (position) => {
+                          const lat = position.coords.latitude;
+                          const lng = position.coords.longitude;
                           setNewPost(prev => ({
                             ...prev,
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude
+                            latitude: lat,
+                            longitude: lng
                           }));
-                          setUserLocation([position.coords.latitude, position.coords.longitude]);
+                          setUserLocation([lat, lng]);
+                          const addr = await reverseGeocode(lat, lng);
+                          if (addr) setNewPost(prev => ({ ...prev, address: addr }));
+                          setIsGettingAddress(false);
                           toast.success("Location set!", { id: 'get-loc' });
                         },
-                        (error) => {
+                        async (error) => {
                           // Fallback to cached location
                           setNewPost(prev => ({
                             ...prev,
                             latitude: userLocation[0],
                             longitude: userLocation[1]
                           }));
+                          const addr = await reverseGeocode(userLocation[0], userLocation[1]);
+                          if (addr) setNewPost(prev => ({ ...prev, address: addr }));
+                          setIsGettingAddress(false);
                           toast.success("Using cached location", { id: 'get-loc' });
                         },
                         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
