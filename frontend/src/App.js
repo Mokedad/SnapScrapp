@@ -2708,6 +2708,57 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
+      {/* Scrap Prices Modal */}
+      <Dialog open={showScrapPrices} onOpenChange={setShowScrapPrices}>
+        <DialogContent className="max-w-md mx-auto rounded-3xl p-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-green-600 to-lime-500 p-6 text-white">
+            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v12M9 9h6M9 15h6" />
+              </svg>
+              Current Scrap Prices
+            </DialogTitle>
+            <p className="text-green-100 text-sm mt-1">NSW Market Rates (indicative)</p>
+          </div>
+          
+          <div className="p-4 max-h-[50vh] overflow-y-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left py-2 font-semibold text-slate-700">Material</th>
+                  <th className="text-right py-2 font-semibold text-slate-700">Price/kg</th>
+                </tr>
+              </thead>
+              <tbody>
+                {SCRAP_PRICES.map((item, index) => (
+                  <tr key={index} className={`border-b border-slate-100 ${index % 2 === 0 ? 'bg-slate-50' : ''}`}>
+                    <td className="py-3 text-slate-800">{item.material}</td>
+                    <td className="py-3 text-right font-medium text-green-700">{item.price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            
+            <div className="mt-4 p-3 bg-amber-50 rounded-xl">
+              <p className="text-xs text-amber-700">
+                <strong>Note:</strong> Prices are indicative and vary by scrap yard, quantity, and quality. Contact your local yard for exact rates.
+              </p>
+            </div>
+          </div>
+          
+          <div className="p-4 border-t">
+            <Button 
+              className="w-full bg-green-600 hover:bg-green-700 text-white rounded-full"
+              onClick={() => setShowScrapPrices(false)}
+              data-testid="scrap-prices-close-btn"
+            >
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Fullscreen Image Viewer */}
       {showFullscreenImage && (
         <div 
