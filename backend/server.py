@@ -192,8 +192,8 @@ async def analyze_image(request: AIAnalysisRequest):
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
-        safety_response = safety_chat.send_message(safety_message)
-        safety_text = safety_response.content.strip() if hasattr(safety_response, 'content') else str(safety_response).strip()
+        safety_response = await safety_chat.send_message(safety_message)
+        safety_text = safety_response.strip() if isinstance(safety_response, str) else str(safety_response).strip()
         
         if "UNSAFE" in safety_text.upper():
             raise HTTPException(status_code=400, detail="Post rejected due to inappropriate content.")
