@@ -170,7 +170,7 @@ Respond ONLY with JSON:
 
 @api_router.post("/analyze-image", response_model=AIAnalysisResponse)
 async def analyze_image(request: AIAnalysisRequest):
-    """Use Gemini to analyze an image and generate title, category, description"""
+    """Use Gemini to analyze an image and generate title, category, description - optimized for speed"""
     import json
     import re
     
@@ -178,28 +178,22 @@ async def analyze_image(request: AIAnalysisRequest):
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You are an AI that analyzes images of items being given away for free.
-Your task is to identify the item and provide:
-1. A short, descriptive title (2-5 words)
-2. A category from this list ONLY: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
-3. A brief description (1-2 sentences) about the item's apparent condition
-
-IMPORTANT: Respond ONLY with valid JSON, no other text:
-{"title": "...", "category": "...", "description": "..."}"""
+            system_message="""Analyze item image. Return JSON only:
+{"title": "2-5 word name", "category": "one of: furniture/electronics/appliances/sports/toys/books/clothing/garden/kitchen/tools/e-waste/scrap-metal/cardboard/general", "description": "1 short sentence about condition"}"""
         ).with_model("gemini", "gemini-2.5-flash")
 
         image_content = ImageContent(image_base64=request.image_base64)
         
         user_message = UserMessage(
-            text="Analyze this item image. Return only JSON with title, category, and description.",
+            text="What is this item? JSON only.",
             file_contents=[image_content]
         )
         
-        response = await chat.send_message(user_message)
+        response = chat.send_message(user_message)
         logger.info(f"AI Response: {response}")
         
         # Parse JSON from response - handle various formats
-        response_text = response.strip()
+        response_text = response.content.strip() if hasattr(response, 'content') else str(response).strip()
         
         # Remove markdown code blocks if present
         if "```" in response_text:
