@@ -1715,11 +1715,12 @@ function AppContent() {
             </button>
             {showRadiusSlider && (
               <div className="flex-1 flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm animate-fade-in">
-                <span className="text-xs text-slate-500">1km</span>
+                <span className="text-xs text-slate-500">5km</span>
                 <input
                   type="range"
-                  min="1"
-                  max="100"
+                  min="5"
+                  max="200"
+                  step="5"
                   value={radiusKm}
                   onChange={(e) => {
                     setRadiusKm(parseInt(e.target.value));
@@ -1729,10 +1730,10 @@ function AppContent() {
                   className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
                   data-testid="radius-slider"
                 />
-                <span className="text-xs text-slate-500">100km</span>
+                <span className="text-xs text-slate-500">200km</span>
               </div>
             )}
-            {!showRadiusSlider && postsInRadius.length !== posts.length && (
+            {!showRadiusSlider && (
               <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-full shadow-sm">
                 {postsInRadius.length} nearby
               </span>
