@@ -170,56 +170,79 @@ Respond ONLY with JSON:
 
 @api_router.post("/analyze-image", response_model=AIAnalysisResponse)
 async def analyze_image(request: AIAnalysisRequest):
-    """Gemini 2.0 Flash - Image analysis with content moderation"""
+    """
+    FULL HIGH-INTELLIGENCE VISION PROTOCOL
+    - Maximum quality, NO speed optimizations
+    - STRICT prohibition on generic titles
+    """
     import json
     import re
     
     try:
-        # Step 1: Content Moderation (Safety Check)
+        # Step 1: Safety Filter (Block inappropriate content)
         safety_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"safety-{generate_id()}",
-            system_message="You are a content safety moderator. Your job is to identify inappropriate content in images."
+            system_message="You are a content safety moderator."
         ).with_model("gemini", "gemini-2.0-flash")
         
         safety_message = UserMessage(
-            text="Analyze this image for safety. Does it contain nudity, sexual content, weapons, drugs, violence, gore, or illegal activity? Reply ONLY with 'SAFE' or 'UNSAFE'.",
+            text="Does this image contain nudity, sexual content, drugs, weapons, violence, gore, hate symbols, or illegal activity? Reply ONLY 'SAFE' or 'UNSAFE'.",
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
         safety_response = safety_chat.send_message(safety_message)
         safety_text = safety_response.content.strip() if hasattr(safety_response, 'content') else str(safety_response).strip()
-        logger.info(f"Safety check result: {safety_text}")
         
         if "UNSAFE" in safety_text.upper():
-            raise HTTPException(status_code=400, detail="Upload rejected: Inappropriate content detected.")
+            raise HTTPException(status_code=400, detail="Post rejected due to inappropriate content.")
         
-        # Step 2: Image Analysis - Auto-fill title, category, description
+        # Step 2: HIGH-INTELLIGENCE Image Analysis
         analysis_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You are an AI assistant for a free items giveaway app called Ucycle.
-Your job is to identify items in photos and provide helpful details.
+            system_message="""You are an expert item identifier for a free stuff giveaway app.
 
-When analyzing an image, provide:
-1. TITLE: A clear, specific name for the item (what is it exactly?)
-2. CATEGORY: Choose one from: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
-3. DESCRIPTION: A helpful description of the item's condition and features
+YOUR MISSION: Identify items with EXTREME SPECIFICITY.
 
-Always respond in valid JSON format:
-{"title": "...", "category": "...", "description": "..."}"""
+TITLE RULES (CRITICAL):
+- Look for: Brand names, materials, colors, shapes, sizes
+- Be SPECIFIC: "Samsung 60L Fridge" NOT "Appliance"
+- Be SPECIFIC: "Rusty Metal Garden Shed" NOT "Shed"
+- Be SPECIFIC: "Pile of Copper Pipes" NOT "Scrap Metal"
+- Be SPECIFIC: "Timber Bed Frame" NOT "Furniture"
+- Be SPECIFIC: "Purple U-Shaped Neck Pillow" NOT "Pillow"
+
+FORBIDDEN TITLE WORDS (NEVER USE):
+- "Item" / "Free Item"
+- "Object"
+- "Stuff"
+- "Thing"
+- "Unknown"
+- "Miscellaneous"
+
+DESCRIPTION RULES:
+- Write natural, human-like sentences
+- Include: Condition (new/used/rusty/worn), Context (curbside/indoor/outdoor), distinct features
+- Example: "A vintage leather armchair. Leather is worn on the seat but structure looks solid. Sitting on the grass."
+
+CATEGORY: Choose ONE from:
+furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+
+RESPOND IN JSON ONLY:
+{"title": "SPECIFIC TITLE HERE", "category": "...", "description": "Natural description here..."}"""
         ).with_model("gemini", "gemini-2.0-flash")
         
         analysis_message = UserMessage(
-            text="What item is in this photo? Identify it and describe its condition.",
+            text="Identify this item with EXTREME SPECIFICITY. What exactly is it? Look for brand, material, color, shape. Describe its condition naturally.",
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
         response = analysis_chat.send_message(analysis_message)
         response_text = response.content.strip() if hasattr(response, 'content') else str(response).strip()
-        logger.info(f"Analysis result: {response_text}")
+        logger.info(f"AI Analysis: {response_text}")
         
-        # Parse JSON response
+        # Parse JSON
         if "```" in response_text:
             match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', response_text)
             if match:
@@ -238,20 +261,85 @@ Always respond in valid JSON format:
         if category not in valid_categories:
             category = "general"
         
+        # STRICT TITLE VALIDATION - Reject generic titles
+        title = data.get("title", "")
+        forbidden_words = ["item", "object", "stuff", "thing", "unknown", "miscellaneous", "free item"]
+        title_lower = title.lower().strip()
+        
+        # Check if title is generic/forbidden
+        is_generic = (
+            not title or 
+            len(title) < 3 or
+            title_lower in forbidden_words or
+            any(title_lower == fw for fw in forbidden_words) or
+            title_lower.startswith("free ") or
+            title_lower == "free"
+        )
+        
+        if is_generic:
+            # Force a retry with stricter prompt
+            retry_chat = LlmChat(
+                api_key=EMERGENT_LLM_KEY,
+                session_id=f"retry-{generate_id()}",
+                system_message="You MUST identify items specifically. NEVER say 'Item' or 'Free Item'."
+            ).with_model("gemini", "gemini-2.0-flash")
+            
+            retry_message = UserMessage(
+                text="What SPECIFIC object is in this image? Give me a detailed name like 'White Bosch Washing Machine' or 'Wooden Dining Table'. DO NOT say 'Item' or 'Free Item'. JSON: {\"title\": \"...\"}",
+                file_contents=[ImageContent(image_base64=request.image_base64)]
+            )
+            
+            retry_response = retry_chat.send_message(retry_message)
+            retry_text = retry_response.content.strip() if hasattr(retry_response, 'content') else str(retry_response).strip()
+            
+            try:
+                if "{" in retry_text:
+                    retry_match = re.search(r'\{[^{}]*\}', retry_text)
+                    if retry_match:
+                        retry_data = json.loads(retry_match.group(0))
+                        title = retry_data.get("title", title)
+            except:
+                pass
+        
+        # Final fallback - use category-based descriptive title (NOT "Item")
+        if not title or title.lower() in forbidden_words or "item" in title.lower():
+            category_titles = {
+                "furniture": "Used Furniture Piece",
+                "electronics": "Electronic Device",
+                "appliances": "Home Appliance",
+                "sports": "Sports Equipment",
+                "toys": "Children's Toy",
+                "books": "Books Collection",
+                "clothing": "Clothing Bundle",
+                "garden": "Garden Equipment",
+                "kitchen": "Kitchen Items",
+                "tools": "Hand Tools",
+                "e-waste": "Electronic Waste",
+                "scrap-metal": "Scrap Metal Materials",
+                "cardboard": "Cardboard Boxes",
+                "general": "Household Goods"
+            }
+            title = category_titles.get(category, "Household Goods")
+        
+        description = data.get("description", "")
+        if not description or len(description) < 10:
+            description = "Available for free pickup. Check the photo for condition details."
+        
         return AIAnalysisResponse(
-            title=data.get("title", "Free Item"),
+            title=title,
             category=category,
-            description=data.get("description", "Available for free pickup")
+            description=description
         )
         
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"AI analysis error: {e}")
+        # Even on error, don't return "Free Item"
         return AIAnalysisResponse(
-            title="Free Item",
+            title="Curbside Pickup Available",
             category="general",
-            description="Please add a description"
+            description="Please check the photo and add your own description."
         )
 
 # ============ POSTS ============
