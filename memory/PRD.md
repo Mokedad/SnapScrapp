@@ -159,13 +159,13 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 ## Completed Tasks (Jan 30, 2026)
 1. ✅ **AI Factory Reset (P0 Critical Fix)** - Complete rewrite of AI image analysis with high-intelligence prompts
    - Uses Gemini 2.5 Flash with detailed expert prompting
-   - Generates highly specific titles (e.g., "Large Used Metal and Glass Double-Door Commercial Display Refrigerator")
+   - **Title length limit enforced: 3-6 words maximum** for mobile UI fit
    - Natural, conversational descriptions including condition, context, and usefulness
    - Strict prohibition on generic words ("Item", "Object", "Stuff", "Thing")
    - Fallback retry mechanism for bad titles
    - Example outputs verified:
-     - "New Cream Fabric Tufted Accent Armchair with Bobbin Legs"
-     - "Used White Metal Front-Load Dishwasher"
+     - "Double Glass Door Refrigerator" (4 words)
+     - "Cream Tufted Accent Armchair" (4 words)
 2. ✅ **Location Button Zoom Enhancement** - My Location button now zooms to level 18 (~1km radius view) instead of 15
 
 ## Next Tasks
