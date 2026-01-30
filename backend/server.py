@@ -264,14 +264,9 @@ OUTPUT FORMAT - JSON ONLY:
         )
     except Exception as e:
         logger.error(f"AI analysis error: {e}")
-            category=category,
-            description=data.get("description", "Free to good home. Pickup only.")
-        )
-    except Exception as e:
-        logger.error(f"AI analysis error: {e}")
-        # Return defaults on error
+        # Return defaults on error - use category as title, not "Item"
         return AIAnalysisResponse(
-            title="Item",
+            title="Free Pickup",
             category="general",
             description="Unable to analyze image automatically. Please add details manually."
         )
