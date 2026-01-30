@@ -3806,7 +3806,7 @@ function PostPage() {
                 >
                   <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500' : ''}`} />
                 </Button>
-                <Button variant="outline" className="py-5 rounded-full" onClick={() => setShowShareDialog(true)} data-testid="share-btn">
+                <Button variant="outline" className="py-5 rounded-full" onClick={handleNativeShare} data-testid="share-btn">
                   <Share2 className="w-4 h-4" />
                 </Button>
                 <Button variant="outline" className="py-5 rounded-full" onClick={() => setShowReportDialog(true)} data-testid="report-btn">
