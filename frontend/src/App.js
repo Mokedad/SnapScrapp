@@ -2705,7 +2705,7 @@ function AppContent() {
             </div>
             
             <p className="text-xs text-slate-400 mt-4">
-              Local partner • Western Sydney
+              Local partner • Sydney Metro Region
             </p>
           </div>
         </DialogContent>
