@@ -3515,6 +3515,29 @@ function PostPage() {
   };
 
   const shareUrl = window.location.href;
+  
+  // Native share function
+  const handleNativeShare = async () => {
+    const shareTitle = `Check out this ${post?.title} on Ucycle`;
+    const shareText = `Free pickup available! Grab it before it's gone!`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl
+        });
+        toast.success("Shared!");
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.log("Native share failed");
+        }
+      }
+    }
+    setShowShareDialog(true);
+  };
 
   const shareToWhatsApp = () => {
     const text = `Check out this free item on Ucycle: ${post.title}`;
