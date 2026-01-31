@@ -219,6 +219,10 @@ function AppContent() {
   const [locationError, setLocationError] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
   const mapRef = useRef(null);
+  const locationWatchId = useRef(null);  // For live GPS tracking
+  
+  // Camera permission state - check on load
+  const [cameraPermissionState, setCameraPermissionState] = useState('prompt');  // 'granted', 'denied', 'prompt'
   
   // Fullscreen image viewer state
   const [showFullscreenImage, setShowFullscreenImage] = useState(false);
