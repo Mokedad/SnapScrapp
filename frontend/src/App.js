@@ -922,34 +922,20 @@ function AppContent() {
     }
   }, []);
 
-  // MODULE 2: Open camera - IMMEDIATELY if permission granted, no nagging
+  // MODULE 2: Open camera DIRECTLY - no options, no delays
   const openCamera = async () => {
     try {
-      // Use cached permission state first for instant response
-      let permissionStatus = cameraPermissionState;
-      
-      // If we don't know the state, check it
-      if (permissionStatus === 'prompt') {
-        permissionStatus = await checkCameraPermission();
-      }
-      
-      // If denied, silently fall back to file picker
-      if (permissionStatus === 'denied') {
-        fileInputRef.current?.click();
-        return;
-      }
-      
-      // Permission is granted or prompt - try to access camera
+      // Immediately try to access camera - browser handles permission prompt if needed
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
         audio: false
       });
       
-      // Success! Update permission state
+      // Success! Show camera immediately
       setCameraPermissionState('granted');
       setCameraStream(stream);
       setShowCameraView(true);
-      setCameraZoom(1); // Reset zoom
+      setCameraZoom(1);
       
       // Check if camera supports native zoom
       const track = stream.getVideoTracks()[0];
@@ -958,21 +944,18 @@ function AppContent() {
         setMaxZoom(capabilities.zoom.max || 5);
       }
       
-      // Connect stream to video element after render
+      // Connect stream to video element
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
-      }, 100);
+      }, 50);
     } catch (error) {
       console.error("Camera error:", error);
-      
-      // Update permission state if denied
       if (error.name === 'NotAllowedError') {
         setCameraPermissionState('denied');
       }
-      
-      // Silently fallback to file picker - no error toast
+      // Camera not available - open gallery instead
       fileInputRef.current?.click();
     }
   };
