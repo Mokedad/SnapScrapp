@@ -1080,6 +1080,20 @@ function AppContent() {
     await processImage(base64);
   };
 
+  // MODULE 2: Check camera permission on app load
+  useEffect(() => {
+    const checkCameraOnLoad = async () => {
+      if (!navigator.permissions) return;
+      try {
+        const result = await navigator.permissions.query({ name: 'camera' });
+        setCameraPermissionState(result.state);
+      } catch (e) {
+        // Some browsers don't support camera permission query
+      }
+    };
+    checkCameraOnLoad();
+  }, []);
+
   // Reverse geocode coordinates to human-readable address
   const reverseGeocode = async (lat, lng) => {
     try {
