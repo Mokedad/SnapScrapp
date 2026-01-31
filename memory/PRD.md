@@ -156,7 +156,7 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
   - Accepted: Scrap Metal, White Goods, Car Batteries, Aluminium, Copper, Brass, Steel
   - Future regions: Newcastle, Interstate partners, Return & Earn locations, Pallet recyclers
 
-## Completed Tasks (Jan 30, 2026)
+## Completed Tasks (Jan 30-31, 2026)
 1. ✅ **AI Factory Reset (P0 Critical Fix)** - Complete rewrite of AI image analysis
    - **Title length limit: 3-6 words MAX** for mobile UI fit
    - **Description length limit: ~350 chars MAX** (2-3 sentences, ~8 lines)
@@ -176,6 +176,23 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
    - **Background Description (The Marathon)**: `/api/posts/{id}/generate-description` runs AFTER post is created
    - **Instant Posting**: User can post as soon as title is ready - no waiting for description
    - GPS + AI Title run in PARALLEL for maximum speed
+5. ✅ **MODULE 1: LIVE LOCATION TRACKING**
+   - Switched from `getCurrentPosition` to `watchPosition` for continuous tracking
+   - Real-time distance updates every 5 seconds as user moves
+   - Auto-starts after initial location obtained
+   - Proper cleanup on unmount
+6. ✅ **MODULE 2: CAMERA PERMISSIONS OVERHAUL**
+   - Checks camera permission state on app load
+   - Opens camera IMMEDIATELY if already granted (no nagging)
+   - Only prompts if browser returns 'prompt' state
+   - Silent fallback to gallery picker if denied
+   - Existing pinch-to-zoom + zoom slider (1x-5x) preserved
+7. ✅ **MODULE 3: OPTIMISTIC 2-SPEED POSTING**
+   - Image displays INSTANTLY on capture
+   - Non-blocking AI analysis in background
+   - Spinner auto-hides after 2 seconds (user can type while waiting)
+   - AI only fills fields if user hasn't typed anything
+   - User feels instant even if AI takes 10+ seconds
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
