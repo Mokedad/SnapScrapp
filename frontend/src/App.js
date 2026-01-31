@@ -680,7 +680,21 @@ function AppContent() {
   // Get user location on mount (silent - no toast unless first time)
   useEffect(() => {
     requestLocation(false); // Silent mode - no toast on initial load
-  }, [requestLocation]);
+    
+    // Cleanup live tracking on unmount
+    return () => {
+      stopLiveLocationTracking();
+    };
+  }, [requestLocation, stopLiveLocationTracking]);
+
+  // MODULE 2: Check camera permission on app load
+  useEffect(() => {
+    const checkCameraOnLoad = async () => {
+      const state = await checkCameraPermission();
+      setCameraPermissionState(state);
+    };
+    checkCameraOnLoad();
+  }, [checkCameraPermission]);
 
   // Initial fetch
   useEffect(() => {
