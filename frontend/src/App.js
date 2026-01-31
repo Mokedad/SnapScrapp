@@ -687,15 +687,6 @@ function AppContent() {
     };
   }, [requestLocation, stopLiveLocationTracking]);
 
-  // MODULE 2: Check camera permission on app load
-  useEffect(() => {
-    const checkCameraOnLoad = async () => {
-      const state = await checkCameraPermission();
-      setCameraPermissionState(state);
-    };
-    checkCameraOnLoad();
-  }, [checkCameraPermission]);
-
   // Initial fetch
   useEffect(() => {
     fetchPosts();
