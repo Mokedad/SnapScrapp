@@ -1114,41 +1114,47 @@ function AppContent() {
   };
 
   // Process image (shared between camera capture and file upload)
-  // NEW: 2-SPEED WORKFLOW - Instant GPS + Fast Title
+  // MODULE 3: OPTIMISTIC 2-SPEED WORKFLOW
+  // - Instant image display
+  // - Background AI analysis (high quality, non-blocking)
+  // - User can type immediately or wait for AI
+  // - Spinner disappears after 2 seconds max
   const processImage = async (base64) => {
-    // Immediately show the post drawer with image
+    // INSTANT: Show the post drawer with image immediately
     setNewPost(prev => ({ 
       ...prev, 
       image_base64: base64,
-      latitude: null,
-      longitude: null,
+      latitude: userLocation ? userLocation[0] : null,
+      longitude: userLocation ? userLocation[1] : null,
       address: "",
       title: "",
-      description: ""  // Description will be generated in background after post
+      description: ""
     }));
     setShowPostDrawer(true);
+    setIsAnalyzing(true);  // Show analyzing indicator
     
-    // ========== PARALLEL: GPS + Fast AI Title ==========
-    // Start both tasks simultaneously for maximum speed
+    // AUTO-HIDE SPINNER after 2 seconds (user can type while waiting)
+    const spinnerTimeout = setTimeout(() => {
+      setIsAnalyzing(false);  // Stop showing "Analyzing" - let user type
+    }, 2000);
     
-    // TASK 1: Instant GPS Stamp with Address
-    const gpsPromise = new Promise(async (resolve) => {
+    // ========== PARALLEL: GPS + HIGH QUALITY AI ==========
+    // Both tasks run simultaneously, UI is NOT blocked
+    
+    // TASK 1: Instant GPS Stamp with Address (non-blocking)
+    (async () => {
       if (!navigator.geolocation) {
         if (userLocation) {
-          resolve({ lat: userLocation[0], lng: userLocation[1] });
-        } else {
-          resolve(null);
+          const addr = await reverseGeocode(userLocation[0], userLocation[1]);
+          if (addr) setNewPost(prev => ({ ...prev, address: addr }));
         }
         return;
       }
       
       const permissionStatus = await checkLocationPermission();
-      if (permissionStatus === 'denied') {
-        if (userLocation) {
-          resolve({ lat: userLocation[0], lng: userLocation[1] });
-        } else {
-          resolve(null);
-        }
+      if (permissionStatus === 'denied' && userLocation) {
+        const addr = await reverseGeocode(userLocation[0], userLocation[1]);
+        if (addr) setNewPost(prev => ({ ...prev, address: addr }));
         return;
       }
       
@@ -1172,7 +1178,6 @@ function AppContent() {
             setNewPost(prev => ({ ...prev, address: address }));
           }
           setIsGettingAddress(false);
-          resolve({ lat: freshLat, lng: freshLng, address });
         },
         (error) => {
           console.log("GPS failed:", error);
@@ -1184,46 +1189,43 @@ function AppContent() {
               latitude: userLocation[0],
               longitude: userLocation[1]
             }));
-            // Try to get address for cached location too
             reverseGeocode(userLocation[0], userLocation[1]).then(addr => {
               if (addr) setNewPost(prev => ({ ...prev, address: addr }));
             });
-            resolve({ lat: userLocation[0], lng: userLocation[1] });
-          } else {
-            resolve(null);
           }
         },
         { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
       );
-    });
-    
-    // TASK 2: Fast AI Title (The Sprinter - < 1 second)
-    const aiPromise = (async () => {
-      setIsAnalyzing(true);
-      try {
-        const base64Data = base64.split(',')[1] || base64;
-        const response = await axios.post(`${API}/analyze-image-fast`, {
-          image_base64: base64Data
-        }, { timeout: 10000 });  // 10s timeout for fast endpoint
-        
-        setNewPost(prev => ({
-          ...prev,
-          title: response.data.title,
-          category: response.data.category
-          // NO description - that comes in background after post
-        }));
-        return response.data;
-      } catch (error) {
-        console.error("Fast AI failed:", error);
-        // Don't show error toast - user can still fill manually
-        return null;
-      } finally {
-        setIsAnalyzing(false);
-      }
     })();
     
-    // Wait for both to complete (they run in parallel)
-    await Promise.all([gpsPromise, aiPromise]);
+    // TASK 2: HIGH QUALITY AI Analysis (non-blocking, runs in background)
+    (async () => {
+      try {
+        const base64Data = base64.split(',')[1] || base64;
+        
+        // Use the FAST endpoint first for quick title
+        const response = await axios.post(`${API}/analyze-image-fast`, {
+          image_base64: base64Data
+        }, { timeout: 15000 });
+        
+        // Clear spinner timeout since AI responded
+        clearTimeout(spinnerTimeout);
+        setIsAnalyzing(false);
+        
+        // Only update title/category if user hasn't typed anything yet
+        setNewPost(prev => ({
+          ...prev,
+          title: prev.title || response.data.title,
+          category: prev.category === 'general' ? response.data.category : prev.category
+        }));
+        
+      } catch (error) {
+        console.error("AI analysis failed:", error);
+        clearTimeout(spinnerTimeout);
+        setIsAnalyzing(false);
+        // No error toast - user can fill manually
+      }
+    })();
   };
 
   // Handle album/gallery selection
