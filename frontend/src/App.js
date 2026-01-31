@@ -924,28 +924,38 @@ function AppContent() {
     if (!navigator.permissions) return 'prompt';
     try {
       const result = await navigator.permissions.query({ name: 'camera' });
+      setCameraPermissionState(result.state);
       return result.state;
     } catch (e) {
       return 'prompt'; // Some browsers don't support camera permission query
     }
   }, []);
 
-  // Open camera
+  // MODULE 2: Open camera - IMMEDIATELY if permission granted, no nagging
   const openCamera = async () => {
     try {
-      // Check permission status first
-      const permissionStatus = await checkCameraPermission();
+      // Use cached permission state first for instant response
+      let permissionStatus = cameraPermissionState;
       
-      // If denied, skip to file picker without showing error
+      // If we don't know the state, check it
+      if (permissionStatus === 'prompt') {
+        permissionStatus = await checkCameraPermission();
+      }
+      
+      // If denied, silently fall back to file picker
       if (permissionStatus === 'denied') {
         fileInputRef.current?.click();
         return;
       }
       
+      // Permission is granted or prompt - try to access camera
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
         audio: false
       });
+      
+      // Success! Update permission state
+      setCameraPermissionState('granted');
       setCameraStream(stream);
       setShowCameraView(true);
       setCameraZoom(1); // Reset zoom
@@ -965,11 +975,13 @@ function AppContent() {
       }, 100);
     } catch (error) {
       console.error("Camera error:", error);
-      // Only show error toast if it's not a permission denial
-      if (error.name !== 'NotAllowedError') {
-        toast.error("Could not access camera");
+      
+      // Update permission state if denied
+      if (error.name === 'NotAllowedError') {
+        setCameraPermissionState('denied');
       }
-      // Fallback to file picker
+      
+      // Silently fallback to file picker - no error toast
       fileInputRef.current?.click();
     }
   };
