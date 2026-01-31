@@ -2289,22 +2289,13 @@ function AppContent() {
                 <img 
                   src={newPost.image_base64} 
                   alt="Preview" 
-                  className={`w-full ${isAnalyzing ? 'h-56' : 'h-40'} object-cover transition-all duration-300`}
+                  className="w-full h-40 object-cover"
                 />
+                {/* MODULE 3: Subtle non-blocking AI indicator */}
                 {isAnalyzing && (
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/90 flex flex-col items-center justify-center">
-                    <div className="relative mb-4">
-                      {/* Outer pulsing ring */}
-                      <div className="absolute inset-0 w-20 h-20 border-4 border-green-400/30 rounded-full animate-ping" />
-                      {/* Middle rotating ring */}
-                      <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-t-green-500 border-r-green-500 rounded-full animate-spin" style={{animationDuration: '1s'}} />
-                      {/* Inner circle with icon */}
-                      <div className="w-20 h-20 bg-green-600/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-green-500/50">
-                        <Eye className="w-8 h-8 text-green-400 animate-pulse" />
-                      </div>
-                    </div>
-                    <p className="text-white text-lg font-bold tracking-wide">AI Analyzing</p>
-                    <p className="text-green-400 text-sm mt-1 animate-pulse">Identifying your item...</p>
+                  <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-white text-xs font-medium">AI analyzing...</span>
                   </div>
                 )}
                 <button
