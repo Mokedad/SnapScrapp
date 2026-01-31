@@ -427,7 +427,46 @@ function AppContent() {
     }
   }, []);
 
-  // Request user location (silent mode = no toast if already granted)
+  // MODULE 1: LIVE LOCATION TRACKING with watchPosition
+  // Updates every 5 seconds for real-time distance tracking
+  const startLiveLocationTracking = useCallback(async () => {
+    if (!navigator.geolocation) return;
+    
+    // Clear any existing watch
+    if (locationWatchId.current) {
+      navigator.geolocation.clearWatch(locationWatchId.current);
+    }
+    
+    const permissionStatus = await checkLocationPermission();
+    if (permissionStatus === 'denied') return;
+    
+    // Start watching position with high accuracy
+    locationWatchId.current = navigator.geolocation.watchPosition(
+      (position) => {
+        const newLoc = [position.coords.latitude, position.coords.longitude];
+        setUserLocation(newLoc);
+        setIsLocating(false);
+      },
+      (error) => {
+        console.log("Live location error:", error.message);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 5000  // Update every 5 seconds max
+      }
+    );
+  }, [checkLocationPermission]);
+
+  // Stop live tracking (cleanup)
+  const stopLiveLocationTracking = useCallback(() => {
+    if (locationWatchId.current) {
+      navigator.geolocation.clearWatch(locationWatchId.current);
+      locationWatchId.current = null;
+    }
+  }, []);
+
+  // Request user location (one-time, for initial centering)
   const requestLocation = useCallback(async (showToast = true) => {
     setIsLocating(true);
     setLocationError(null);
@@ -466,6 +505,9 @@ function AppContent() {
         if (mapRef.current) {
           mapRef.current.flyTo(loc, 18, { duration: 1.5 });
         }
+        
+        // Start live tracking after initial location is obtained
+        startLiveLocationTracking();
       },
       (error) => {
         setIsLocating(false);
@@ -494,7 +536,7 @@ function AppContent() {
         maximumAge: 60000
       }
     );
-  }, [checkLocationPermission]);
+  }, [checkLocationPermission, startLiveLocationTracking]);
 
   // Filter posts by radius from user location
   const filterPostsByRadius = useCallback((allPosts, location, radius) => {
