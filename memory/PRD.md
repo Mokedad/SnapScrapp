@@ -224,6 +224,21 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
     - Clicks by category breakdown
     - API endpoints: `/admin/partners`, `/admin/partner-summary`
     - Click tracking: `/track-partner-click` (called when user taps "Get directions")
+13. ✅ **PWA SHORTCUT TO CAMERA**
+    - Added "Post Item" shortcut in manifest.json
+    - Opens camera directly via `?action=camera` URL parameter
+    - Appears in iOS/Android app shortcuts menu
+14. ✅ **"ADD TO HOME SCREEN" PROMPT (iOS)**
+    - Detects if app is NOT in standalone mode (PWA not installed)
+    - Shows overlay with arrow pointing to Share button
+    - Step-by-step instructions: Share → Add to Home Screen → Add
+    - Includes Safari camera settings tip
+    - Only shows once (saved to localStorage)
+15. ✅ **NATIVE CAMERA INTEGRATION**
+    - Uses `<input type="file" capture="environment">` for native camera
+    - Bypasses repeated permission prompts
+    - System handles permissions persistently
+    - Full access to device camera features (zoom, flash, etc.)
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
