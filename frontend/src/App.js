@@ -5368,6 +5368,19 @@ function PostPage() {
   );
 }
 
+// Lazy load AdminPanel for better initial load performance
+const LazyAdminPanel = lazy(() => Promise.resolve({ default: AdminPanel }));
+
+// Loading fallback for lazy components
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-50">
+    <div className="text-center">
+      <Loader2 className="w-8 h-8 animate-spin text-green-600 mx-auto mb-2" />
+      <p className="text-slate-600">Loading...</p>
+    </div>
+  </div>
+);
+
 // Main App with Router
 function App() {
   return (
@@ -5375,7 +5388,11 @@ function App() {
       <Routes>
         <Route path="/" element={<AppContent />} />
         <Route path="/post/:postId" element={<PostPage />} />
-        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/admin" element={
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyAdminPanel />
+          </Suspense>
+        } />
       </Routes>
     </BrowserRouter>
   );
