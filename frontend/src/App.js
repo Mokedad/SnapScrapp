@@ -54,48 +54,15 @@ import {
 import "leaflet/dist/leaflet.css";
 import "@/index.css";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Import shared utilities and constants
+import { BACKEND_URL, API, CATEGORIES, REPORT_REASONS, SCRAP_PRICES, PARTNERS, STORAGE_KEYS } from './utils/constants';
+import { createPinIcon, locationIcon, calculateDistance, formatDistance as formatDistanceUtil, isInSydneyMetro, formatAddress } from './utils/mapUtils';
 
-// Categories list
-const CATEGORIES = [
-  "furniture", "electronics", "appliances", "sports", "toys", "books", 
-  "clothing", "garden", "kitchen", "tools", "e-waste", "scrap-metal", "cardboard", "general"
-];
-
-// Report reasons
-const REPORT_REASONS = [
-  { value: "not_correct", label: "Not correct / Misleading", description: "Item info or location is wrong" },
-  { value: "illegal_dumping", label: "Illegal Dumping", description: "Report to local council" },
-  { value: "item_gone", label: "Item already gone", description: "The item is no longer available" },
-  { value: "other", label: "Other", description: "Other types of concerns" }
-];
-
-// Create custom marker icon from base64 image
-const createPinIcon = (imageBase64) => {
-  const html = `
-    <div class="custom-pin">
-      <img src="${imageBase64.startsWith('data:') ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`}" alt="item" />
-    </div>
-  `;
-  return L.divIcon({
-    html,
-    className: '',
-    iconSize: [52, 52],
-    iconAnchor: [26, 52],
-    popupAnchor: [0, -52]
-  });
+// Helper function using imported utility
+const formatDistance = (post) => {
+  if (post.distance === undefined) return null;
+  return formatDistanceUtil(post.distance);
 };
-
-// Default marker for location selection
-const locationIcon = L.divIcon({
-  html: `<div style="width:40px;height:40px;background:#166534;border-radius:50%;border:4px solid white;box-shadow:0 4px 14px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-  </div>`,
-  className: '',
-  iconSize: [40, 40],
-  iconAnchor: [20, 40]
-});
 
 // Map click handler component
 function LocationPicker({ onLocationSelect, selectedLocation }) {
