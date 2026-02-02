@@ -2240,11 +2240,92 @@ function AppContent() {
 
       {/* Menu Drawer */}
       <Drawer open={showMenu} onOpenChange={setShowMenu}>
-        <DrawerContent className="max-h-[60vh]">
+        <DrawerContent className="max-h-[70vh]">
           <DrawerHeader>
             <DrawerTitle>Menu</DrawerTitle>
           </DrawerHeader>
-          <div className="p-4 space-y-2 overflow-y-auto">
+          <div className="p-4 space-y-3 overflow-y-auto">
+            
+            {/* Download App Section - Only show if NOT in standalone mode */}
+            {!isStandalone && (
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 mb-2 border border-blue-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <Smartphone className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-semibold text-slate-900">Download App</h3>
+                </div>
+                <p className="text-xs text-slate-600 mb-3">Get the full app experience with quick access from your home screen</p>
+                
+                <button
+                  onClick={() => {
+                    setShowMenu(false);
+                    setShowAddToHomeScreen(true);
+                  }}
+                  className="w-full flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-blue-50 transition-colors text-left shadow-sm"
+                  data-testid="add-home-menu-btn"
+                >
+                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <Plus className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <span className="font-medium text-slate-900 text-sm">Add to Home Screen</span>
+                    <p className="text-xs text-slate-500">Install Ucycle on your device</p>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-slate-400 -rotate-90" />
+                </button>
+              </div>
+            )}
+
+            {/* Device Options Section - iOS specific features */}
+            {isIOS && (
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-4 mb-2 border border-slate-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Settings className="w-5 h-5 text-slate-600" />
+                  <h3 className="font-semibold text-slate-900">Device Options</h3>
+                </div>
+                
+                <div className="space-y-2">
+                  {/* Action Button Setup */}
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      setShowActionButtonGuide(true);
+                    }}
+                    className="w-full flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-slate-50 transition-colors text-left shadow-sm"
+                    data-testid="action-button-menu-btn"
+                  >
+                    <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                      <Zap className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <div className="flex-1">
+                      <span className="font-medium text-slate-900 text-sm">Action Button</span>
+                      <p className="text-xs text-slate-500">Map to iPhone hardware button</p>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-slate-400 -rotate-90" />
+                  </button>
+                  
+                  {/* Quick Guide */}
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      setShowQuickGuide(true);
+                    }}
+                    className="w-full flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-slate-50 transition-colors text-left shadow-sm"
+                    data-testid="quick-guide-menu-btn"
+                  >
+                    <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                      <HelpCircle className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <span className="font-medium text-slate-900 text-sm">Quick Guide</span>
+                      <p className="text-xs text-slate-500">Setup tips & camera help</p>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-slate-400 -rotate-90" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Regular Menu Items */}
             <button
               onClick={() => {
                 setShowMenu(false);
