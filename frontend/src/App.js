@@ -796,13 +796,17 @@ function AppContent() {
     }
   }, []);
 
-  // Detect standalone mode (PWA installed) and handle ?action=camera shortcut
+  // Detect standalone mode (PWA installed), iOS device, and handle ?action=camera shortcut
   useEffect(() => {
     // Check if running as standalone PWA
     const standalone = window.matchMedia('(display-mode: standalone)').matches 
                     || window.navigator.standalone === true
                     || document.referrer.includes('android-app://');
     setIsStandalone(standalone);
+    
+    // Detect iOS device
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    setIsIOS(iOS);
     
     // Handle ?action=camera shortcut from PWA
     const urlParams = new URLSearchParams(window.location.search);
