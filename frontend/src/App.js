@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense, memo } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, useParams } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet";
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -71,6 +71,16 @@ import { MapCenterUpdater, MapRefSetter } from './components/map/MapHelpers';
 
 // Import extracted post components
 import { CategoryBadge, StatusBadge } from './components/post/PostCard';
+
+// Performance: Memoized marker component to prevent re-renders
+const MemoizedMarker = memo(({ post, onClick }) => (
+  <Marker
+    position={[post.latitude, post.longitude]}
+    icon={createPinIcon(post.image_base64)}
+    eventHandlers={{ click: () => onClick(post) }}
+  />
+));
+MemoizedMarker.displayName = 'MemoizedMarker';
 
 // Main App Component
 function AppContent() {
