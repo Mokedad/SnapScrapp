@@ -2918,11 +2918,29 @@ function AppContent() {
                 }`}
                 data-testid={`report-reason-${reason.value}`}
               >
-                <span className={`font-medium ${reportReason === reason.value ? 'text-green-700' : 'text-slate-700'}`}>
+                <span className={`font-medium block ${reportReason === reason.value ? 'text-green-700' : 'text-slate-700'}`}>
                   {reason.label}
                 </span>
+                <span className="text-xs text-slate-500">{reason.description}</span>
               </button>
             ))}
+            
+            {/* Additional details for illegal dumping */}
+            {reportReason === 'illegal_dumping' && (
+              <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <p className="text-sm text-amber-800 mb-3">
+                  <strong>⚠️ Illegal Dumping Report</strong><br/>
+                  This will be sent to local council authorities. Please add any additional details.
+                </p>
+                <textarea
+                  value={reportDetails}
+                  onChange={(e) => setReportDetails(e.target.value)}
+                  placeholder="Additional details (optional): e.g., 'Large pile of construction waste', 'Multiple mattresses', etc."
+                  className="w-full p-3 border border-amber-300 rounded-lg text-sm resize-none"
+                  rows={3}
+                />
+              </div>
+            )}
           </div>
           <Button
             className="w-full bg-green-800 hover:bg-green-900"
@@ -2935,6 +2953,8 @@ function AppContent() {
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Submitting...
               </>
+            ) : reportReason === 'illegal_dumping' ? (
+              "Report to Council"
             ) : (
               "Submit Report"
             )}
