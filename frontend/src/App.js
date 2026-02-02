@@ -3257,6 +3257,211 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
+      {/* Quick Guide Modal - iOS swipe to dismiss */}
+      {showQuickGuide && (
+        <div 
+          className="fixed inset-0 z-[70] bg-black/60 animate-fade-in"
+          onClick={() => setShowQuickGuide(false)}
+        >
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[80vh] overflow-y-auto animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drag handle */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-12 h-1.5 bg-slate-300 rounded-full" />
+            </div>
+            <p className="text-center text-xs text-slate-400 mb-2">Swipe down to close</p>
+            
+            <div className="px-6 pb-8">
+              <h2 className="text-xl font-bold text-slate-900 mb-4">Quick Setup Guide</h2>
+              
+              {/* Home Screen Section */}
+              {!isStandalone && (
+                <div className="bg-blue-50 rounded-2xl p-4 mb-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <Plus className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-900">Add to Home Screen</h3>
+                      <p className="text-xs text-slate-500">Install for quick access</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-3 bg-white rounded-lg p-2">
+                      <Share2 className="w-5 h-5 text-blue-500" />
+                      <span>Tap the <strong>Share</strong> button below</span>
+                    </div>
+                    <div className="flex items-center gap-3 bg-white rounded-lg p-2">
+                      <ChevronDown className="w-5 h-5 text-slate-500" />
+                      <span>Scroll down in the menu</span>
+                    </div>
+                    <div className="flex items-center gap-3 bg-white rounded-lg p-2">
+                      <Plus className="w-5 h-5 text-green-500" />
+                      <span>Select <strong>"Add to Home Screen"</strong></span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Action Button Section */}
+              <div className="bg-orange-50 rounded-2xl p-4 mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900">iPhone Action Button</h3>
+                    <p className="text-xs text-slate-500">Quick camera access</p>
+                  </div>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <p className="text-slate-600">Map Ucycle to your iPhone's Action Button for instant posting:</p>
+                  <div className="bg-white rounded-lg p-2 text-xs text-slate-600">
+                    Settings → Action Button → Shortcut → "Post Item"
+                  </div>
+                </div>
+              </div>
+              
+              {/* Camera Permission Section */}
+              <div className="bg-green-50 rounded-2xl p-4 mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                    <Camera className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900">Camera Permission</h3>
+                    <p className="text-xs text-slate-500">Stop repeated prompts</p>
+                  </div>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <p className="text-slate-600">To stop Safari asking "Allow Camera" every time:</p>
+                  <div className="bg-white rounded-lg p-3 space-y-2">
+                    <p className="text-xs text-slate-600">
+                      <strong>Method 1:</strong> Tap the <strong>"AA"</strong> in URL bar → Website Settings → Camera → <span className="text-green-600 font-semibold">Allow</span>
+                    </p>
+                    <p className="text-xs text-slate-600">
+                      <strong>Method 2:</strong> Settings → Safari → Camera → <span className="text-green-600 font-semibold">Allow</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setShowQuickGuide(false)}
+                className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full"
+              >
+                Got it!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Action Button Guide Modal */}
+      {showActionButtonGuide && (
+        <div 
+          className="fixed inset-0 z-[70] bg-black/60 animate-fade-in"
+          onClick={() => setShowActionButtonGuide(false)}
+        >
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drag handle */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-12 h-1.5 bg-slate-300 rounded-full" />
+            </div>
+            <p className="text-center text-xs text-slate-400 mb-2">Swipe down to close</p>
+            
+            <div className="px-6 pb-8">
+              <div className="text-center mb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+                  <Zap className="w-10 h-10 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-900">Action Button Setup</h2>
+                <p className="text-sm text-slate-500 mt-1">iPhone 15 Pro & newer</p>
+              </div>
+              
+              <div className="space-y-4 mb-6">
+                <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
+                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Open iPhone Settings</p>
+                    <p className="text-sm text-slate-500">Go to Settings app on your iPhone</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
+                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Tap "Action Button"</p>
+                    <p className="text-sm text-slate-500">Scroll down to find this option</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
+                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">3</div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Select "Shortcut"</p>
+                    <p className="text-sm text-slate-500">Choose the Shortcut action type</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
+                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">4</div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Choose "Open Ucycle"</p>
+                    <p className="text-sm text-slate-500">Or create a shortcut that opens Safari to Ucycle</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-orange-50 rounded-xl p-4 mb-6">
+                <p className="text-sm text-orange-800">
+                  <strong>💡 Pro Tip:</strong> Add Ucycle to your Home Screen first for the best experience with the Action Button!
+                </p>
+              </div>
+              
+              <button
+                onClick={() => setShowActionButtonGuide(false)}
+                className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Camera Troubleshoot Tooltip */}
+      {showCameraTroubleshoot && !hasSeenCameraTip && (
+        <div className="fixed bottom-24 left-4 right-4 z-50 animate-slide-up">
+          <div className="bg-slate-900 text-white rounded-2xl p-4 shadow-xl">
+            <div className="flex items-start gap-3">
+              <Camera className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-semibold text-sm">Stop Camera Permission Prompts</p>
+                <p className="text-xs text-slate-300 mt-1">
+                  Tap the <strong className="text-blue-400">"AA"</strong> in the URL bar → Website Settings → Set Camera to <strong className="text-green-400">"Allow"</strong>
+                </p>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowCameraTroubleshoot(false);
+                  setHasSeenCameraTip(true);
+                  localStorage.setItem('ucycle_camera_tip_seen', 'true');
+                }}
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Fullscreen Image Viewer */}
       {showFullscreenImage && (
         <div 
