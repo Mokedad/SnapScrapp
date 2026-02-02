@@ -3043,10 +3043,33 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
-      {/* iOS Add to Home Screen Prompt */}
+      {/* iOS Add to Home Screen Prompt - Swipe down to dismiss */}
       {showAddToHomeScreen && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 animate-fade-in">
-          <div className="w-full max-w-md mx-4 mb-4 animate-slide-up">
+        <div 
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 animate-fade-in"
+          onClick={dismissAddToHomeScreen}
+        >
+          <div 
+            className="w-full max-w-md mx-4 mb-20 animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => {
+              e.currentTarget.dataset.touchStartY = e.touches[0].clientY;
+            }}
+            onTouchEnd={(e) => {
+              const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+              const endY = e.changedTouches[0].clientY;
+              // Swipe down to close (threshold 80px)
+              if (endY - startY > 80) {
+                dismissAddToHomeScreen();
+              }
+            }}
+          >
+            {/* Drag handle */}
+            <div className="flex justify-center mb-2">
+              <div className="w-10 h-1.5 bg-white/60 rounded-full" />
+            </div>
+            <p className="text-center text-xs text-white/80 mb-2">Swipe down to close</p>
+            
             {/* Arrow pointing to Share button */}
             <div className="flex justify-center mb-2">
               <div className="bg-white rounded-full p-2 shadow-lg animate-bounce">
@@ -3084,7 +3107,7 @@ function AppContent() {
                       <Plus className="w-4 h-4 text-green-600" />
                     </div>
                     <p className="text-sm text-slate-700">
-                      <strong>Step 2:</strong> Scroll and select <span className="text-green-600">"Add to Home Screen"</span>
+                      <strong>Step 2:</strong> Scroll and select <span className="text-green-600">&quot;Add to Home Screen&quot;</span>
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -3092,7 +3115,7 @@ function AppContent() {
                       <Check className="w-4 h-4 text-amber-600" />
                     </div>
                     <p className="text-sm text-slate-700">
-                      <strong>Step 3:</strong> Tap <span className="text-amber-600">"Add"</span> to confirm
+                      <strong>Step 3:</strong> Tap <span className="text-amber-600">&quot;Add&quot;</span> to confirm
                     </p>
                   </div>
                 </div>
