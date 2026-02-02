@@ -2041,11 +2041,22 @@ function AppContent() {
         data-testid="image-upload-input"
       />
       
-      {/* Hidden canvas for camera capture */}
+      {/* Hidden input for NATIVE CAMERA - opens device camera app */}
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        ref={cameraInputRef}
+        onChange={handleNativeCameraCapture}
+        className="hidden"
+        data-testid="native-camera-input"
+      />
+      
+      {/* Hidden canvas for image processing */}
       <canvas ref={canvasRef} className="hidden" />
 
-      {/* Camera FAB Button */}
-      {!pickingLocation && !showCameraView && (
+      {/* Camera FAB Button - Opens NATIVE camera */}
+      {!pickingLocation && (
         <button 
           className="fab-button"
           onClick={openCamera}
