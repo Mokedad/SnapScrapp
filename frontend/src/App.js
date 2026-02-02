@@ -3275,15 +3275,47 @@ function AppContent() {
       {/* Quick Guide Modal - iOS swipe to dismiss */}
       {showQuickGuide && (
         <div 
-          className="fixed inset-0 z-[70] bg-black/60 animate-fade-in"
+          className="fixed inset-0 z-[70] bg-black/60 modal-backdrop animate-fade-in"
           onClick={() => setShowQuickGuide(false)}
         >
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[80vh] overflow-y-auto animate-slide-up"
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[80vh] overflow-y-auto animate-slide-up modal-content"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => {
+              const touch = e.touches[0];
+              e.currentTarget.dataset.touchStartY = touch.clientY;
+              e.currentTarget.dataset.touchStartScrollTop = e.currentTarget.scrollTop;
+            }}
+            onTouchMove={(e) => {
+              const touch = e.touches[0];
+              const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+              const startScroll = parseFloat(e.currentTarget.dataset.touchStartScrollTop || 0);
+              const currentY = touch.clientY;
+              const diff = currentY - startY;
+              
+              // Only allow swipe down when at top of scroll
+              if (startScroll <= 0 && diff > 0) {
+                e.currentTarget.style.transform = `translateY(${Math.min(diff * 0.5, 150)}px)`;
+                e.currentTarget.style.transition = 'none';
+              }
+            }}
+            onTouchEnd={(e) => {
+              const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+              const startScroll = parseFloat(e.currentTarget.dataset.touchStartScrollTop || 0);
+              const endY = e.changedTouches[0].clientY;
+              const diff = endY - startY;
+              
+              e.currentTarget.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
+              e.currentTarget.style.transform = '';
+              
+              // Close if swiped down more than 80px when at top
+              if (startScroll <= 0 && diff > 80) {
+                setShowQuickGuide(false);
+              }
+            }}
           >
             {/* Drag handle */}
-            <div className="flex justify-center pt-3 pb-2">
+            <div className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing">
               <div className="w-12 h-1.5 bg-slate-300 rounded-full" />
             </div>
             <p className="text-center text-xs text-slate-400 mb-2">Swipe down to close</p>
@@ -3306,7 +3338,7 @@ function AppContent() {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-3 bg-white rounded-lg p-2">
                       <Share2 className="w-5 h-5 text-blue-500" />
-                      <span>Tap the <strong>Share</strong> icon in your browser's toolbar (Safari, Chrome)</span>
+                      <span>Tap the <strong>Share</strong> icon in your browser&apos;s toolbar (Safari, Chrome)</span>
                     </div>
                     <div className="flex items-center gap-3 bg-white rounded-lg p-2">
                       <ChevronDown className="w-5 h-5 text-slate-500" />
@@ -3314,7 +3346,7 @@ function AppContent() {
                     </div>
                     <div className="flex items-center gap-3 bg-white rounded-lg p-2">
                       <Plus className="w-5 h-5 text-green-500" />
-                      <span>Select <strong>"Add to Home Screen"</strong></span>
+                      <span>Select <strong>&quot;Add to Home Screen&quot;</strong></span>
                     </div>
                   </div>
                 </div>
@@ -3332,10 +3364,10 @@ function AppContent() {
                   </div>
                 </div>
                 <div className="space-y-2 text-sm">
-                  <p className="text-slate-600">To stop Safari asking "Allow Camera" every time:</p>
+                  <p className="text-slate-600">To stop Safari asking &quot;Allow Camera&quot; every time:</p>
                   <div className="bg-white rounded-lg p-3 space-y-2">
                     <p className="text-xs text-slate-600">
-                      <strong>Method 1:</strong> Tap the <strong>"AA"</strong> in URL bar → Website Settings → Camera → <span className="text-green-600 font-semibold">Allow</span>
+                      <strong>Method 1:</strong> Tap the <strong>&quot;AA&quot;</strong> in URL bar → Website Settings → Camera → <span className="text-green-600 font-semibold">Allow</span>
                     </p>
                     <p className="text-xs text-slate-600">
                       <strong>Method 2:</strong> Settings → Safari → Camera → <span className="text-green-600 font-semibold">Allow</span>
@@ -3346,7 +3378,7 @@ function AppContent() {
               
               <button
                 onClick={() => setShowQuickGuide(false)}
-                className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full"
+                className="w-full py-4 bg-green-600 hover:bg-green-700 active:scale-[0.98] text-white font-semibold rounded-full transition-all"
               >
                 Got it!
               </button>
