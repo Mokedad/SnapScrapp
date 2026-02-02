@@ -457,8 +457,13 @@ h1, h2, h3, h4, h5, h6 {
   to { opacity: 1; }
 }
 
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 @keyframes slideUp {
-  from { transform: translateY(100px); opacity: 0; }
+  from { transform: translateY(100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
@@ -467,16 +472,80 @@ h1, h2, h3, h4, h5, h6 {
   to { transform: translateY(0); opacity: 1; }
 }
 
+@keyframes slideOut {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(100%); opacity: 0; }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.2s ease-in forwards;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.4s ease-out;
+  animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.animate-slide-out {
+  animation: slideOut 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 
 .animate-slide-down {
-  animation: slideDown 0.4s ease-out;
+  animation: slideDown 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Smooth modal transitions with GPU acceleration */
+.modal-content {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Swipeable modal base styles */
+.swipeable-modal {
+  touch-action: pan-y;
+  will-change: transform;
+  transition: transform 0.1s ease-out;
+}
+
+.swipeable-modal.swiping {
+  transition: none;
+}
+
+/* Drag handle indicator */
+.drag-handle {
+  width: 40px;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  margin: 8px auto 4px;
+}
+
+/* Optimized backdrop with blur */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  will-change: opacity;
+}
+
+/* Prevent scroll during modal interaction */
+.body-modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* Smooth button interactions */
+.btn-smooth {
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  will-change: transform;
+}
+
+.btn-smooth:active {
+  transform: scale(0.97);
 }
 
 /* Hide leaflet default attribution on mobile */
