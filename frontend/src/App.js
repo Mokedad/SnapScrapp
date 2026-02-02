@@ -1507,7 +1507,8 @@ function AppContent() {
   const [sharePost, setSharePost] = useState(null);
   
   const handleNativeShare = async (post) => {
-    const shareUrl = `${window.location.origin}/post/${post.id}`;
+    // Use post-meta URL for social sharing (has proper OG tags for image previews)
+    const shareUrl = `${BACKEND_URL}/post-meta/${post.id}`;
     const shareTitle = `Check out this ${post.title} on Ucycle`;
     const shareText = `Free pickup available! Grab it before it's gone!`;
     
@@ -1618,7 +1619,9 @@ function AppContent() {
     setShowShareDialog(true);
   };
 
-  const getShareUrl = (post) => `${window.location.origin}/post/${post.id}`;
+  // Use post-meta URL for social sharing (has proper OG tags for previews)
+  // This URL auto-redirects human visitors to /post/{id}
+  const getShareUrl = (post) => `${BACKEND_URL}/post-meta/${post.id}`;
 
   const shareToWhatsApp = (post) => {
     const url = getShareUrl(post);
