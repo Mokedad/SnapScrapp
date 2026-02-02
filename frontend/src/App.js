@@ -3046,18 +3046,32 @@ function AppContent() {
       {/* iOS Add to Home Screen Prompt - Swipe down to dismiss */}
       {showAddToHomeScreen && (
         <div 
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 animate-fade-in"
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 modal-backdrop animate-fade-in"
           onClick={dismissAddToHomeScreen}
         >
           <div 
-            className="w-full max-w-md mx-4 mb-20 animate-slide-up"
+            className="w-full max-w-md mx-4 mb-20 animate-slide-up modal-content"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => {
               e.currentTarget.dataset.touchStartY = e.touches[0].clientY;
             }}
+            onTouchMove={(e) => {
+              const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+              const currentY = e.touches[0].clientY;
+              const diff = currentY - startY;
+              // Only allow downward swipe
+              if (diff > 0) {
+                e.currentTarget.style.transform = `translateY(${diff * 0.5}px)`;
+                e.currentTarget.style.opacity = `${Math.max(0.3, 1 - diff / 300)}`;
+                e.currentTarget.style.transition = 'none';
+              }
+            }}
             onTouchEnd={(e) => {
               const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
               const endY = e.changedTouches[0].clientY;
+              e.currentTarget.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease';
+              e.currentTarget.style.transform = '';
+              e.currentTarget.style.opacity = '';
               // Swipe down to close (threshold 80px)
               if (endY - startY > 80) {
                 dismissAddToHomeScreen();
@@ -3065,7 +3079,7 @@ function AppContent() {
             }}
           >
             {/* Drag handle */}
-            <div className="flex justify-center mb-2">
+            <div className="flex justify-center mb-2 cursor-grab active:cursor-grabbing">
               <div className="w-10 h-1.5 bg-white/60 rounded-full" />
             </div>
             <p className="text-center text-xs text-white/80 mb-2">Swipe down to close</p>
@@ -3099,7 +3113,7 @@ function AppContent() {
                       <Share2 className="w-4 h-4 text-blue-600" />
                     </div>
                     <p className="text-sm text-slate-700">
-                      <strong>Step 1:</strong> Tap the <span className="text-blue-600">Share</span> icon in your browser's toolbar (Safari, Chrome)
+                      <strong>Step 1:</strong> Tap the <span className="text-blue-600">Share</span> icon in your browser&apos;s toolbar (Safari, Chrome)
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -3127,13 +3141,13 @@ function AppContent() {
                 <div className="flex gap-3">
                   <Button 
                     variant="outline"
-                    className="flex-1 py-4 rounded-full"
+                    className="flex-1 py-4 rounded-full active:scale-[0.98] transition-transform"
                     onClick={dismissAddToHomeScreen}
                   >
                     Maybe later
                   </Button>
                   <Button 
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full active:scale-[0.98] transition-transform"
                     onClick={dismissAddToHomeScreen}
                   >
                     Got it!
