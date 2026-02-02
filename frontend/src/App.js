@@ -268,6 +268,15 @@ function AppContent() {
   const [showCategoryFilter, setShowCategoryFilter] = useState(false); // Collapsible category filter
   const [showAddToHomeScreen, setShowAddToHomeScreen] = useState(false); // iOS Add to Home Screen prompt
   const [isStandalone, setIsStandalone] = useState(false); // PWA standalone mode detection
+  const [isIOS, setIsIOS] = useState(false); // iOS device detection
+  
+  // Menu & Guide modals
+  const [showQuickGuide, setShowQuickGuide] = useState(false); // Quick Guide swipe modal
+  const [showActionButtonGuide, setShowActionButtonGuide] = useState(false); // Action Button setup guide
+  const [showCameraTroubleshoot, setShowCameraTroubleshoot] = useState(false); // Camera troubleshoot tooltip
+  const [hasSeenCameraTip, setHasSeenCameraTip] = useState(() => {
+    return localStorage.getItem('ucycle_camera_tip_seen') === 'true';
+  });
   
   // Notification state
   const [notification, setNotification] = useState(null);
