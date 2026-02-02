@@ -307,29 +307,42 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 22. ✅ **SMOOTH SWIPE-TO-DISMISS ON ALL MODALS & PERFORMANCE OPTIMIZATION**
     - **Request**: Add swipe-to-dismiss to all slider boxes, make app flawless and smooth
     - **Changes implemented**:
-      - **CSS Animations Overhaul** (`index.css`):
-        - Added GPU-accelerated animations with `will-change`, `backface-visibility`
-        - Smooth cubic-bezier timing functions for natural feel
-        - Added `modal-content`, `modal-backdrop`, `swipeable-modal` classes
-        - Added reduced-motion media query for accessibility
-        - Optimized touch handling with `-webkit-tap-highlight-color: transparent`
-      - **Drawer Component** (`drawer.jsx`):
-        - Enhanced with GPU acceleration
-        - Smoother drag handle styling
-        - Better rounded corners (20px)
-      - **Dialog Component** (`dialog.jsx`):
-        - Added backdrop blur effect
-        - GPU-accelerated transforms
-        - Smoother close button with active state
-      - **Button Component** (`button.jsx`):
-        - Added `active:scale-[0.97]` for tactile feedback
-        - Touch manipulation optimization
-        - Smooth transition-all duration
-      - **Modals with Swipe-to-Dismiss**:
-        - Quick Guide Modal (swipe down)
-        - Add to Home Screen Modal (swipe down with opacity fade)
-        - Norman Scrap Yard Ad (swipe any direction)
-        - Camera Troubleshoot Tooltip (swipe down)
-        - PWA Install Prompt Banner (swipe down)
-        - App Update Banner (swipe up)
-        - All with smooth rubber-band effect during drag
+      - CSS Animations Overhaul with GPU acceleration
+      - Drawer, Dialog, Button components enhanced
+      - All modals now have swipe-to-dismiss
+
+23. ✅ **ADMIN REPORTS TAB REINSTATED & ENHANCED**
+    - Added Reports tab to admin panel
+    - Reports grouped by "All Reports" and "Illegal Dumping"
+    - Shows report reason, post title, suburb, region
+    - Mark Reviewed button for each report
+
+24. ✅ **ADMIN ANALYTICS TAB ADDED**
+    - Conversion rate metric (items collected vs total)
+    - Average posts per day
+    - Category distribution with visual progress bars
+    - Post status distribution
+    - Top auto-detected brands
+    - Illegal dumping reports by region
+
+25. ✅ **AUTO BRAND DETECTION FROM POSTS**
+    - Backend auto-detects known brands from post titles and descriptions
+    - Automatically creates or increments brand records
+    - 70+ common brands supported (Samsung, IKEA, Dyson, etc.)
+    - Brands shown in Analytics and Brands tabs
+
+26. ✅ **ENHANCED REPORT OPTIONS FOR POSTS**
+    - Two report types now available:
+      1. "Not Correct/Misleading" - Regular report for incorrect info
+      2. "Illegal Dumping" - Reports to local council
+    - Illegal dumping reports:
+      - Collect full post data (title, description, category, image, location)
+      - Auto-detect suburb and region from address
+      - Stored in separate collection grouped by region
+      - Email generation endpoint for council notification
+      - Email from: admin@ucycle.com.au
+
+27. ✅ **SYDNEY REGION MAPPING**
+    - Implemented region detection for Sydney suburbs
+    - 10 regions: Penrith, Blacktown, Parramatta, Liverpool, Campbelltown, Sutherland, Northern Sydney, Eastern Sydney, Inner West, CBD
+    - Used for illegal dumping report organization
