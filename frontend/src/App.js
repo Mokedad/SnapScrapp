@@ -4009,6 +4009,8 @@ function AdminPanel() {
       <div className="flex border-b border-slate-200 bg-white overflow-x-auto hide-scrollbar">
         {[
           { id: 'stats', label: 'Stats', icon: BarChart3 },
+          { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+          { id: 'reports', label: 'Reports', icon: AlertTriangle },
           { id: 'types', label: 'Types', icon: Package },
           { id: 'partners', label: 'Partners', icon: Handshake },
           { id: 'posts', label: 'Posts', icon: Eye },
