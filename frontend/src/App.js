@@ -860,6 +860,27 @@ function AppContent() {
   const dismissWelcome = () => {
     localStorage.setItem('ucycle_welcome_seen', 'true');
     setShowWelcome(false);
+    
+    // Check if NOT in standalone mode (PWA not installed)
+    // Show "Add to Home Screen" prompt for iOS users
+    const standalone = window.matchMedia('(display-mode: standalone)').matches 
+                    || window.navigator.standalone === true;
+    
+    if (!standalone) {
+      // Detect iOS
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const hasSeenAddToHome = localStorage.getItem('ucycle_add_to_home_seen');
+      
+      if (isIOS && !hasSeenAddToHome) {
+        // Show Add to Home Screen prompt after a brief delay
+        setTimeout(() => setShowAddToHomeScreen(true), 500);
+      }
+    }
+  };
+
+  const dismissAddToHomeScreen = () => {
+    localStorage.setItem('ucycle_add_to_home_seen', 'true');
+    setShowAddToHomeScreen(false);
   };
 
   // Auto-dismiss welcome popup after 10 seconds
