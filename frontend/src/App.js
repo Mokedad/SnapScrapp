@@ -264,6 +264,8 @@ function AppContent() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [radiusKm, setRadiusKm] = useState(105); // Default 105km radius for geo-filtering
   const [showRadiusSlider, setShowRadiusSlider] = useState(false);
+  const [filterBarVisible, setFilterBarVisible] = useState(true); // Auto-fade filter bar
+  const filterBarTimeoutRef = useRef(null);
   
   // Camera state
   const [showCameraView, setShowCameraView] = useState(false);
