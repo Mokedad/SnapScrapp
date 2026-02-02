@@ -3860,6 +3860,16 @@ function AdminPanel() {
               </div>
             )}
 
+            {/* Export Button */}
+            <button
+              onClick={() => handleExport('partner-clicks')}
+              className="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition-colors"
+              data-testid="export-partner-clicks-btn"
+            >
+              <Download className="w-5 h-5" />
+              Export Partner Clicks (CSV)
+            </button>
+
             {/* Partners List */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <div className="p-3 bg-slate-50 border-b flex items-center justify-between">
