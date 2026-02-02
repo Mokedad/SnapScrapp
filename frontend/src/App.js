@@ -3537,6 +3537,205 @@ function AdminPanel() {
           </div>
         )}
 
+        {/* Types of Scrap Tab */}
+        {activeTab === 'types' && (
+          <div className="space-y-4 animate-fade-in">
+            {/* Summary Cards */}
+            {itemTypesSummary && (
+              <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-4 text-white">
+                <h3 className="font-semibold mb-3">Types of Scrap Summary</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-orange-100 text-xs">Unique Item Types</p>
+                    <p className="text-2xl font-bold">{itemTypesSummary.total_types}</p>
+                  </div>
+                  <div>
+                    <p className="text-orange-100 text-xs">With Brand Detected</p>
+                    <p className="text-2xl font-bold">{itemTypesSummary.with_brands}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Top Brands */}
+            {itemTypesSummary?.top_brands?.length > 0 && (
+              <div className="bg-white rounded-xl p-4 shadow-sm">
+                <h4 className="font-semibold text-slate-900 mb-3">Top Brands Detected</h4>
+                <div className="space-y-2">
+                  {itemTypesSummary.top_brands.map((brand, idx) => (
+                    <div key={idx} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                      <span className="font-medium text-slate-700">{brand._id}</span>
+                      <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full text-sm font-bold">{brand.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Category Filter */}
+            <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ${selectedCategory === 'all' ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+              >
+                All Categories
+              </button>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap capitalize ${selectedCategory === cat ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                >
+                  {cat.replace('-', ' ')}
+                </button>
+              ))}
+            </div>
+
+            {/* Item Types List */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="p-3 bg-slate-50 border-b">
+                <h4 className="font-semibold text-slate-700">Item Types Recorded</h4>
+              </div>
+              {itemTypes.length === 0 ? (
+                <div className="p-8 text-center text-slate-400">
+                  <Package className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                  <p>No items tracked yet</p>
+                  <p className="text-xs mt-1">Items will appear after posting</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto">
+                  {itemTypes
+                    .filter(item => selectedCategory === 'all' || item.category === selectedCategory)
+                    .map((item, idx) => (
+                    <div key={idx} className="p-3 flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-slate-900 truncate">{item.original_title}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded capitalize">{item.category}</span>
+                          {item.brand && (
+                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{item.brand}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right ml-3">
+                        <span className="bg-orange-500 text-white px-2.5 py-1 rounded-full text-sm font-bold">{item.count}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Partners Tab */}
+        {activeTab === 'partners' && (
+          <div className="space-y-4 animate-fade-in">
+            {/* Summary */}
+            {partnerSummary && (
+              <div className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl p-4 text-white">
+                <h3 className="font-semibold mb-3">Partner Clicks Summary</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-purple-200 text-xs">Total Clicks</p>
+                    <p className="text-3xl font-bold">{partnerSummary.total_clicks}</p>
+                  </div>
+                  <div>
+                    <p className="text-purple-200 text-xs">Partners</p>
+                    <p className="text-3xl font-bold">{partnerSummary.by_partner?.length || 0}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Partners List */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="p-3 bg-slate-50 border-b flex items-center justify-between">
+                <h4 className="font-semibold text-slate-700">Scrap Partners</h4>
+              </div>
+              
+              {partners.length === 0 ? (
+                <div className="p-8 text-center text-slate-400">
+                  <Handshake className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                  <p>No partner clicks yet</p>
+                  <p className="text-xs mt-1">Clicks will be recorded when users tap partner links</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {partners.map((partner, idx) => (
+                    <div key={idx} className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h5 className="font-bold text-slate-900">{partner.partner_name}</h5>
+                          <p className="text-xs text-slate-500 mt-1">
+                            Last click: {partner.last_click ? new Date(partner.last_click).toLocaleDateString() : 'Never'}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="bg-purple-600 text-white px-3 py-1.5 rounded-full text-lg font-bold">{partner.total_clicks}</span>
+                          <p className="text-xs text-slate-500 mt-1">clicks</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Norman's Scrap Yard - Featured Partner */}
+            <div className="bg-white rounded-xl shadow-sm p-4 border-2 border-purple-200">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <Building className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <h5 className="font-bold text-slate-900">Norman's Scrap Yard</h5>
+                  <p className="text-xs text-slate-500">Featured Partner • Sydney Metro</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="bg-purple-50 rounded-lg p-2">
+                  <p className="text-lg font-bold text-purple-700">
+                    {partnerSummary?.by_partner?.find(p => p._id === "Norman's Scrap Yard")?.clicks || 0}
+                  </p>
+                  <p className="text-xs text-purple-600">Total Clicks</p>
+                </div>
+                <div className="bg-green-50 rounded-lg p-2">
+                  <p className="text-lg font-bold text-green-700">Active</p>
+                  <p className="text-xs text-green-600">Status</p>
+                </div>
+                <div className="bg-blue-50 rounded-lg p-2">
+                  <p className="text-lg font-bold text-blue-700">Sydney</p>
+                  <p className="text-xs text-blue-600">Region</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Clicks */}
+            {partnerSummary?.recent_clicks?.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="p-3 bg-slate-50 border-b">
+                  <h4 className="font-semibold text-slate-700">Recent Partner Clicks</h4>
+                </div>
+                <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
+                  {partnerSummary.recent_clicks.map((click, idx) => (
+                    <div key={idx} className="p-3 flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-slate-900">{click.partner_name}</p>
+                        <p className="text-xs text-slate-500">
+                          {click.category && <span className="capitalize">{click.category} • </span>}
+                          {new Date(click.clicked_at).toLocaleString()}
+                        </p>
+                      </div>
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Posts Tab */}
         {activeTab === 'posts' && (
           <div className="space-y-4 animate-fade-in">
