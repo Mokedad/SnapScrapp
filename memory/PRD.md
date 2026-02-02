@@ -303,3 +303,33 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
       - Added swipe-down-to-dismiss gesture (80px threshold)
       - Added tap-backdrop-to-dismiss
       - Added drag handle indicator with "Swipe down to close" text
+
+22. ✅ **SMOOTH SWIPE-TO-DISMISS ON ALL MODALS & PERFORMANCE OPTIMIZATION**
+    - **Request**: Add swipe-to-dismiss to all slider boxes, make app flawless and smooth
+    - **Changes implemented**:
+      - **CSS Animations Overhaul** (`index.css`):
+        - Added GPU-accelerated animations with `will-change`, `backface-visibility`
+        - Smooth cubic-bezier timing functions for natural feel
+        - Added `modal-content`, `modal-backdrop`, `swipeable-modal` classes
+        - Added reduced-motion media query for accessibility
+        - Optimized touch handling with `-webkit-tap-highlight-color: transparent`
+      - **Drawer Component** (`drawer.jsx`):
+        - Enhanced with GPU acceleration
+        - Smoother drag handle styling
+        - Better rounded corners (20px)
+      - **Dialog Component** (`dialog.jsx`):
+        - Added backdrop blur effect
+        - GPU-accelerated transforms
+        - Smoother close button with active state
+      - **Button Component** (`button.jsx`):
+        - Added `active:scale-[0.97]` for tactile feedback
+        - Touch manipulation optimization
+        - Smooth transition-all duration
+      - **Modals with Swipe-to-Dismiss**:
+        - Quick Guide Modal (swipe down)
+        - Add to Home Screen Modal (swipe down with opacity fade)
+        - Norman Scrap Yard Ad (swipe any direction)
+        - Camera Troubleshoot Tooltip (swipe down)
+        - PWA Install Prompt Banner (swipe down)
+        - App Update Banner (swipe up)
+        - All with smooth rubber-band effect during drag
