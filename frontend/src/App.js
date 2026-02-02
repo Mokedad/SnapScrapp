@@ -1938,12 +1938,24 @@ function AppContent() {
                 click: () => handleViewDetails(post)
               }}
             >
-              {/* Popup with distance */}
-              <Popup className="custom-popup" closeButton={false}>
-                <div className="text-center p-1">
-                  <p className="font-semibold text-sm truncate max-w-[120px]">{post.title}</p>
+              {/* Popup with distance - auto-closes after 1.5s */}
+              <Popup 
+                className="custom-popup" 
+                closeButton={false}
+                autoPan={false}
+                eventHandlers={{
+                  add: (e) => {
+                    // Auto-close popup after 1.5 seconds
+                    setTimeout(() => {
+                      e.target.close();
+                    }, 1500);
+                  }
+                }}
+              >
+                <div className="text-center p-1 min-w-[140px] max-w-[200px]">
+                  <p className="font-semibold text-sm leading-tight" style={{ wordBreak: 'break-word' }}>{post.title}</p>
                   {formatDistance(post) && (
-                    <p className="text-xs text-green-600 font-medium">{formatDistance(post)} away</p>
+                    <p className="text-xs text-green-600 font-medium mt-0.5">{formatDistance(post)} away</p>
                   )}
                   <p className="text-xs text-slate-500">Tap to view</p>
                 </div>
