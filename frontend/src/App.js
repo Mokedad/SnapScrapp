@@ -3441,16 +3441,17 @@ function AdminPanel() {
       </header>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 bg-white">
+      <div className="flex border-b border-slate-200 bg-white overflow-x-auto">
         {[
-          { id: 'stats', label: 'Statistics', icon: BarChart3 },
+          { id: 'stats', label: 'Stats', icon: BarChart3 },
           { id: 'posts', label: 'Posts', icon: Eye },
-          { id: 'reports', label: 'Reports', icon: Flag }
+          { id: 'reports', label: 'Reports', icon: Flag },
+          { id: 'brands', label: 'Brands', icon: Building }
         ].map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-3 flex items-center justify-center gap-2 text-sm font-medium transition-colors ${
+            className={`flex-1 py-3 flex items-center justify-center gap-1.5 text-sm font-medium transition-colors whitespace-nowrap px-2 ${
               activeTab === tab.id 
                 ? 'text-green-700 border-b-2 border-green-600' 
                 : 'text-slate-500 hover:text-slate-700'
@@ -3460,8 +3461,13 @@ function AdminPanel() {
             <tab.icon className="w-4 h-4" />
             {tab.label}
             {tab.id === 'reports' && reports.length > 0 && (
-              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                 {reports.length}
+              </span>
+            )}
+            {tab.id === 'brands' && brands.length > 0 && (
+              <span className="bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                {brands.length}
               </span>
             )}
           </button>
