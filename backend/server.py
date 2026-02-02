@@ -738,24 +738,61 @@ async def create_post(post: PostCreate):
     )
 
 @api_router.get("/posts", response_model=List[PostResponse])
-async def get_posts(include_expired: bool = False):
-    """Get all active posts (auto-expire check)"""
+async def get_posts(
+    include_expired: bool = False,
+    limit: int = 200,
+    skip: int = 0,
+    lat: Optional[float] = None,
+    lng: Optional[float] = None,
+    radius_km: Optional[float] = None
+):
+    """Get posts with pagination and optional geo-filtering for performance"""
     now = now_utc()
     
-    # First, update expired posts
-    await db.posts.update_many(
-        {
-            "status": "active",
-            "expires_at": {"$lt": to_iso(now)}
-        },
-        {"$set": {"status": "expired"}}
+    # First, update expired posts (run in background for performance)
+    asyncio.create_task(
+        db.posts.update_many(
+            {
+                "status": "active",
+                "expires_at": {"$lt": to_iso(now)}
+            },
+            {"$set": {"status": "expired"}}
+        )
     )
     
-    # Query for active posts
+    # Build query
     query = {"status": "active"} if not include_expired else {}
-    posts = await db.posts.find(query, {"_id": 0, "original_latitude": 0, "original_longitude": 0}).to_list(1000)
     
-    # Ensure backward compatibility - add images array if missing
+    # Projection - exclude heavy fields for list view
+    projection = {
+        "_id": 0, 
+        "original_latitude": 0, 
+        "original_longitude": 0,
+        # For list view, we only need thumbnail - full image loaded on detail view
+        # "image_base64": 0  # Uncomment if images are very large
+    }
+    
+    # Optimized query with sorting by newest first, with pagination
+    posts = await db.posts.find(query, projection).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    # If geo-filtering requested, filter by distance (client-side for simplicity)
+    if lat is not None and lng is not None and radius_km is not None:
+        def within_radius(post):
+            if post.get("latitude") and post.get("longitude"):
+                # Haversine formula approximation
+                from math import radians, sin, cos, sqrt, atan2
+                R = 6371  # Earth's radius in km
+                lat1, lng1 = radians(lat), radians(lng)
+                lat2, lng2 = radians(post["latitude"]), radians(post["longitude"])
+                dlat, dlng = lat2 - lat1, lng2 - lng1
+                a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlng/2)**2
+                c = 2 * atan2(sqrt(a), sqrt(1-a))
+                distance = R * c
+                return distance <= radius_km
+            return False
+        posts = [p for p in posts if within_radius(p)]
+    
+    # Ensure backward compatibility
     result = []
     for p in posts:
         if "images" not in p:
