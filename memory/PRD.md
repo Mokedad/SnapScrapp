@@ -275,3 +275,24 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
+
+## Completed Tasks (Feb 2, 2026) - Bug Fixes
+18. ✅ **SOCIAL SHARING IMAGE FIX (P0 Critical Bug)**
+    - **Issue**: When sharing post URL on social media, image preview was blank
+    - **Root cause**: Social crawlers need actual URLs, not base64 data
+    - **Fix implemented**:
+      - New `/api/post-image/{post_id}.jpg` endpoint that serves actual JPEG image
+      - New `/api/post-meta/{post_id}` endpoint that serves HTML with proper OG tags
+      - OG tags: og:title, og:image, og:description, og:url, twitter:card, twitter:image
+      - Share URLs now point to `/api/post-meta/{post_id}` which auto-redirects to actual post
+19. ✅ **REMOVE ACTION BUTTON FEATURE (P1)**
+    - **Issue**: iOS Action Button can't launch PWAs - feature was misleading
+    - **Fix**: Removed from:
+      - Menu "Device Options" section (no more Action Button button)
+      - Quick Guide modal (removed Action Button section)
+      - Action Button Guide Modal (removed entirely)
+    - Kept: "Quick Guide" button in Device Options with Camera Permission tips
+20. ✅ **REWORD ADD TO HOME SCREEN INSTRUCTIONS (P1)**
+    - **Issue**: "Tap the Share button below" was confusing
+    - **Fix**: Changed to "Tap the Share icon in your browser's toolbar (Safari, Chrome)"
+    - Updated in: Add to Home Screen overlay and Quick Guide modal
