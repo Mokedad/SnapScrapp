@@ -993,6 +993,13 @@ function AppContent() {
 
   // Open NATIVE device camera app
   const openCamera = () => {
+    // Show camera troubleshoot tip (one-time) for iOS users
+    if (isIOS && !hasSeenCameraTip) {
+      setShowCameraTroubleshoot(true);
+      // Auto-dismiss after 6 seconds
+      setTimeout(() => setShowCameraTroubleshoot(false), 6000);
+    }
+    
     // Trigger the native camera input - opens device's camera app
     cameraInputRef.current?.click();
   };
@@ -1001,6 +1008,9 @@ function AppContent() {
   const handleNativeCameraCapture = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // Hide camera tip when photo is taken
+    setShowCameraTroubleshoot(false);
     
     // Convert to base64
     const reader = new FileReader();
