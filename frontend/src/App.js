@@ -2297,25 +2297,6 @@ function AppContent() {
                 </div>
                 
                 <div className="space-y-2">
-                  {/* Action Button Setup */}
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      setShowActionButtonGuide(true);
-                    }}
-                    className="w-full flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-slate-50 transition-colors text-left shadow-sm"
-                    data-testid="action-button-menu-btn"
-                  >
-                    <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                      <Zap className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <div className="flex-1">
-                      <span className="font-medium text-slate-900 text-sm">Action Button</span>
-                      <p className="text-xs text-slate-500">Map to iPhone hardware button</p>
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-slate-400 -rotate-90" />
-                  </button>
-                  
                   {/* Quick Guide */}
                   <button
                     onClick={() => {
