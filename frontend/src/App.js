@@ -1106,15 +1106,10 @@ function AppContent() {
       description: ""
     }));
     setShowPostDrawer(true);
-    setIsAnalyzing(true);  // Show analyzing indicator
+    setIsAnalyzing(true);
+    setAiAnalysisStep('Scanning image...');
     
-    // AUTO-HIDE SPINNER after 2 seconds (user can type while waiting)
-    const spinnerTimeout = setTimeout(() => {
-      setIsAnalyzing(false);  // Stop showing "Analyzing" - let user type
-    }, 2000);
-    
-    // ========== PARALLEL: GPS + HIGH QUALITY AI ==========
-    // Both tasks run simultaneously, UI is NOT blocked
+    // ========== PARALLEL: GPS + AI Analysis ==========
     
     // TASK 1: Instant GPS Stamp with Address (non-blocking)
     (async () => {
@@ -1139,7 +1134,6 @@ function AppContent() {
           const freshLat = position.coords.latitude;
           const freshLng = position.coords.longitude;
           
-          // Immediately set coordinates
           setNewPost(prev => ({
             ...prev,
             latitude: freshLat,
@@ -1147,7 +1141,6 @@ function AppContent() {
           }));
           setUserLocation([freshLat, freshLng]);
           
-          // Reverse geocode to get address
           const address = await reverseGeocode(freshLat, freshLng);
           if (address) {
             setNewPost(prev => ({ ...prev, address: address }));
@@ -1157,7 +1150,6 @@ function AppContent() {
         (error) => {
           console.log("GPS failed:", error);
           setIsGettingAddress(false);
-          // Fallback to cached
           if (userLocation) {
             setNewPost(prev => ({
               ...prev,
@@ -1173,19 +1165,28 @@ function AppContent() {
       );
     })();
     
-    // TASK 2: HIGH QUALITY AI Analysis (non-blocking, runs in background)
+    // TASK 2: AI Analysis with progress steps
     (async () => {
       try {
         const base64Data = base64.split(',')[1] || base64;
         
-        // Use the FAST endpoint first for quick title
+        // Step 1: Scanning
+        setAiAnalysisStep('Scanning image...');
+        await new Promise(r => setTimeout(r, 500));
+        
+        // Step 2: Identifying
+        setAiAnalysisStep('Identifying item...');
+        
         const response = await axios.post(`${API}/analyze-image-fast`, {
           image_base64: base64Data
-        }, { timeout: 15000 });
+        }, { timeout: 20000 });
         
-        // Clear spinner timeout since AI responded
-        clearTimeout(spinnerTimeout);
+        // Step 3: Complete
+        setAiAnalysisStep('Analysis complete!');
+        await new Promise(r => setTimeout(r, 300));
+        
         setIsAnalyzing(false);
+        setAiAnalysisStep('');
         
         // Only update title/category if user hasn't typed anything yet
         setNewPost(prev => ({
