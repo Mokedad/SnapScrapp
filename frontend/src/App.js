@@ -1695,11 +1695,19 @@ function AppContent() {
     try {
       await axios.post(`${API}/reports`, {
         post_id: selectedPost.id,
-        reason: reportReason
+        reason: reportReason,
+        details: reportDetails
       });
-      toast.success("Report submitted");
+      
+      if (reportReason === 'illegal_dumping') {
+        toast.success("Illegal dumping reported! Council will be notified.", { duration: 4000 });
+      } else {
+        toast.success("Report submitted");
+      }
+      
       setShowReportDialog(false);
       setReportReason("");
+      setReportDetails("");
     } catch (error) {
       console.error("Failed to report:", error);
       toast.error("Failed to submit report");
