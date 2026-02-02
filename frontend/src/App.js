@@ -302,13 +302,15 @@ function AppContent() {
   const [isPosting, setIsPosting] = useState(false);
   const [pickingLocation, setPickingLocation] = useState(false);
   const [isGettingAddress, setIsGettingAddress] = useState(false);  // For address lookup loading
+  const [aiAnalysisStep, setAiAnalysisStep] = useState('');  // For showing AI progress steps
   
   // Report state
   const [reportReason, setReportReason] = useState("");
   const [isReporting, setIsReporting] = useState(false);
   
-  // Additional images input ref
-  const fileInputRef = useRef(null);
+  // File input refs - using native camera
+  const fileInputRef = useRef(null);  // Gallery picker
+  const cameraInputRef = useRef(null);  // Native camera capture
   const additionalImagesRef = useRef(null);
 
   // Favorites functions
