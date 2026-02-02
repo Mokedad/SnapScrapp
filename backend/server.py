@@ -1931,6 +1931,43 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ============ DATABASE INDEXES FOR PERFORMANCE ============
+@app.on_event("startup")
+async def create_indexes():
+    """Create database indexes for optimized queries"""
+    try:
+        # Posts collection indexes
+        await db.posts.create_index("id", unique=True)
+        await db.posts.create_index("status")
+        await db.posts.create_index("created_at")
+        await db.posts.create_index("expires_at")
+        await db.posts.create_index("category")
+        await db.posts.create_index([("status", 1), ("created_at", -1)])  # Compound index for main query
+        await db.posts.create_index([("latitude", 1), ("longitude", 1)])  # Geo queries
+        
+        # Reports collection indexes
+        await db.reports.create_index("post_id")
+        await db.reports.create_index("status")
+        await db.reports.create_index("reason")
+        await db.reports.create_index("created_at")
+        
+        # Brands collection indexes
+        await db.brands.create_index("id", unique=True)
+        await db.brands.create_index("name")
+        await db.brands.create_index("scan_count")
+        
+        # Item types collection indexes
+        await db.item_types.create_index([("category", 1), ("normalized_title", 1)])
+        await db.item_types.create_index("count")
+        
+        # Partner clicks indexes
+        await db.partner_clicks.create_index("partner_id")
+        await db.partner_clicks.create_index("created_at")
+        
+        logger.info("Database indexes created successfully")
+    except Exception as e:
+        logger.warning(f"Error creating indexes (may already exist): {e}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
