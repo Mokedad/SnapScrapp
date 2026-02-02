@@ -3412,6 +3412,40 @@ function AdminPanel() {
     }
   };
 
+  // Export functions
+  const handleExport = async (type) => {
+    try {
+      toast.loading(`Preparing ${type} export...`, { id: 'export' });
+      
+      const endpoints = {
+        'item-types': '/admin/export/item-types',
+        'partner-clicks': '/admin/export/partner-clicks',
+        'brands': '/admin/export/brands',
+        'posts': '/admin/export/posts',
+        'all': '/admin/export/all'
+      };
+      
+      const response = await axios.get(`${API}${endpoints[type]}?pin=${pin}`, {
+        responseType: 'blob'
+      });
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', type === 'all' ? 'ucycle_full_export.json' : `ucycle_${type}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success(`${type} data exported!`, { id: 'export' });
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast.error("Export failed", { id: 'export' });
+    }
+  };
+
   // Remove post
   const handleRemovePost = async (postId) => {
     try {
