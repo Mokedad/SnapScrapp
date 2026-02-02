@@ -264,6 +264,8 @@ function AppContent() {
   const [showScrapYardAd, setShowScrapYardAd] = useState(false);
   const [showScrapPrices, setShowScrapPrices] = useState(false); // Scrap prices modal
   const [showCategoryFilter, setShowCategoryFilter] = useState(false); // Collapsible category filter
+  const [showAddToHomeScreen, setShowAddToHomeScreen] = useState(false); // iOS Add to Home Screen prompt
+  const [isStandalone, setIsStandalone] = useState(false); // PWA standalone mode detection
   
   // Notification state
   const [notification, setNotification] = useState(null);
