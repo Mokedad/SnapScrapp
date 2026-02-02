@@ -3326,7 +3326,7 @@ function AppContent() {
 
       {/* Scrap Prices Modal - Compact Receipt Style */}
       <Dialog open={showScrapPrices} onOpenChange={setShowScrapPrices}>
-        <DialogContent className="max-w-xs mx-auto rounded-2xl p-0 overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
+        <DialogContent className="max-w-xs rounded-2xl p-0 overflow-hidden">
           <div className="bg-gradient-to-br from-green-600 to-lime-500 px-3 py-2 text-white">
             <DialogTitle className="text-base font-bold flex items-center gap-2">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
