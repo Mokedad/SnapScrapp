@@ -249,6 +249,29 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
       - **Brands CSV**: Brand Name, Category, Scan Count, Notes, Dates
       - **Full Export (JSON)**: All data in single JSON file
     - API endpoints: `/admin/export/item-types`, `/admin/export/partner-clicks`, `/admin/export/brands`, `/admin/export/posts`, `/admin/export/all`
+17. ✅ **iOS ONBOARDING & MENU SYSTEM**
+    - **Download App Section** (Menu):
+      - Shows only if NOT in standalone mode
+      - "Add to Home Screen" button triggers iOS install guide
+    - **Device Options Section** (Menu - iOS only):
+      - "Action Button" - Guide for iPhone hardware button mapping
+      - "Quick Guide" - Comprehensive setup modal
+    - **Add to Home Screen Overlay**:
+      - Triggers after "Let's Go" on first visit (if not standalone + iOS)
+      - Animated arrow pointing to Safari Share button
+      - Step-by-step visual guide with icons
+      - Persists dismissal in localStorage
+    - **Quick Setup Guide Modal** (swipe to dismiss):
+      - Home Screen installation instructions
+      - iPhone Action Button setup (Settings → Action Button → Shortcut)
+      - Camera Permission tips (AA menu → Website Settings → Allow)
+    - **Action Button Guide Modal**:
+      - Step-by-step numbered instructions
+      - Pro tip about Home Screen installation
+    - **Camera Troubleshoot Tooltip**:
+      - One-time tooltip explaining "AA" menu camera settings
+      - Shows when camera is opened (iOS only)
+      - Auto-dismisses after 6 seconds
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
