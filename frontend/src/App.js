@@ -530,9 +530,9 @@ function AppContent() {
           toast.success("Location found!");
         }
         
-        // Fly to location if map is ready - zoom level 18 for ~1km radius view
+        // Fly to location if map is ready - zoom level 19 for close street view (~100m radius)
         if (mapRef.current) {
-          mapRef.current.flyTo(loc, 18, { duration: 1.5 });
+          mapRef.current.flyTo(loc, 19, { duration: 1.5 });
         }
         
         // Start live tracking after initial location is obtained
