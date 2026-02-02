@@ -45,8 +45,7 @@ import {
   Smartphone,
   Settings,
   HelpCircle,
-  ChevronDown,
-  Zap
+  ChevronDown
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "@/index.css";
