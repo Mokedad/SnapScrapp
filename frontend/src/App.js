@@ -55,8 +55,8 @@ import "leaflet/dist/leaflet.css";
 import "@/index.css";
 
 // Import shared utilities and constants
-import { BACKEND_URL, API, CATEGORIES, REPORT_REASONS, SCRAP_PRICES, PARTNERS, STORAGE_KEYS } from './utils/constants';
-import { createPinIcon, locationIcon, calculateDistance, formatDistance as formatDistanceUtil, isInSydneyMetro, formatAddress } from './utils/mapUtils';
+import { BACKEND_URL, API, CATEGORIES, REPORT_REASONS, STORAGE_KEYS } from './utils/constants';
+import { createPinIcon, locationIcon, calculateDistance, formatDistance as formatDistanceUtil, formatAddress } from './utils/mapUtils';
 
 // Helper function using imported utility
 const formatDistance = (post) => {
