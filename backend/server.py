@@ -749,15 +749,13 @@ async def get_posts(
     """Get posts with pagination and optional geo-filtering for performance"""
     now = now_utc()
     
-    # First, update expired posts (run in background for performance)
-    asyncio.create_task(
-        db.posts.update_many(
-            {
-                "status": "active",
-                "expires_at": {"$lt": to_iso(now)}
-            },
-            {"$set": {"status": "expired"}}
-        )
+    # Update expired posts (quick inline update)
+    await db.posts.update_many(
+        {
+            "status": "active",
+            "expires_at": {"$lt": to_iso(now)}
+        },
+        {"$set": {"status": "expired"}}
     )
     
     # Build query
@@ -767,9 +765,7 @@ async def get_posts(
     projection = {
         "_id": 0, 
         "original_latitude": 0, 
-        "original_longitude": 0,
-        # For list view, we only need thumbnail - full image loaded on detail view
-        # "image_base64": 0  # Uncomment if images are very large
+        "original_longitude": 0
     }
     
     # Optimized query with sorting by newest first, with pagination
@@ -777,10 +773,9 @@ async def get_posts(
     
     # If geo-filtering requested, filter by distance (client-side for simplicity)
     if lat is not None and lng is not None and radius_km is not None:
+        from math import radians, sin, cos, sqrt, atan2
         def within_radius(post):
             if post.get("latitude") and post.get("longitude"):
-                # Haversine formula approximation
-                from math import radians, sin, cos, sqrt, atan2
                 R = 6371  # Earth's radius in km
                 lat1, lng1 = radians(lat), radians(lng)
                 lat2, lng2 = radians(post["latitude"]), radians(post["longitude"])
