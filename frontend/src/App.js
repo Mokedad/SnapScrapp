@@ -3737,6 +3737,8 @@ function AdminPanel() {
   const [stats, setStats] = useState(null);
   const [posts, setPosts] = useState([]);
   const [reports, setReports] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+  const [illegalDumpingReports, setIllegalDumpingReports] = useState(null);
   const [brands, setBrands] = useState([]);
   const [brandStats, setBrandStats] = useState(null);
   const [itemTypes, setItemTypes] = useState([]);
@@ -3746,6 +3748,7 @@ function AdminPanel() {
   const [activeTab, setActiveTab] = useState("stats");
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedRegion, setSelectedRegion] = useState('all');
   
   // Brand form state
   const [showBrandForm, setShowBrandForm] = useState(false);
