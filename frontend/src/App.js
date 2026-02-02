@@ -3285,11 +3285,11 @@ function AppContent() {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-3 bg-white rounded-lg p-2">
                       <Share2 className="w-5 h-5 text-blue-500" />
-                      <span>Tap the <strong>Share</strong> button below</span>
+                      <span>Tap the <strong>Share</strong> icon in your browser's toolbar (Safari, Chrome)</span>
                     </div>
                     <div className="flex items-center gap-3 bg-white rounded-lg p-2">
                       <ChevronDown className="w-5 h-5 text-slate-500" />
-                      <span>Scroll down in the menu</span>
+                      <span>Scroll down in the share menu</span>
                     </div>
                     <div className="flex items-center gap-3 bg-white rounded-lg p-2">
                       <Plus className="w-5 h-5 text-green-500" />
@@ -3298,25 +3298,6 @@ function AppContent() {
                   </div>
                 </div>
               )}
-              
-              {/* Action Button Section */}
-              <div className="bg-orange-50 rounded-2xl p-4 mb-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                    <Zap className="w-5 h-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-900">iPhone Action Button</h3>
-                    <p className="text-xs text-slate-500">Quick camera access</p>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <p className="text-slate-600">Map Ucycle to your iPhone's Action Button for instant posting:</p>
-                  <div className="bg-white rounded-lg p-2 text-xs text-slate-600">
-                    Settings → Action Button → Shortcut → "Post Item"
-                  </div>
-                </div>
-              </div>
               
               {/* Camera Permission Section */}
               <div className="bg-green-50 rounded-2xl p-4 mb-4">
