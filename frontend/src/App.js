@@ -3247,14 +3247,18 @@ function AdminPanel() {
   const fetchAdminData = async () => {
     setLoading(true);
     try {
-      const [statsRes, postsRes, reportsRes] = await Promise.all([
+      const [statsRes, postsRes, reportsRes, brandsRes, brandStatsRes] = await Promise.all([
         axios.get(`${API}/admin/stats?pin=${pin}`),
         axios.get(`${API}/admin/posts?pin=${pin}`),
-        axios.get(`${API}/reports?status=pending`)
+        axios.get(`${API}/reports?status=pending`),
+        axios.get(`${API}/admin/brands?pin=${pin}`),
+        axios.get(`${API}/admin/brand-stats?pin=${pin}`)
       ]);
       setStats(statsRes.data);
       setPosts(postsRes.data);
       setReports(reportsRes.data);
+      setBrands(brandsRes.data);
+      setBrandStats(brandStatsRes.data);
     } catch (error) {
       console.error("Failed to fetch admin data:", error);
       toast.error("Failed to load data");
