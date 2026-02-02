@@ -1327,6 +1327,151 @@ async def admin_get_brand_stats(pin: str = Query(...)):
         "top_brands": top_brands
     }
 
+# ============ AUTO BRAND DETECTION ============
+
+# Common brand keywords to auto-detect from titles/descriptions
+KNOWN_BRANDS = [
+    # Appliances
+    "samsung", "lg", "whirlpool", "bosch", "miele", "electrolux", "westinghouse", "fisher paykel", 
+    "fisher & paykel", "haier", "panasonic", "hitachi", "sharp", "breville", "sunbeam", "delonghi",
+    "dyson", "hoover", "bissell", "karcher", "philips", "braun", "tefal", "kitchenaid", "smeg",
+    # Electronics
+    "apple", "sony", "microsoft", "hp", "dell", "lenovo", "asus", "acer", "toshiba", "canon",
+    "nikon", "gopro", "bose", "jbl", "nintendo", "playstation", "xbox", "logitech", "razer",
+    # Furniture
+    "ikea", "freedom", "fantastic", "amart", "focus on furniture", "oz design", "king living",
+    "nick scali", "harvey norman", "officeworks", "bunnings",
+    # Tools
+    "makita", "dewalt", "bosch", "milwaukee", "ryobi", "ozito", "stanley", "craftsman", "black decker",
+    "black & decker", "stihl", "husqvarna",
+    # Outdoor/Garden
+    "weber", "masport", "victa", "rover", "toro", "coleman", "oztrail",
+    # Baby/Kids
+    "fisher price", "little tikes", "step2", "baby jogger", "bugaboo", "uppababy", "chicco",
+    # Sports
+    "nike", "adidas", "reebok", "puma", "under armour", "spalding", "wilson"
+]
+
+async def auto_detect_and_track_brand(title: str, description: str, category: str):
+    """Automatically detect brand names from post title/description and track them"""
+    text_to_search = f"{title} {description}".lower()
+    
+    for brand_name in KNOWN_BRANDS:
+        if brand_name in text_to_search:
+            # Check if brand exists in our database
+            existing = await db.brands.find_one({"name": {"$regex": f"^{brand_name}$", "$options": "i"}})
+            
+            if existing:
+                # Increment scan count
+                await db.brands.update_one(
+                    {"id": existing["id"]},
+                    {
+                        "$inc": {"scan_count": 1},
+                        "$set": {"last_scanned": to_iso(now_utc())}
+                    }
+                )
+            else:
+                # Auto-create the brand
+                brand_doc = {
+                    "id": generate_id(),
+                    "name": brand_name.title(),  # Capitalize properly
+                    "category": category,
+                    "notes": "Auto-detected from post",
+                    "scan_count": 1,
+                    "last_scanned": to_iso(now_utc()),
+                    "created_at": to_iso(now_utc()),
+                    "auto_detected": True
+                }
+                await db.brands.insert_one(brand_doc)
+            
+            # Log the detection
+            logger.info(f"Auto-detected brand: {brand_name} in category {category}")
+            break  # Only track first brand found
+
+# ============ ANALYTICS ENDPOINTS ============
+
+@api_router.get("/admin/analytics")
+async def get_analytics(pin: str = Query(...), days: int = 30):
+    """Get comprehensive analytics data for admin dashboard"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    now = now_utc()
+    start_date = now - timedelta(days=days)
+    
+    # Posts over time
+    posts_pipeline = [
+        {"$match": {"created_at": {"$gte": to_iso(start_date)}}},
+        {"$addFields": {"date": {"$substr": ["$created_at", 0, 10]}}},
+        {"$group": {"_id": "$date", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}}
+    ]
+    posts_by_date = await db.posts.aggregate(posts_pipeline).to_list(100)
+    
+    # Category distribution
+    category_pipeline = [
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    categories = await db.posts.aggregate(category_pipeline).to_list(100)
+    
+    # Status distribution
+    status_pipeline = [
+        {"$group": {"_id": "$status", "count": {"$sum": 1}}}
+    ]
+    statuses = await db.posts.aggregate(status_pipeline).to_list(10)
+    
+    # Reports by reason
+    reports_pipeline = [
+        {"$group": {"_id": "$reason", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    reports_by_reason = await db.reports.aggregate(reports_pipeline).to_list(20)
+    
+    # Reports by region (for illegal dumping)
+    region_pipeline = [
+        {"$match": {"reason": "illegal_dumping"}},
+        {"$group": {"_id": "$region", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    reports_by_region = await db.reports.aggregate(region_pipeline).to_list(20)
+    
+    # Top brands
+    top_brands = await db.brands.find({}, {"_id": 0, "name": 1, "scan_count": 1, "category": 1}).sort("scan_count", -1).limit(10).to_list(10)
+    
+    # Partner clicks over time
+    partner_pipeline = [
+        {"$match": {"created_at": {"$gte": to_iso(start_date)}}},
+        {"$group": {"_id": "$partner_id", "clicks": {"$sum": 1}}},
+        {"$sort": {"clicks": -1}}
+    ]
+    partner_clicks = await db.partner_clicks.aggregate(partner_pipeline).to_list(20)
+    
+    # Calculate conversion rate (collected / total active+collected)
+    total = await db.posts.count_documents({})
+    collected = await db.posts.count_documents({"status": "collected"})
+    conversion_rate = (collected / total * 100) if total > 0 else 0
+    
+    # Average posts per day
+    avg_posts_per_day = len(posts_by_date) > 0 and sum(p["count"] for p in posts_by_date) / len(posts_by_date) or 0
+    
+    return {
+        "period_days": days,
+        "posts_by_date": posts_by_date,
+        "categories": categories,
+        "statuses": statuses,
+        "reports_by_reason": reports_by_reason,
+        "reports_by_region": reports_by_region,
+        "top_brands": top_brands,
+        "partner_clicks": partner_clicks,
+        "metrics": {
+            "conversion_rate": round(conversion_rate, 1),
+            "avg_posts_per_day": round(avg_posts_per_day, 1),
+            "total_posts": total,
+            "total_collected": collected
+        }
+    }
+
 # ============ STATS HELPER ============
 
 async def update_stats(event: str, category: str):
