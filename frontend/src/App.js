@@ -3608,6 +3608,178 @@ function AdminPanel() {
             )}
           </div>
         )}
+
+        {/* Brands Tab - Admin branding/companies tracking */}
+        {activeTab === 'brands' && (
+          <div className="space-y-4 animate-fade-in">
+            {/* Brand Stats Summary */}
+            {brandStats && (
+              <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-4 text-white">
+                <h3 className="font-semibold mb-2">Brand Tracking Summary</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-blue-200 text-xs">Total Brands</p>
+                    <p className="text-2xl font-bold">{brandStats.total_brands}</p>
+                  </div>
+                  <div>
+                    <p className="text-blue-200 text-xs">Categories</p>
+                    <p className="text-2xl font-bold">{brandStats.by_category?.length || 0}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Add Brand Button */}
+            <button
+              onClick={() => {
+                setEditingBrand(null);
+                setBrandForm({ name: '', category: 'appliances', notes: '' });
+                setShowBrandForm(true);
+              }}
+              className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-blue-700"
+              data-testid="add-brand-btn"
+            >
+              <Plus className="w-5 h-5" />
+              Add Brand / Company
+            </button>
+
+            {/* Brand Form Modal */}
+            {showBrandForm && (
+              <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl w-full max-w-md p-6">
+                  <h3 className="text-lg font-bold text-slate-900 mb-4">
+                    {editingBrand ? 'Edit Brand' : 'Add New Brand'}
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Brand Name</label>
+                      <input
+                        type="text"
+                        value={brandForm.name}
+                        onChange={(e) => setBrandForm(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="e.g., Samsung, IKEA, Fisher-Price"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        data-testid="brand-name-input"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                      <select
+                        value={brandForm.category}
+                        onChange={(e) => setBrandForm(prev => ({ ...prev, category: e.target.value }))}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        data-testid="brand-category-select"
+                      >
+                        <option value="appliances">Appliances</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="furniture">Furniture</option>
+                        <option value="toys">Toys</option>
+                        <option value="garden">Garden</option>
+                        <option value="tools">Tools</option>
+                        <option value="sports">Sports</option>
+                        <option value="kitchen">Kitchen</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Notes (optional)</label>
+                      <textarea
+                        value={brandForm.notes}
+                        onChange={(e) => setBrandForm(prev => ({ ...prev, notes: e.target.value }))}
+                        placeholder="Data insights, collection value, etc."
+                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        rows={3}
+                        data-testid="brand-notes-input"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3 mt-6">
+                    <button
+                      onClick={() => setShowBrandForm(false)}
+                      className="flex-1 py-3 bg-slate-100 text-slate-700 rounded-xl font-medium"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSaveBrand}
+                      disabled={!brandForm.name.trim()}
+                      className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-medium disabled:opacity-50"
+                      data-testid="save-brand-btn"
+                    >
+                      {editingBrand ? 'Update' : 'Add Brand'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Brands List */}
+            {brands.length === 0 ? (
+              <div className="text-center py-12 text-slate-500">
+                <Building className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                <p>No brands tracked yet</p>
+                <p className="text-sm mt-1">Add brands to track items scanned/posted</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {brands.map(brand => (
+                  <div key={brand.id} className="bg-white rounded-xl shadow-sm p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-slate-900">{brand.name}</h4>
+                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full capitalize">
+                            {brand.category}
+                          </span>
+                        </div>
+                        {brand.notes && (
+                          <p className="text-sm text-slate-500 mt-1">{brand.notes}</p>
+                        )}
+                        <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                          <span className="flex items-center gap-1">
+                            <Eye className="w-3 h-3" />
+                            {brand.scan_count} scans
+                          </span>
+                          {brand.last_scanned && (
+                            <span>Last: {new Date(brand.last_scanned).toLocaleDateString()}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleIncrementBrand(brand.id)}
+                          className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
+                          title="Record a scan"
+                          data-testid={`increment-brand-${brand.id}`}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => openEditBrand(brand)}
+                          className="p-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200"
+                          data-testid={`edit-brand-${brand.id}`}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteBrand(brand.id)}
+                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
+                          data-testid={`delete-brand-${brand.id}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <Toaster position="top-center" duration={1200} toastOptions={{ style: { marginTop: '40vh' } }} />
