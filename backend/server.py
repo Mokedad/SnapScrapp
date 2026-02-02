@@ -1036,6 +1036,232 @@ async def update_stats(event: str, category: str):
         upsert=True
     )
 
+# ============ BACKGROUND ITEM TYPE TRACKING ============
+# Runs AFTER post is created - no delay to user
+
+async def track_item_type(title: str, category: str):
+    """Track item type for 'Types of Scrap' reporting - runs in background"""
+    try:
+        now = now_utc()
+        
+        # Extract potential brand from title (common brand patterns)
+        brand = None
+        common_brands = [
+            "Samsung", "LG", "Sony", "Panasonic", "Philips", "Bosch", "Miele",
+            "Fisher-Price", "IKEA", "Kmart", "Target", "Big W", "Bunnings",
+            "Dyson", "Breville", "Sunbeam", "Kenwood", "DeLonghi", "Smeg",
+            "Westinghouse", "Electrolux", "Whirlpool", "Haier", "Hisense",
+            "Nintendo", "PlayStation", "Xbox", "Apple", "Dell", "HP", "Lenovo"
+        ]
+        title_lower = title.lower()
+        for b in common_brands:
+            if b.lower() in title_lower:
+                brand = b
+                break
+        
+        # Normalize title for grouping (remove numbers, special chars)
+        normalized_title = re.sub(r'[0-9\-\.\,\(\)]', '', title).strip()
+        normalized_title = ' '.join(normalized_title.split())  # Clean whitespace
+        
+        # Update or create item type record
+        await db.item_types.update_one(
+            {
+                "category": category,
+                "normalized_title": normalized_title.lower()
+            },
+            {
+                "$inc": {"count": 1},
+                "$set": {
+                    "original_title": title,
+                    "category": category,
+                    "brand": brand,
+                    "last_posted": to_iso(now)
+                },
+                "$setOnInsert": {
+                    "first_posted": to_iso(now),
+                    "normalized_title": normalized_title.lower()
+                }
+            },
+            upsert=True
+        )
+        
+        # Also track by category totals
+        await db.category_stats.update_one(
+            {"category": category},
+            {
+                "$inc": {"total_posts": 1},
+                "$set": {"last_posted": to_iso(now)},
+                "$setOnInsert": {"category": category, "first_posted": to_iso(now)}
+            },
+            upsert=True
+        )
+        
+        logger.info(f"Tracked item type: {title} ({category}) - brand: {brand}")
+    except Exception as e:
+        logger.error(f"Item type tracking error: {e}")
+
+# ============ ADMIN ITEM TYPES ENDPOINTS ============
+
+@api_router.get("/admin/item-types")
+async def admin_get_item_types(pin: str = Query(...), category: str = None):
+    """Get all tracked item types for 'Types of Scrap' reporting"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    query = {}
+    if category:
+        query["category"] = category
+    
+    items = await db.item_types.find(query, {"_id": 0}).sort("count", -1).to_list(500)
+    return items
+
+@api_router.get("/admin/category-stats")
+async def admin_get_category_stats(pin: str = Query(...)):
+    """Get category statistics for reporting"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    stats = await db.category_stats.find({}, {"_id": 0}).sort("total_posts", -1).to_list(50)
+    return stats
+
+@api_router.get("/admin/item-types-summary")
+async def admin_get_item_types_summary(pin: str = Query(...)):
+    """Get summary of item types for dashboard"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    # Total unique item types
+    total_types = await db.item_types.count_documents({})
+    
+    # Items with brands detected
+    with_brands = await db.item_types.count_documents({"brand": {"$ne": None}})
+    
+    # Top categories
+    pipeline = [
+        {"$group": {"_id": "$category", "count": {"$sum": "$count"}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]
+    top_categories = await db.item_types.aggregate(pipeline).to_list(10)
+    
+    # Top brands
+    brand_pipeline = [
+        {"$match": {"brand": {"$ne": None}}},
+        {"$group": {"_id": "$brand", "count": {"$sum": "$count"}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]
+    top_brands = await db.item_types.aggregate(brand_pipeline).to_list(10)
+    
+    return {
+        "total_types": total_types,
+        "with_brands": with_brands,
+        "top_categories": top_categories,
+        "top_brands": top_brands
+    }
+
+# ============ PARTNER TRACKING ============
+
+@api_router.post("/track-partner-click")
+async def track_partner_click(partner_id: str, partner_name: str, post_id: str = None, category: str = None):
+    """Track when user clicks to go to partner (e.g., Norman's Scrap Yard)"""
+    try:
+        now = now_utc()
+        
+        # Record the click
+        click_doc = {
+            "id": generate_id(),
+            "partner_id": partner_id,
+            "partner_name": partner_name,
+            "post_id": post_id,
+            "category": category,
+            "clicked_at": to_iso(now)
+        }
+        await db.partner_clicks.insert_one(click_doc)
+        
+        # Update partner stats
+        await db.partner_stats.update_one(
+            {"partner_id": partner_id},
+            {
+                "$inc": {"total_clicks": 1},
+                "$set": {
+                    "partner_name": partner_name,
+                    "last_click": to_iso(now)
+                },
+                "$setOnInsert": {
+                    "partner_id": partner_id,
+                    "first_click": to_iso(now)
+                }
+            },
+            upsert=True
+        )
+        
+        logger.info(f"Partner click tracked: {partner_name} (post: {post_id})")
+        return {"status": "tracked"}
+    except Exception as e:
+        logger.error(f"Partner tracking error: {e}")
+        return {"status": "error"}
+
+@api_router.get("/admin/partners")
+async def admin_get_partners(pin: str = Query(...)):
+    """Get all partner statistics"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    partners = await db.partner_stats.find({}, {"_id": 0}).sort("total_clicks", -1).to_list(100)
+    return partners
+
+@api_router.get("/admin/partner-clicks")
+async def admin_get_partner_clicks(pin: str = Query(...), partner_id: str = None, limit: int = 100):
+    """Get partner click history"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    query = {}
+    if partner_id:
+        query["partner_id"] = partner_id
+    
+    clicks = await db.partner_clicks.find(query, {"_id": 0}).sort("clicked_at", -1).limit(limit).to_list(limit)
+    return clicks
+
+@api_router.get("/admin/partner-summary")
+async def admin_get_partner_summary(pin: str = Query(...)):
+    """Get partner summary for dashboard"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    # Total clicks
+    total_clicks = await db.partner_clicks.count_documents({})
+    
+    # Clicks by partner
+    pipeline = [
+        {"$group": {
+            "_id": "$partner_name",
+            "clicks": {"$sum": 1},
+            "last_click": {"$max": "$clicked_at"}
+        }},
+        {"$sort": {"clicks": -1}}
+    ]
+    by_partner = await db.partner_clicks.aggregate(pipeline).to_list(50)
+    
+    # Clicks by category
+    cat_pipeline = [
+        {"$match": {"category": {"$ne": None}}},
+        {"$group": {"_id": "$category", "clicks": {"$sum": 1}}},
+        {"$sort": {"clicks": -1}}
+    ]
+    by_category = await db.partner_clicks.aggregate(cat_pipeline).to_list(20)
+    
+    # Recent clicks
+    recent = await db.partner_clicks.find({}, {"_id": 0}).sort("clicked_at", -1).limit(10).to_list(10)
+    
+    return {
+        "total_clicks": total_clicks,
+        "by_partner": by_partner,
+        "by_category": by_category,
+        "recent_clicks": recent
+    }
+
 # ============ HEALTH CHECK ============
 
 @api_router.get("/")
