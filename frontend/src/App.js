@@ -3254,18 +3254,26 @@ function AdminPanel() {
   const fetchAdminData = async () => {
     setLoading(true);
     try {
-      const [statsRes, postsRes, reportsRes, brandsRes, brandStatsRes] = await Promise.all([
+      const [statsRes, postsRes, reportsRes, brandsRes, brandStatsRes, itemTypesRes, itemTypesSummaryRes, partnersRes, partnerSummaryRes] = await Promise.all([
         axios.get(`${API}/admin/stats?pin=${pin}`),
         axios.get(`${API}/admin/posts?pin=${pin}`),
         axios.get(`${API}/reports?status=pending`),
         axios.get(`${API}/admin/brands?pin=${pin}`),
-        axios.get(`${API}/admin/brand-stats?pin=${pin}`)
+        axios.get(`${API}/admin/brand-stats?pin=${pin}`),
+        axios.get(`${API}/admin/item-types?pin=${pin}`),
+        axios.get(`${API}/admin/item-types-summary?pin=${pin}`),
+        axios.get(`${API}/admin/partners?pin=${pin}`),
+        axios.get(`${API}/admin/partner-summary?pin=${pin}`)
       ]);
       setStats(statsRes.data);
       setPosts(postsRes.data);
       setReports(reportsRes.data);
       setBrands(brandsRes.data);
       setBrandStats(brandStatsRes.data);
+      setItemTypes(itemTypesRes.data);
+      setItemTypesSummary(itemTypesSummaryRes.data);
+      setPartners(partnersRes.data);
+      setPartnerSummary(partnerSummaryRes.data);
     } catch (error) {
       console.error("Failed to fetch admin data:", error);
       toast.error("Failed to load data");
