@@ -889,6 +889,117 @@ async def admin_get_all_posts(pin: str = Query(...)):
     posts = await db.posts.find({}, {"_id": 0, "original_latitude": 0, "original_longitude": 0}).to_list(1000)
     return [PostResponse(**p) for p in posts]
 
+# ============ ADMIN BRAND/COMPANY TRACKING ============
+
+@api_router.get("/admin/brands")
+async def admin_get_brands(pin: str = Query(...)):
+    """Get all tracked brands (admin)"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    brands = await db.brands.find({}, {"_id": 0}).sort("scan_count", -1).to_list(1000)
+    return brands
+
+@api_router.post("/admin/brands")
+async def admin_create_brand(brand: BrandCreate, pin: str = Query(...)):
+    """Add a new brand to track (admin)"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    brand_doc = {
+        "id": generate_id(),
+        "name": brand.name,
+        "category": brand.category,
+        "notes": brand.notes or "",
+        "scan_count": 0,
+        "last_scanned": None,
+        "created_at": to_iso(now_utc())
+    }
+    
+    await db.brands.insert_one(brand_doc)
+    del brand_doc["_id"]
+    return brand_doc
+
+@api_router.put("/admin/brands/{brand_id}")
+async def admin_update_brand(brand_id: str, brand: BrandCreate, pin: str = Query(...)):
+    """Update a brand (admin)"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    result = await db.brands.update_one(
+        {"id": brand_id},
+        {"$set": {
+            "name": brand.name,
+            "category": brand.category,
+            "notes": brand.notes or ""
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    
+    return {"status": "updated"}
+
+@api_router.delete("/admin/brands/{brand_id}")
+async def admin_delete_brand(brand_id: str, pin: str = Query(...)):
+    """Delete a brand (admin)"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    result = await db.brands.delete_one({"id": brand_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    
+    return {"status": "deleted"}
+
+@api_router.post("/admin/brands/{brand_id}/increment")
+async def admin_increment_brand_scan(brand_id: str, pin: str = Query(...)):
+    """Increment scan count for a brand (admin)"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    result = await db.brands.update_one(
+        {"id": brand_id},
+        {
+            "$inc": {"scan_count": 1},
+            "$set": {"last_scanned": to_iso(now_utc())}
+        }
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    
+    return {"status": "incremented"}
+
+@api_router.get("/admin/brand-stats")
+async def admin_get_brand_stats(pin: str = Query(...)):
+    """Get brand statistics for presentation (admin)"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    # Get total brands
+    total_brands = await db.brands.count_documents({})
+    
+    # Get brands by category
+    pipeline = [
+        {"$group": {
+            "_id": "$category",
+            "count": {"$sum": 1},
+            "total_scans": {"$sum": "$scan_count"}
+        }},
+        {"$sort": {"total_scans": -1}}
+    ]
+    by_category = await db.brands.aggregate(pipeline).to_list(100)
+    
+    # Get top scanned brands
+    top_brands = await db.brands.find({}, {"_id": 0}).sort("scan_count", -1).limit(10).to_list(10)
+    
+    return {
+        "total_brands": total_brands,
+        "by_category": by_category,
+        "top_brands": top_brands
+    }
+
 # ============ STATS HELPER ============
 
 async def update_stats(event: str, category: str):
