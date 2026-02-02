@@ -924,42 +924,27 @@ function AppContent() {
     }
   }, []);
 
-  // MODULE 2: Open camera DIRECTLY - no options, no delays
-  const openCamera = async () => {
-    try {
-      // Immediately try to access camera - browser handles permission prompt if needed
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
-        audio: false
-      });
-      
-      // Success! Show camera immediately
-      setCameraPermissionState('granted');
-      setCameraStream(stream);
-      setShowCameraView(true);
-      setCameraZoom(1);
-      
-      // Check if camera supports native zoom
-      const track = stream.getVideoTracks()[0];
-      const capabilities = track.getCapabilities?.();
-      if (capabilities?.zoom) {
-        setMaxZoom(capabilities.zoom.max || 5);
-      }
-      
-      // Connect stream to video element
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      }, 50);
-    } catch (error) {
-      console.error("Camera error:", error);
-      if (error.name === 'NotAllowedError') {
-        setCameraPermissionState('denied');
-      }
-      // Camera not available - open gallery instead
-      fileInputRef.current?.click();
-    }
+  // Open NATIVE device camera app
+  const openCamera = () => {
+    // Trigger the native camera input - opens device's camera app
+    cameraInputRef.current?.click();
+  };
+  
+  // Handle native camera capture result
+  const handleNativeCameraCapture = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64 = event.target.result;
+      await processImage(base64);
+    };
+    reader.readAsDataURL(file);
+    
+    // Clear the input so same file can be selected again
+    e.target.value = '';
   };
 
   // Close camera
