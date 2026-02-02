@@ -3148,18 +3148,30 @@ function AppContent() {
       {/* Norman Scrap Yard Ad - Sydney Metro Only - Swipe to dismiss */}
       {showScrapYardAd && isInSydneyMetro() && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 modal-backdrop animate-fade-in"
           onClick={() => setShowScrapYardAd(false)}
         >
           <div 
-            className="bg-white max-w-sm mx-4 rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
+            className="bg-white max-w-sm mx-4 rounded-3xl shadow-2xl overflow-hidden animate-slide-up modal-content"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={(e) => {
               e.currentTarget.dataset.touchStartY = e.touches[0].clientY;
             }}
+            onTouchMove={(e) => {
+              const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+              const currentY = e.touches[0].clientY;
+              const diff = currentY - startY;
+              // Allow both up and down swipe
+              if (Math.abs(diff) > 10) {
+                e.currentTarget.style.transform = `translateY(${diff * 0.4}px)`;
+                e.currentTarget.style.transition = 'none';
+              }
+            }}
             onTouchEnd={(e) => {
               const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
               const endY = e.changedTouches[0].clientY;
+              e.currentTarget.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
+              e.currentTarget.style.transform = '';
               if (Math.abs(endY - startY) > 80) {
                 setShowScrapYardAd(false);
               }
@@ -3167,7 +3179,7 @@ function AppContent() {
           >
             <div className="pt-6 px-6 text-center">
               {/* Swipe indicator */}
-              <div className="w-10 h-1 bg-slate-300 rounded-full mx-auto mb-4" />
+              <div className="w-10 h-1 bg-slate-300 rounded-full mx-auto mb-4 cursor-grab" />
               
               <img 
                 src={NORMAN_SCRAP_YARD.logo} 
@@ -3196,14 +3208,14 @@ function AppContent() {
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <Button 
                   variant="outline"
-                  className="py-4 rounded-full"
+                  className="py-4 rounded-full active:scale-[0.98] transition-transform"
                   onClick={() => setShowScrapYardAd(false)}
                   data-testid="scrapyard-skip-btn"
                 >
                   Not now
                 </Button>
                 <Button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full"
+                  className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full active:scale-[0.98] transition-transform"
                   onClick={async () => {
                     // Track partner click (background, no delay)
                     try {
@@ -3220,7 +3232,7 @@ function AppContent() {
               </div>
               
               <p className="text-xs text-slate-400 pb-4">
-                Swipe or tap outside to dismiss • Auto-closes in 5s
+                Swipe to dismiss • Auto-closes in 5s
               </p>
             </div>
           </div>
