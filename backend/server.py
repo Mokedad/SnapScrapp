@@ -85,11 +85,43 @@ class GenerateDescriptionRequest(BaseModel):
 
 class ReportCreate(BaseModel):
     post_id: str
-    reason: str  # "item_gone", "incorrect_location", "unsafe", "spam"
+    reason: str  # "not_correct", "illegal_dumping"
+    details: Optional[str] = ""  # Additional details for illegal dumping
 
 class ReportResponse(BaseModel):
     id: str
     post_id: str
+    reason: str
+    details: Optional[str] = ""
+    status: str
+    created_at: str
+    # For illegal dumping reports
+    suburb: Optional[str] = None
+    region: Optional[str] = None
+    post_title: Optional[str] = None
+    post_description: Optional[str] = None
+    post_category: Optional[str] = None
+    post_image: Optional[str] = None  # Base64 or URL
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
+
+# Illegal Dumping Report - full data for email
+class IllegalDumpingReport(BaseModel):
+    id: str
+    post_id: str
+    post_title: str
+    post_description: str
+    post_category: str
+    post_image: str
+    latitude: float
+    longitude: float
+    address: str
+    suburb: str
+    region: str
+    reporter_details: Optional[str] = ""
+    created_at: str
+    status: str = "pending"
 
 # Admin Branding/Companies tracking
 class BrandCreate(BaseModel):
