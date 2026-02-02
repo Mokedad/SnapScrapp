@@ -3696,6 +3696,46 @@ function AdminPanel() {
                 </div>
               </div>
             )}
+
+            {/* Export All Data Button */}
+            <div className="bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl p-4 text-white">
+              <h3 className="font-semibold mb-2">Export Data</h3>
+              <p className="text-slate-300 text-sm mb-4">Download tracking data for analysis or presentations</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleExport('posts')}
+                  className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  data-testid="export-posts-btn"
+                >
+                  <Download className="w-4 h-4" />
+                  Posts CSV
+                </button>
+                <button
+                  onClick={() => handleExport('item-types')}
+                  className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  data-testid="export-types-btn"
+                >
+                  <Download className="w-4 h-4" />
+                  Types CSV
+                </button>
+                <button
+                  onClick={() => handleExport('partner-clicks')}
+                  className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  data-testid="export-partners-btn"
+                >
+                  <Download className="w-4 h-4" />
+                  Partners CSV
+                </button>
+                <button
+                  onClick={() => handleExport('all')}
+                  className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  data-testid="export-all-btn"
+                >
+                  <FileDown className="w-4 h-4" />
+                  Export All
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
