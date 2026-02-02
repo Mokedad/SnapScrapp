@@ -2950,6 +2950,85 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
+      {/* iOS Add to Home Screen Prompt */}
+      {showAddToHomeScreen && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 animate-fade-in">
+          <div className="w-full max-w-md mx-4 mb-4 animate-slide-up">
+            {/* Arrow pointing to Share button */}
+            <div className="flex justify-center mb-2">
+              <div className="bg-white rounded-full p-2 shadow-lg animate-bounce">
+                <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 7l4-4m0 0l4 4m-4-4v18" />
+                </svg>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+              <div className="p-6 text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                  <Camera className="w-8 h-8 text-green-600" />
+                </div>
+                
+                <h3 className="text-xl font-bold text-slate-900 mb-2">
+                  Add Ucycle to Home Screen
+                </h3>
+                <p className="text-slate-600 text-sm mb-4">
+                  Get instant access with one tap! Install Ucycle for the best experience.
+                </p>
+                
+                {/* Instructions */}
+                <div className="bg-slate-50 rounded-xl p-4 text-left space-y-3 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Share2 className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <p className="text-sm text-slate-700">
+                      <strong>Step 1:</strong> Tap the <span className="text-blue-600">Share</span> button below
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Plus className="w-4 h-4 text-green-600" />
+                    </div>
+                    <p className="text-sm text-slate-700">
+                      <strong>Step 2:</strong> Scroll and select <span className="text-green-600">"Add to Home Screen"</span>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Check className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <p className="text-sm text-slate-700">
+                      <strong>Step 3:</strong> Tap <span className="text-amber-600">"Add"</span> to confirm
+                    </p>
+                  </div>
+                </div>
+                
+                <p className="text-xs text-slate-400 mb-4">
+                  📷 For best camera access, also visit Safari Settings → Ucycle → Camera → Allow
+                </p>
+                
+                <div className="flex gap-3">
+                  <Button 
+                    variant="outline"
+                    className="flex-1 py-4 rounded-full"
+                    onClick={dismissAddToHomeScreen}
+                  >
+                    Maybe later
+                  </Button>
+                  <Button 
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full"
+                    onClick={dismissAddToHomeScreen}
+                  >
+                    Got it!
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Norman Scrap Yard Ad - Sydney Metro Only - Swipe to dismiss */}
       {showScrapYardAd && isInSydneyMetro() && (
         <div 
