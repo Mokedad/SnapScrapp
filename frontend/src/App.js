@@ -3776,10 +3776,12 @@ function AdminPanel() {
   const fetchAdminData = async () => {
     setLoading(true);
     try {
-      const [statsRes, postsRes, reportsRes, brandsRes, brandStatsRes, itemTypesRes, itemTypesSummaryRes, partnersRes, partnerSummaryRes] = await Promise.all([
+      const [statsRes, postsRes, reportsRes, analyticsRes, illegalRes, brandsRes, brandStatsRes, itemTypesRes, itemTypesSummaryRes, partnersRes, partnerSummaryRes] = await Promise.all([
         axios.get(`${API}/admin/stats?pin=${pin}`),
         axios.get(`${API}/admin/posts?pin=${pin}`),
         axios.get(`${API}/reports?status=pending`),
+        axios.get(`${API}/admin/analytics?pin=${pin}`),
+        axios.get(`${API}/admin/illegal-dumping-reports?pin=${pin}`),
         axios.get(`${API}/admin/brands?pin=${pin}`),
         axios.get(`${API}/admin/brand-stats?pin=${pin}`),
         axios.get(`${API}/admin/item-types?pin=${pin}`),
@@ -3790,6 +3792,8 @@ function AdminPanel() {
       setStats(statsRes.data);
       setPosts(postsRes.data);
       setReports(reportsRes.data);
+      setAnalytics(analyticsRes.data);
+      setIllegalDumpingReports(illegalRes.data);
       setBrands(brandsRes.data);
       setBrandStats(brandStatsRes.data);
       setItemTypes(itemTypesRes.data);
@@ -3801,6 +3805,25 @@ function AdminPanel() {
       toast.error("Failed to load data");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Generate email content for illegal dumping
+  const generateIllegalDumpingEmail = async (reportId) => {
+    try {
+      const res = await axios.get(`${API}/admin/illegal-dumping-email/${reportId}?pin=${pin}`);
+      const { subject, body, image_url } = res.data;
+      
+      // Copy to clipboard
+      await navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`);
+      toast.success("Email content copied to clipboard!");
+      
+      // Also open mailto link
+      const mailtoLink = `mailto:council@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(mailtoLink, '_blank');
+    } catch (error) {
+      console.error("Failed to generate email:", error);
+      toast.error("Failed to generate email");
     }
   };
 
