@@ -103,9 +103,6 @@ class BrandResponse(BaseModel):
     scan_count: int
     last_scanned: Optional[str]
     created_at: str
-    reason: str
-    created_at: str
-    status: str  # "pending", "reviewed"
 
 class AdminVerify(BaseModel):
     pin: str
@@ -118,6 +115,20 @@ class StatsResponse(BaseModel):
     removed_posts: int
     pending_reports: int
     categories: dict
+
+# Item Type Tracking (for "Types of Scrap" tab)
+class ItemTypeRecord(BaseModel):
+    category: str
+    title: str
+    brand: Optional[str] = None
+    count: int = 1
+
+# Partner Click Tracking
+class PartnerClickRecord(BaseModel):
+    partner_id: str
+    partner_name: str
+    post_id: Optional[str] = None
+    category: Optional[str] = None
 
 # ============ HELPER FUNCTIONS ============
 
