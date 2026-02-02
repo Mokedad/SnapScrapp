@@ -66,11 +66,8 @@ const CATEGORIES = [
 const REPORT_REASONS = [
   { value: "not_correct", label: "Not correct / Misleading", description: "Item info or location is wrong" },
   { value: "illegal_dumping", label: "Illegal Dumping", description: "Report to local council" },
-  // Legacy reasons for backward compatibility
   { value: "item_gone", label: "Item already gone", description: "The item is no longer available" },
-  { value: "incorrect_location", label: "Incorrect location", description: "Location info is wrong" },
-  { value: "unsafe", label: "Unsafe or prohibited", description: "Item shouldn't be posted" },
-  { value: "spam", label: "Spam / misuse", description: "Not a legitimate post" }
+  { value: "other", label: "Other", description: "Other types of concerns" }
 ];
 
 // Create custom marker icon from base64 image
