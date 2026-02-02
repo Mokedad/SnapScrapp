@@ -719,6 +719,9 @@ async def create_post(post: PostCreate):
     # This runs after the post is created
     asyncio.create_task(track_item_type(post.title, post.category))
     
+    # BACKGROUND: Auto-detect and track brands from title/description
+    asyncio.create_task(auto_detect_and_track_brand(post.title, post.description, post.category))
+    
     return PostResponse(
         id=post_doc["id"],
         image_base64=post_doc["image_base64"],
