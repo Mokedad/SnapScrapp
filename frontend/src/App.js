@@ -37,7 +37,9 @@ import {
   Search,
   Heart,
   Building,
-  Edit
+  Edit,
+  Package,
+  Handshake
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "@/index.css";
