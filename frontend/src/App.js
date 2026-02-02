@@ -64,119 +64,13 @@ const formatDistance = (post) => {
   return formatDistanceUtil(post.distance);
 };
 
-// Map click handler component
-function LocationPicker({ onLocationSelect, selectedLocation }) {
-  useMapEvents({
-    click: (e) => {
-      onLocationSelect([e.latlng.lat, e.latlng.lng]);
-    }
-  });
-  
-  return selectedLocation ? (
-    <Marker position={selectedLocation} icon={locationIcon} />
-  ) : null;
-}
+// Import extracted map components
+import { LocationPicker } from './components/map/LocationPicker';
+import { UserLocationMarker } from './components/map/UserLocationMarker';
+import { MapCenterUpdater, MapRefSetter } from './components/map/MapHelpers';
 
-// Map center updater
-function MapCenterUpdater({ center }) {
-  const map = useMap();
-  useEffect(() => {
-    if (center) {
-      map.setView(center, map.getZoom());
-    }
-  }, [center, map]);
-  return null;
-}
-
-// Map reference setter
-function MapRefSetter({ mapRef }) {
-  const map = useMap();
-  useEffect(() => {
-    mapRef.current = map;
-  }, [map, mapRef]);
-  return null;
-}
-
-// User location marker
-function UserLocationMarker({ position }) {
-  if (!position) return null;
-  
-  const icon = L.divIcon({
-    html: `<div class="user-location-marker">
-      <div class="pulse-ring"></div>
-      <div class="center-dot"></div>
-    </div>`,
-    className: '',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
-  });
-  
-  return <Marker position={position} icon={icon} />;
-}
-
-// Category Badge
-function CategoryBadge({ category }) {
-  return (
-    <span className={`category-pill ${category}`} data-testid={`category-badge-${category}`}>
-      {category.replace('-', ' ')}
-    </span>
-  );
-}
-
-// Status Badge
-function StatusBadge({ status }) {
-  return (
-    <span className={`status-badge ${status}`} data-testid={`status-badge-${status}`}>
-      {status === "active" && <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />}
-      {status}
-    </span>
-  );
-}
-
-// Post Card Component
-function PostCard({ post, onViewDetails }) {
-  const timeLeft = () => {
-    const expires = new Date(post.expires_at);
-    const now = new Date();
-    const diff = expires - now;
-    if (diff <= 0) return "Expired";
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    if (hours < 1) return "< 1 hour left";
-    return `${hours}h left`;
-  };
-
-  return (
-    <div 
-      className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 animate-slide-up cursor-pointer hover:shadow-md transition-shadow"
-      onClick={() => onViewDetails(post)}
-      data-testid={`post-card-${post.id}`}
-    >
-      <div className="relative aspect-video">
-        <img 
-          src={post.image_base64.startsWith('data:') ? post.image_base64 : `data:image/jpeg;base64,${post.image_base64}`}
-          alt={post.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute top-3 left-3">
-          <CategoryBadge category={post.category} />
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
-          <h3 className="text-white font-bold text-lg">{post.title}</h3>
-        </div>
-      </div>
-      <div className="p-4">
-        <p className="text-slate-600 text-sm line-clamp-2 mb-3">{post.description}</p>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-slate-500 text-sm">
-            <Clock className="w-4 h-4" />
-            <span>{timeLeft()}</span>
-          </div>
-          <StatusBadge status={post.status} />
-        </div>
-      </div>
-    </div>
-  );
-}
+// Import extracted post components
+import { CategoryBadge, StatusBadge } from './components/post/PostCard';
 
 // Main App Component
 function AppContent() {
