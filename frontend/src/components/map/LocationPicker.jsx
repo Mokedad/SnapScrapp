@@ -5,7 +5,7 @@ import { locationIcon } from '../../utils/mapUtils';
 export function LocationPicker({ onLocationSelect, selectedLocation }) {
   useMapEvents({
     click(e) {
-      onLocationSelect(e.latlng.lat, e.latlng.lng);
+      onLocationSelect([e.latlng.lat, e.latlng.lng]);
     }
   });
   
