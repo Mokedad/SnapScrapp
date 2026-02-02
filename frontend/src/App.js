@@ -3538,9 +3538,34 @@ function AppContent() {
         </div>
       )}
 
-      {/* PWA Install Prompt Banner */}
+      {/* PWA Install Prompt Banner - Swipe down to dismiss */}
       {showInstallPrompt && (
-        <div className="fixed bottom-20 left-4 right-4 z-50 animate-slide-up">
+        <div 
+          className="fixed bottom-20 left-4 right-4 z-50 animate-slide-up modal-content"
+          onTouchStart={(e) => {
+            e.currentTarget.dataset.touchStartY = e.touches[0].clientY;
+          }}
+          onTouchMove={(e) => {
+            const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+            const currentY = e.touches[0].clientY;
+            const diff = currentY - startY;
+            if (diff > 0) {
+              e.currentTarget.style.transform = `translateY(${diff * 0.5}px)`;
+              e.currentTarget.style.opacity = `${Math.max(0.3, 1 - diff / 150)}`;
+              e.currentTarget.style.transition = 'none';
+            }
+          }}
+          onTouchEnd={(e) => {
+            const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+            const endY = e.changedTouches[0].clientY;
+            e.currentTarget.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            e.currentTarget.style.transform = '';
+            e.currentTarget.style.opacity = '';
+            if (endY - startY > 60) {
+              dismissInstallPrompt();
+            }
+          }}
+        >
           <div className="bg-white rounded-2xl shadow-xl p-4 border border-slate-200">
             <div className="flex items-start gap-3">
               <img 
@@ -3552,7 +3577,7 @@ function AppContent() {
                 <h3 className="font-bold text-slate-900">Install Ucycle</h3>
                 <p className="text-sm text-slate-600">Add to home screen for quick access</p>
               </div>
-              <button onClick={dismissInstallPrompt} className="text-slate-400 hover:text-slate-600">
+              <button onClick={dismissInstallPrompt} className="text-slate-400 hover:text-slate-600 active:scale-95 transition-transform">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -3576,9 +3601,34 @@ function AppContent() {
         </div>
       )}
 
-      {/* App Update Banner */}
+      {/* App Update Banner - Swipe up to dismiss */}
       {showUpdateBanner && (
-        <div className="fixed top-16 left-4 right-4 z-50 animate-slide-down">
+        <div 
+          className="fixed top-16 left-4 right-4 z-50 animate-slide-down modal-content"
+          onTouchStart={(e) => {
+            e.currentTarget.dataset.touchStartY = e.touches[0].clientY;
+          }}
+          onTouchMove={(e) => {
+            const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+            const currentY = e.touches[0].clientY;
+            const diff = currentY - startY;
+            if (diff < 0) {
+              e.currentTarget.style.transform = `translateY(${diff * 0.5}px)`;
+              e.currentTarget.style.opacity = `${Math.max(0.3, 1 + diff / 150)}`;
+              e.currentTarget.style.transition = 'none';
+            }
+          }}
+          onTouchEnd={(e) => {
+            const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+            const endY = e.changedTouches[0].clientY;
+            e.currentTarget.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            e.currentTarget.style.transform = '';
+            e.currentTarget.style.opacity = '';
+            if (startY - endY > 60) {
+              setShowUpdateBanner(false);
+            }
+          }}
+        >
           <div className="bg-blue-600 text-white rounded-2xl shadow-xl p-4">
             <div className="flex items-center gap-3">
               <RefreshCw className="w-6 h-6" />
