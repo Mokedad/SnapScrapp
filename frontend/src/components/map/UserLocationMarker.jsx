@@ -13,11 +13,28 @@ const pulsingIcon = L.divIcon({
 });
 
 export function UserLocationMarker({ position }) {
+  // Handle null/undefined
   if (!position) return null;
+  
+  // Handle both array [lat, lng] and object {lat, lng} formats
+  let lat, lng;
+  if (Array.isArray(position)) {
+    [lat, lng] = position;
+  } else if (position.lat !== undefined && position.lng !== undefined) {
+    lat = position.lat;
+    lng = position.lng;
+  } else {
+    return null;
+  }
+  
+  // Validate coordinates
+  if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) {
+    return null;
+  }
   
   return (
     <Marker 
-      position={[position.lat, position.lng]} 
+      position={[lat, lng]} 
       icon={pulsingIcon}
       zIndexOffset={1000}
     />
