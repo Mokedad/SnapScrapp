@@ -1810,13 +1810,10 @@ function AppContent() {
             animateAddingMarkers={false}
           >
             {getDisplayPosts().map(post => (
-              <Marker
+              <MemoizedMarker
                 key={post.id}
-                position={[post.latitude, post.longitude]}
-                icon={createPinIcon(post.image_base64)}
-                eventHandlers={{
-                  click: () => handleViewDetails(post)
-                }}
+                post={post}
+                onClick={handleViewDetails}
               />
             ))}
           </MarkerClusterGroup>
