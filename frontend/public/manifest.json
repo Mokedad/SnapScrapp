@@ -26,6 +26,36 @@
       "purpose": "any maskable"
     }
   ],
+  "shortcuts": [
+    {
+      "name": "Post Item",
+      "short_name": "Post",
+      "description": "Take a photo and post a free item",
+      "url": "/?action=camera",
+      "icons": [
+        {
+          "src": "/logo192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Browse Items",
+      "short_name": "Browse",
+      "description": "See free items near you",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/logo192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
   "categories": ["lifestyle", "utilities"],
-  "lang": "en"
+  "lang": "en",
+  "scope": "/",
+  "id": "ucycle-app"
 }
