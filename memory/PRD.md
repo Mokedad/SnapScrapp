@@ -296,3 +296,10 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
     - **Issue**: "Tap the Share button below" was confusing
     - **Fix**: Changed to "Tap the Share icon in your browser's toolbar (Safari, Chrome)"
     - Updated in: Add to Home Screen overlay and Quick Guide modal
+21. ✅ **ADD TO HOME SCREEN MODAL UX IMPROVEMENTS**
+    - **Issue**: Button hidden behind Emergent logo, no swipe gesture
+    - **Fix**: 
+      - Increased bottom margin (`mb-20`) to move modal up from Emergent logo
+      - Added swipe-down-to-dismiss gesture (80px threshold)
+      - Added tap-backdrop-to-dismiss
+      - Added drag handle indicator with "Swipe down to close" text
