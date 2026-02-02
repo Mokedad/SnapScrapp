@@ -4706,7 +4706,8 @@ function PostPage() {
     }
   };
 
-  const shareUrl = window.location.href;
+  // Use post-meta URL for social sharing (has proper OG tags for image previews)
+  const shareUrl = `${BACKEND_URL}/post-meta/${postId}`;
   
   // Native share function
   const handleNativeShare = async () => {
