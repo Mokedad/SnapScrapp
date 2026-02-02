@@ -2111,6 +2111,17 @@ function AppContent() {
         </div>
       )}
 
+      {/* Tap to show filter bar indicator (when filter bar is hidden) */}
+      {!filterBarVisible && !showSearchBar && !pickingLocation && !showCameraView && (
+        <button
+          onClick={showFilterBar}
+          className="fixed top-[68px] left-1/2 -translate-x-1/2 z-20 bg-white/80 backdrop-blur-sm rounded-full px-4 py-1.5 shadow-md border border-slate-200 transition-all hover:bg-white active:scale-95"
+          data-testid="show-filter-bar-btn"
+        >
+          <span className="text-sm font-medium text-slate-600">{postsInRadius.length} nearby</span>
+        </button>
+      )}
+
       {/* My Location button */}
       {!pickingLocation && (
         <button 
