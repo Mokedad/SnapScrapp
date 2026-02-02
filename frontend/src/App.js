@@ -3289,6 +3289,52 @@ function AdminPanel() {
     }
   };
 
+  // Brand management functions
+  const handleSaveBrand = async () => {
+    try {
+      if (editingBrand) {
+        await axios.put(`${API}/admin/brands/${editingBrand.id}?pin=${pin}`, brandForm);
+        toast.success("Brand updated");
+      } else {
+        await axios.post(`${API}/admin/brands?pin=${pin}`, brandForm);
+        toast.success("Brand added");
+      }
+      setShowBrandForm(false);
+      setEditingBrand(null);
+      setBrandForm({ name: '', category: 'appliances', notes: '' });
+      fetchAdminData();
+    } catch (error) {
+      toast.error("Failed to save brand");
+    }
+  };
+
+  const handleDeleteBrand = async (brandId) => {
+    if (!window.confirm("Delete this brand?")) return;
+    try {
+      await axios.delete(`${API}/admin/brands/${brandId}?pin=${pin}`);
+      toast.success("Brand deleted");
+      fetchAdminData();
+    } catch (error) {
+      toast.error("Failed to delete brand");
+    }
+  };
+
+  const handleIncrementBrand = async (brandId) => {
+    try {
+      await axios.post(`${API}/admin/brands/${brandId}/increment?pin=${pin}`);
+      toast.success("Scan count incremented");
+      fetchAdminData();
+    } catch (error) {
+      toast.error("Failed to increment");
+    }
+  };
+
+  const openEditBrand = (brand) => {
+    setEditingBrand(brand);
+    setBrandForm({ name: brand.name, category: brand.category, notes: brand.notes || '' });
+    setShowBrandForm(true);
+  };
+
   // PIN entry screen
   if (!verified) {
     return (
