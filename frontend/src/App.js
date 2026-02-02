@@ -3413,16 +3413,43 @@ function AppContent() {
         </div>
       )}
 
-      {/* Camera Troubleshoot Tooltip */}
+      {/* Camera Troubleshoot Tooltip - Swipe down to dismiss */}
       {showCameraTroubleshoot && !hasSeenCameraTip && (
-        <div className="fixed bottom-24 left-4 right-4 z-50 animate-slide-up">
+        <div 
+          className="fixed bottom-24 left-4 right-4 z-50 animate-slide-up modal-content"
+          onTouchStart={(e) => {
+            e.currentTarget.dataset.touchStartY = e.touches[0].clientY;
+          }}
+          onTouchMove={(e) => {
+            const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+            const currentY = e.touches[0].clientY;
+            const diff = currentY - startY;
+            if (diff > 0) {
+              e.currentTarget.style.transform = `translateY(${diff * 0.5}px)`;
+              e.currentTarget.style.opacity = `${Math.max(0.3, 1 - diff / 200)}`;
+              e.currentTarget.style.transition = 'none';
+            }
+          }}
+          onTouchEnd={(e) => {
+            const startY = parseFloat(e.currentTarget.dataset.touchStartY || 0);
+            const endY = e.changedTouches[0].clientY;
+            e.currentTarget.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            e.currentTarget.style.transform = '';
+            e.currentTarget.style.opacity = '';
+            if (endY - startY > 60) {
+              setShowCameraTroubleshoot(false);
+              setHasSeenCameraTip(true);
+              localStorage.setItem('ucycle_camera_tip_seen', 'true');
+            }
+          }}
+        >
           <div className="bg-slate-900 text-white rounded-2xl p-4 shadow-xl">
             <div className="flex items-start gap-3">
               <Camera className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="font-semibold text-sm">Stop Camera Permission Prompts</p>
                 <p className="text-xs text-slate-300 mt-1">
-                  Tap the <strong className="text-blue-400">"AA"</strong> in the URL bar → Website Settings → Set Camera to <strong className="text-green-400">"Allow"</strong>
+                  Tap the <strong className="text-blue-400">&quot;AA&quot;</strong> in the URL bar → Website Settings → Set Camera to <strong className="text-green-400">&quot;Allow&quot;</strong>
                 </p>
               </div>
               <button 
@@ -3431,7 +3458,7 @@ function AppContent() {
                   setHasSeenCameraTip(true);
                   localStorage.setItem('ucycle_camera_tip_seen', 'true');
                 }}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-white active:scale-95 transition-transform"
               >
                 <X className="w-5 h-5" />
               </button>
