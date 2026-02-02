@@ -1,19 +1,36 @@
 import L from 'leaflet';
 
-// Create custom marker icon from base64 image
+// Icon cache for performance - prevents recreating icons for same images
+const iconCache = new Map();
+
+// Create custom marker icon from base64 image (memoized)
 export const createPinIcon = (imageBase64) => {
+  // Check cache first
+  if (iconCache.has(imageBase64)) {
+    return iconCache.get(imageBase64);
+  }
+  
   const html = `
     <div class="custom-pin">
-      <img src="${imageBase64.startsWith('data:') ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`}" alt="item" />
+      <img src="${imageBase64.startsWith('data:') ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`}" alt="item" loading="lazy" />
     </div>
   `;
-  return L.divIcon({
+  const icon = L.divIcon({
     html,
     className: '',
     iconSize: [52, 52],
     iconAnchor: [26, 52],
     popupAnchor: [0, -52]
   });
+  
+  // Cache the icon (limit cache size)
+  if (iconCache.size > 100) {
+    const firstKey = iconCache.keys().next().value;
+    iconCache.delete(firstKey);
+  }
+  iconCache.set(imageBase64, icon);
+  
+  return icon;
 };
 
 // Default marker for location selection
