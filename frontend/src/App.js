@@ -785,6 +785,26 @@ function AppContent() {
     }
   }, []);
 
+  // Detect standalone mode (PWA installed) and handle ?action=camera shortcut
+  useEffect(() => {
+    // Check if running as standalone PWA
+    const standalone = window.matchMedia('(display-mode: standalone)').matches 
+                    || window.navigator.standalone === true
+                    || document.referrer.includes('android-app://');
+    setIsStandalone(standalone);
+    
+    // Handle ?action=camera shortcut from PWA
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('action') === 'camera') {
+      // Clear the URL parameter
+      window.history.replaceState({}, '', window.location.pathname);
+      // Open camera after a brief delay for app to initialize
+      setTimeout(() => {
+        openCamera();
+      }, 500);
+    }
+  }, []);
+
   // PWA Install Prompt listener
   useEffect(() => {
     const handleBeforeInstall = (e) => {
