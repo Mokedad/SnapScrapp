@@ -128,6 +128,56 @@ h1, h2, h3, h4, h5, h6 {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Marker Cluster Styles */
+.marker-cluster {
+  background-color: rgba(22, 163, 74, 0.6) !important;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-cluster div {
+  background-color: rgba(22, 163, 74, 0.9);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-cluster-small {
+  background-color: rgba(34, 197, 94, 0.6) !important;
+}
+
+.marker-cluster-small div {
+  background-color: rgba(34, 197, 94, 0.9);
+  width: 30px;
+  height: 30px;
+}
+
+.marker-cluster-medium {
+  background-color: rgba(22, 163, 74, 0.6) !important;
+}
+
+.marker-cluster-medium div {
+  background-color: rgba(22, 163, 74, 0.9);
+  width: 40px;
+  height: 40px;
+}
+
+.marker-cluster-large {
+  background-color: rgba(21, 128, 61, 0.6) !important;
+}
+
+.marker-cluster-large div {
+  background-color: rgba(21, 128, 61, 0.9);
+  width: 50px;
+  height: 50px;
+}
+
 /* Glass morphism header */
 .glass-header {
   background: rgba(255, 255, 255, 0.85);
