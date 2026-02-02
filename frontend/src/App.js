@@ -277,7 +277,6 @@ function AppContent() {
   
   // Menu & Guide modals
   const [showQuickGuide, setShowQuickGuide] = useState(false); // Quick Guide swipe modal
-  const [showActionButtonGuide, setShowActionButtonGuide] = useState(false); // Action Button setup guide
   const [showCameraTroubleshoot, setShowCameraTroubleshoot] = useState(false); // Camera troubleshoot tooltip
   const [hasSeenCameraTip, setHasSeenCameraTip] = useState(() => {
     return localStorage.getItem('ucycle_camera_tip_seen') === 'true';
