@@ -4429,38 +4429,227 @@ function AdminPanel() {
           </div>
         )}
 
-        {/* Reports Tab */}
-        {activeTab === 'reports' && (
+        {/* Analytics Tab */}
+        {activeTab === 'analytics' && (
           <div className="space-y-4 animate-fade-in">
-            {reports.length === 0 ? (
-              <div className="text-center py-12 text-slate-500">
-                No pending reports
-              </div>
-            ) : (
-              reports.map(report => (
-                <div key={report.id} className="bg-white rounded-2xl shadow-sm p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-medium text-slate-900">
-                        {REPORT_REASONS.find(r => r.value === report.reason)?.label || report.reason}
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Post: {report.post_id.slice(0, 8)}...
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        {new Date(report.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleReviewReport(report.id)}
-                      className="px-3 py-1.5 bg-green-100 text-green-700 text-sm font-medium rounded-full hover:bg-green-200"
-                      data-testid={`review-report-${report.id}`}
-                    >
-                      Mark Reviewed
-                    </button>
+            {analytics ? (
+              <>
+                {/* Key Metrics */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-4 text-white">
+                    <p className="text-green-100 text-xs">Conversion Rate</p>
+                    <p className="text-3xl font-bold">{analytics.metrics?.conversion_rate || 0}%</p>
+                    <p className="text-green-200 text-xs mt-1">Items collected vs total</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-4 text-white">
+                    <p className="text-blue-100 text-xs">Avg Posts/Day</p>
+                    <p className="text-3xl font-bold">{analytics.metrics?.avg_posts_per_day || 0}</p>
+                    <p className="text-blue-200 text-xs mt-1">Last {analytics.period_days} days</p>
                   </div>
                 </div>
-              ))
+
+                {/* Category Distribution */}
+                <div className="bg-white rounded-2xl shadow-sm p-4">
+                  <h3 className="font-semibold text-slate-900 mb-3">Category Distribution</h3>
+                  <div className="space-y-2">
+                    {analytics.categories?.slice(0, 8).map(cat => (
+                      <div key={cat._id} className="flex items-center justify-between">
+                        <span className="text-sm text-slate-600 capitalize">{cat._id || 'Unknown'}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-green-500 rounded-full"
+                              style={{ width: `${(cat.count / (analytics.metrics?.total_posts || 1)) * 100}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium text-slate-700 w-8">{cat.count}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Status Distribution */}
+                <div className="bg-white rounded-2xl shadow-sm p-4">
+                  <h3 className="font-semibold text-slate-900 mb-3">Post Status</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {analytics.statuses?.map(s => (
+                      <div key={s._id} className="bg-slate-50 rounded-xl p-3">
+                        <p className="text-xs text-slate-500 capitalize">{s._id || 'Unknown'}</p>
+                        <p className="text-xl font-bold text-slate-800">{s.count}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Top Brands (Auto-detected) */}
+                {analytics.top_brands?.length > 0 && (
+                  <div className="bg-white rounded-2xl shadow-sm p-4">
+                    <h3 className="font-semibold text-slate-900 mb-3">Top Brands (Auto-detected)</h3>
+                    <div className="space-y-2">
+                      {analytics.top_brands.map((brand, i) => (
+                        <div key={i} className="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
+                          <span className="font-medium text-slate-700">{brand.name}</span>
+                          <span className="text-sm text-blue-600">{brand.scan_count} found</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Reports by Region */}
+                {analytics.reports_by_region?.length > 0 && (
+                  <div className="bg-white rounded-2xl shadow-sm p-4">
+                    <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-500" />
+                      Illegal Dumping by Region
+                    </h3>
+                    <div className="space-y-2">
+                      {analytics.reports_by_region.map(r => (
+                        <div key={r._id} className="flex items-center justify-between p-2 bg-amber-50 rounded-xl">
+                          <span className="text-slate-700">{r._id || 'Unknown'}</span>
+                          <span className="font-bold text-amber-700">{r.count} reports</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-12 text-slate-500">
+                Loading analytics...
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Reports Tab - Enhanced with Illegal Dumping */}
+        {activeTab === 'reports' && (
+          <div className="space-y-4 animate-fade-in">
+            {/* Report Type Filter */}
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setSelectedRegion('all')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedRegion === 'all' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'
+                }`}
+              >
+                All Reports
+              </button>
+              <button
+                onClick={() => setSelectedRegion('illegal')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  selectedRegion === 'illegal' ? 'bg-amber-600 text-white' : 'bg-amber-100 text-amber-700'
+                }`}
+              >
+                Illegal Dumping
+              </button>
+            </div>
+
+            {/* Illegal Dumping Reports by Region */}
+            {selectedRegion === 'illegal' && illegalDumpingReports && (
+              <>
+                <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-4 text-white">
+                  <h3 className="font-semibold mb-2">Illegal Dumping Reports</h3>
+                  <p className="text-2xl font-bold">{illegalDumpingReports.total}</p>
+                  <p className="text-amber-100 text-sm">Total reports pending council notification</p>
+                </div>
+
+                {/* By Region */}
+                {Object.entries(illegalDumpingReports.by_region || {}).map(([region, regionReports]) => (
+                  <div key={region} className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div className="bg-slate-100 px-4 py-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MapPinned className="w-4 h-4 text-slate-600" />
+                        <h4 className="font-semibold text-slate-900">{region}</h4>
+                      </div>
+                      <span className="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-full">
+                        {regionReports.length} reports
+                      </span>
+                    </div>
+                    <div className="divide-y divide-slate-100">
+                      {regionReports.map(report => (
+                        <div key={report.id} className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium text-slate-900">{report.post_title}</p>
+                              <p className="text-sm text-slate-600 mt-1">{report.suburb}</p>
+                              <p className="text-xs text-slate-400 mt-1">
+                                {new Date(report.created_at).toLocaleDateString()} • {report.address?.slice(0, 40)}...
+                              </p>
+                              {report.reporter_details && (
+                                <p className="text-xs text-amber-700 mt-2 bg-amber-50 p-2 rounded">
+                                  Note: {report.reporter_details}
+                                </p>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => generateIllegalDumpingEmail(report.id)}
+                              className="ml-3 px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 flex items-center gap-1"
+                            >
+                              <Mail className="w-4 h-4" />
+                              Email
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                
+                {Object.keys(illegalDumpingReports.by_region || {}).length === 0 && (
+                  <div className="text-center py-12 text-slate-500">
+                    No illegal dumping reports
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* All Regular Reports */}
+            {selectedRegion === 'all' && (
+              <>
+                {reports.length === 0 ? (
+                  <div className="text-center py-12 text-slate-500">
+                    No pending reports
+                  </div>
+                ) : (
+                  reports.map(report => (
+                    <div key={report.id} className="bg-white rounded-2xl shadow-sm p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            {report.reason === 'illegal_dumping' && (
+                              <AlertTriangle className="w-4 h-4 text-amber-500" />
+                            )}
+                            <p className="font-medium text-slate-900">
+                              {REPORT_REASONS.find(r => r.value === report.reason)?.label || report.reason}
+                            </p>
+                          </div>
+                          <p className="text-sm text-slate-600 mt-1">{report.post_title}</p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {report.suburb} • {report.region}
+                          </p>
+                          <p className="text-xs text-slate-400">
+                            {new Date(report.created_at).toLocaleDateString()}
+                          </p>
+                          {report.details && (
+                            <p className="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded">
+                              {report.details}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleReviewReport(report.id)}
+                          className="px-3 py-1.5 bg-green-100 text-green-700 text-sm font-medium rounded-full hover:bg-green-200"
+                          data-testid={`review-report-${report.id}`}
+                        >
+                          Mark Reviewed
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </>
             )}
           </div>
         )}
