@@ -239,6 +239,16 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
     - Bypasses repeated permission prompts
     - System handles permissions persistently
     - Full access to device camera features (zoom, flash, etc.)
+16. ✅ **ADMIN DATA EXPORT OPTIONS**
+    - Export buttons in Stats tab for all data types
+    - Individual export buttons in Types and Partners tabs
+    - Export formats:
+      - **Posts CSV**: ID, Title, Category, Description, Status, Location, Dates
+      - **Item Types CSV**: Title, Category, Brand, Count, First/Last Posted
+      - **Partner Clicks CSV**: Partner Name, ID, Category, Post ID, Click Time
+      - **Brands CSV**: Brand Name, Category, Scan Count, Notes, Dates
+      - **Full Export (JSON)**: All data in single JSON file
+    - API endpoints: `/admin/export/item-types`, `/admin/export/partner-clicks`, `/admin/export/brands`, `/admin/export/posts`, `/admin/export/all`
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
