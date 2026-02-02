@@ -936,21 +936,91 @@ async def mark_collected(post_id: str):
 
 # ============ REPORTS ============
 
-@api_router.post("/reports", response_model=ReportResponse)
+# Sydney region mapping based on suburbs
+SYDNEY_REGIONS = {
+    "penrith": ["penrith", "emu plains", "jamisontown", "south penrith", "cranebrook", "werrington", "kingswood", "cambridge park", "st marys", "oxley park", "mount druitt", "rooty hill"],
+    "blacktown": ["blacktown", "seven hills", "toongabbie", "lalor park", "kings langley", "prospect", "doonside", "quakers hill", "riverstone", "schofields", "marsden park"],
+    "parramatta": ["parramatta", "westmead", "harris park", "granville", "merrylands", "guildford", "auburn", "lidcombe", "homebush", "strathfield", "burwood"],
+    "liverpool": ["liverpool", "casula", "prestons", "moorebank", "chipping norton", "fairfield", "cabramatta", "canley vale", "wetherill park", "smithfield"],
+    "campbelltown": ["campbelltown", "ingleburn", "minto", "leumeah", "macquarie fields", "glenfield", "narellan", "camden", "harrington park"],
+    "sutherland": ["sutherland", "cronulla", "miranda", "caringbah", "engadine", "menai", "bankstown", "punchbowl", "revesby", "padstow"],
+    "northern_sydney": ["chatswood", "north sydney", "lane cove", "ryde", "eastwood", "macquarie park", "epping", "hornsby", "gordon", "turramurra"],
+    "eastern_sydney": ["bondi", "randwick", "coogee", "maroubra", "mascot", "botany", "kensington", "kingsford"],
+    "inner_west": ["marrickville", "newtown", "leichhardt", "ashfield", "canterbury", "dulwich hill", "summer hill", "concord"],
+    "cbd": ["sydney", "surry hills", "darlinghurst", "potts point", "ultimo", "pyrmont", "chippendale", "redfern", "waterloo"]
+}
+
+def get_region_from_suburb(suburb: str) -> str:
+    """Determine the region based on suburb name"""
+    suburb_lower = suburb.lower().strip()
+    for region, suburbs in SYDNEY_REGIONS.items():
+        for s in suburbs:
+            if s in suburb_lower or suburb_lower in s:
+                return region.replace("_", " ").title()
+    return "Greater Sydney"
+
+@api_router.post("/reports")
 async def create_report(report: ReportCreate):
-    """Report a post"""
+    """Report a post - supports regular reports and illegal dumping reports"""
     # Check if post exists
     post = await db.posts.find_one({"id": report.post_id}, {"_id": 0})
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     
+    # Get suburb from post address
+    address = post.get("address", "")
+    suburb = ""
+    if address:
+        # Try to extract suburb from address (usually before state/postcode)
+        parts = address.split(",")
+        if len(parts) >= 2:
+            suburb = parts[-2].strip() if len(parts) > 2 else parts[0].strip()
+        else:
+            suburb = address.split()[0] if address else "Unknown"
+    
+    region = get_region_from_suburb(suburb) if suburb else "Greater Sydney"
+    
     report_doc = {
         "id": generate_id(),
         "post_id": report.post_id,
         "reason": report.reason,
+        "details": report.details or "",
         "created_at": to_iso(now_utc()),
-        "status": "pending"
+        "status": "pending",
+        # Post details for context
+        "post_title": post.get("title", ""),
+        "post_description": post.get("description", ""),
+        "post_category": post.get("category", ""),
+        "latitude": post.get("latitude"),
+        "longitude": post.get("longitude"),
+        "address": address,
+        "suburb": suburb,
+        "region": region
     }
+    
+    # For illegal dumping, store the image reference
+    if report.reason == "illegal_dumping":
+        report_doc["post_image"] = post.get("image_base64", "")[:100] + "..." if post.get("image_base64") else ""
+        report_doc["full_image_available"] = bool(post.get("image_base64"))
+        
+        # Also store in separate illegal_dumping collection grouped by region
+        illegal_doc = {
+            "id": report_doc["id"],
+            "post_id": report.post_id,
+            "post_title": post.get("title", ""),
+            "post_description": post.get("description", ""),
+            "post_category": post.get("category", ""),
+            "latitude": post.get("latitude"),
+            "longitude": post.get("longitude"),
+            "address": address,
+            "suburb": suburb,
+            "region": region,
+            "reporter_details": report.details or "",
+            "created_at": to_iso(now_utc()),
+            "status": "pending",
+            "email_sent": False
+        }
+        await db.illegal_dumping_reports.insert_one(illegal_doc)
     
     await db.reports.insert_one(report_doc)
     
@@ -960,14 +1030,98 @@ async def create_report(report: ReportCreate):
         {"$inc": {"report_count": 1}}
     )
     
-    return ReportResponse(**report_doc)
+    return report_doc
 
-@api_router.get("/reports", response_model=List[ReportResponse])
-async def get_reports(status: Optional[str] = None):
+@api_router.get("/reports")
+async def get_reports(status: Optional[str] = None, reason: Optional[str] = None):
     """Get all reports (admin)"""
-    query = {"status": status} if status else {}
-    reports = await db.reports.find(query, {"_id": 0}).to_list(1000)
-    return [ReportResponse(**r) for r in reports]
+    query = {}
+    if status:
+        query["status"] = status
+    if reason:
+        query["reason"] = reason
+    reports = await db.reports.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return reports
+
+@api_router.get("/admin/illegal-dumping-reports")
+async def get_illegal_dumping_reports(pin: str = Query(...), region: Optional[str] = None):
+    """Get illegal dumping reports grouped by region"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Invalid PIN")
+    
+    query = {}
+    if region:
+        query["region"] = region
+    
+    reports = await db.illegal_dumping_reports.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    
+    # Group by region
+    by_region = {}
+    for r in reports:
+        reg = r.get("region", "Unknown")
+        if reg not in by_region:
+            by_region[reg] = []
+        by_region[reg].append(r)
+    
+    return {
+        "total": len(reports),
+        "by_region": by_region,
+        "reports": reports
+    }
+
+@api_router.get("/admin/illegal-dumping-email/{report_id}")
+async def get_illegal_dumping_email_content(report_id: str, pin: str = Query(...)):
+    """Generate email content for an illegal dumping report"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Invalid PIN")
+    
+    report = await db.illegal_dumping_reports.find_one({"id": report_id}, {"_id": 0})
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+    
+    # Get the full post with image
+    post = await db.posts.find_one({"id": report["post_id"]}, {"_id": 0})
+    
+    # Generate email content
+    email_subject = f"Illegal Dumping Report - {report.get('suburb', 'Unknown')} ({report.get('region', 'Sydney')})"
+    
+    email_body = f"""
+ILLEGAL DUMPING REPORT
+======================
+Report ID: {report['id']}
+Date: {report['created_at']}
+Region: {report.get('region', 'Unknown')}
+Suburb: {report.get('suburb', 'Unknown')}
+
+LOCATION DETAILS
+----------------
+Address: {report.get('address', 'Not provided')}
+Coordinates: {report.get('latitude', 'N/A')}, {report.get('longitude', 'N/A')}
+Google Maps: https://www.google.com/maps?q={report.get('latitude', 0)},{report.get('longitude', 0)}
+
+ITEM DETAILS
+------------
+Title: {report.get('post_title', 'Unknown')}
+Category: {report.get('post_category', 'Unknown')}
+Description: {report.get('post_description', 'No description')}
+
+REPORTER NOTES
+--------------
+{report.get('reporter_details', 'No additional details provided')}
+
+---
+This report was generated by Ucycle
+From: admin@ucycle.com.au
+"""
+    
+    return {
+        "subject": email_subject,
+        "body": email_body,
+        "from_email": "admin@ucycle.com.au",
+        "report": report,
+        "has_image": bool(post and post.get("image_base64")),
+        "image_url": f"/api/post-image/{report['post_id']}.jpg" if post and post.get("image_base64") else None
+    }
 
 # ============ ADMIN ============
 
