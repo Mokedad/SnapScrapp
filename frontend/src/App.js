@@ -61,10 +61,8 @@ const CATEGORIES = [
 
 // Report reasons
 const REPORT_REASONS = [
-  { value: "item_gone", label: "Item already gone" },
-  { value: "incorrect_location", label: "Incorrect location" },
-  { value: "unsafe", label: "Unsafe or prohibited" },
-  { value: "spam", label: "Spam / misuse" }
+  { value: "not_correct", label: "Not correct / Misleading", description: "Item info or location is wrong" },
+  { value: "illegal_dumping", label: "Illegal Dumping", description: "Report to local council" }
 ];
 
 // Create custom marker icon from base64 image
