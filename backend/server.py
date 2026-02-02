@@ -759,7 +759,7 @@ async def get_og_meta(post_id: str):
     }
 
 # ============ POST IMAGE FOR SOCIAL SHARING ============
-from fastapi.responses import Response
+from fastapi.responses import Response, HTMLResponse
 
 @api_router.get("/post-image/{post_id}.jpg")
 async def get_post_image(post_id: str):
@@ -790,6 +790,100 @@ async def get_post_image(post_id: str):
     except Exception as e:
         logger.error(f"Failed to decode image for post {post_id}: {e}")
         raise HTTPException(status_code=500, detail="Failed to process image")
+
+
+# ============ POST META PAGE FOR SOCIAL SHARING ============
+# This serves HTML with proper OG tags that social media crawlers can read
+
+@app.get("/post-meta/{post_id}")
+async def get_post_meta_page(post_id: str):
+    """
+    Serve an HTML page with Open Graph meta tags for social media sharing.
+    This is accessed by social media crawlers when someone shares a post link.
+    The page auto-redirects human users to the actual app.
+    """
+    from starlette.requests import Request
+    
+    post = await db.posts.find_one({"id": post_id}, {"_id": 0})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    title = post.get("title", "Free Item")
+    description = post.get("description", "Grab it before it's gone!")[:200]
+    category = post.get("category", "general")
+    
+    # Get the base URL from environment or use a fallback
+    base_url = os.environ.get("CORS_ORIGINS", "https://itemshare-map.preview.emergentagent.com").split(",")[0].strip()
+    if base_url == "*":
+        base_url = "https://itemshare-map.preview.emergentagent.com"
+    
+    # Image URL must be absolute and publicly accessible
+    image_url = f"{base_url}/api/post-image/{post_id}.jpg"
+    post_url = f"{base_url}/post/{post_id}"
+    
+    # Generate HTML with proper OG tags
+    html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>{title} - Free on Ucycle</title>
+    <meta name="title" content="{title} - Free on Ucycle">
+    <meta name="description" content="Free pickup available! {description}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{post_url}">
+    <meta property="og:title" content="{title} - Free on Ucycle">
+    <meta property="og:description" content="Free pickup available! {description}">
+    <meta property="og:image" content="{image_url}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Ucycle">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{post_url}">
+    <meta property="twitter:title" content="{title} - Free on Ucycle">
+    <meta property="twitter:description" content="Free pickup available! {description}">
+    <meta property="twitter:image" content="{image_url}">
+    
+    <!-- Auto-redirect for human visitors (crawlers don't execute JS) -->
+    <script>
+        window.location.href = "{post_url}";
+    </script>
+    <noscript>
+        <meta http-equiv="refresh" content="0;url={post_url}">
+    </noscript>
+    
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #166534, #22c55e);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }}
+        h1 {{ margin-bottom: 10px; }}
+        a {{ color: white; text-decoration: underline; }}
+    </style>
+</head>
+<body>
+    <h1>🔄 Redirecting to Ucycle...</h1>
+    <p>Taking you to: <strong>{title}</strong></p>
+    <p><a href="{post_url}">Click here if not redirected</a></p>
+</body>
+</html>"""
+    
+    return HTMLResponse(content=html_content, status_code=200)
 
 @api_router.patch("/posts/{post_id}/collected")
 async def mark_collected(post_id: str):
