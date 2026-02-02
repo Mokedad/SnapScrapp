@@ -2264,13 +2264,29 @@ function AppContent() {
                 <img 
                   src={newPost.image_base64} 
                   alt="Preview" 
-                  className="w-full h-40 object-cover"
+                  className={`w-full ${isAnalyzing ? 'h-48' : 'h-40'} object-cover transition-all duration-300`}
                 />
-                {/* MODULE 3: Subtle non-blocking AI indicator */}
+                {/* AI Analysis Progress Overlay */}
                 {isAnalyzing && (
-                  <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-white text-xs font-medium">AI analyzing...</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col items-center justify-end pb-6">
+                    {/* Animated scanning line */}
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" 
+                         style={{animation: 'scan 2s ease-in-out infinite'}} />
+                    
+                    {/* Progress indicator */}
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="relative">
+                        <div className="w-16 h-16 border-4 border-green-400/30 rounded-full" />
+                        <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-green-400 rounded-full animate-spin" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Eye className="w-6 h-6 text-green-400" />
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-white font-semibold text-base">{aiAnalysisStep || 'Analyzing...'}</p>
+                        <p className="text-green-400/80 text-xs mt-1">AI Vision Processing</p>
+                      </div>
+                    </div>
                   </div>
                 )}
                 <button
