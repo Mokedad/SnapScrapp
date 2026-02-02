@@ -1998,14 +1998,17 @@ function AppContent() {
         </div>
       )}
 
-      {/* Radius & Category Filters - Floating Pill Bar */}
+      {/* Radius & Category Filters - Floating Pill Bar (auto-fades after 1.2s) */}
       {!showSearchBar && !pickingLocation && !showCameraView && (
-        <div className="fixed top-[68px] left-1/2 -translate-x-1/2 z-20">
+        <div 
+          className={`fixed top-[68px] left-1/2 -translate-x-1/2 z-20 transition-opacity duration-300 ${filterBarVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          onClick={showFilterBar}
+        >
           {/* Floating pill-shaped bar - slightly larger for easy tapping */}
           <div className="bg-white rounded-full shadow-lg px-3 py-1.5 border border-slate-200 flex items-center gap-2" style={{ backgroundColor: '#ffffff' }}>
             {/* Radius button */}
             <button
-              onClick={() => setShowRadiusSlider(!showRadiusSlider)}
+              onClick={(e) => { e.stopPropagation(); setShowRadiusSlider(!showRadiusSlider); showFilterBar(); }}
               className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full text-sm font-bold text-slate-800 hover:bg-slate-200 transition-colors"
               data-testid="radius-toggle"
             >
@@ -2018,7 +2021,7 @@ function AppContent() {
             
             {/* Filter button */}
             <button
-              onClick={() => setShowCategoryFilter(!showCategoryFilter)}
+              onClick={(e) => { e.stopPropagation(); setShowCategoryFilter(!showCategoryFilter); showFilterBar(); }}
               className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                 selectedCategory || showFavoritesOnly
                   ? 'bg-green-600 text-white'
