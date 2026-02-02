@@ -910,6 +910,25 @@ function AppContent() {
     setShowAddToHomeScreen(false);
   };
 
+  // Auto-fade filter bar after 1.2 seconds - reappears on tap
+  useEffect(() => {
+    if (filterBarVisible && !showRadiusSlider && !showCategoryFilter) {
+      filterBarTimeoutRef.current = setTimeout(() => {
+        setFilterBarVisible(false);
+      }, 1200);
+    }
+    return () => {
+      if (filterBarTimeoutRef.current) {
+        clearTimeout(filterBarTimeoutRef.current);
+      }
+    };
+  }, [filterBarVisible, showRadiusSlider, showCategoryFilter]);
+
+  // Show filter bar when radius or category changes, or when tapped
+  const showFilterBar = useCallback(() => {
+    setFilterBarVisible(true);
+  }, []);
+
   // Auto-dismiss welcome popup after 10 seconds
   useEffect(() => {
     if (showWelcome) {
