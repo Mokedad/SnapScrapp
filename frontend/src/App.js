@@ -324,6 +324,7 @@ function AppContent() {
   
   // Report state
   const [reportReason, setReportReason] = useState("");
+  const [reportDetails, setReportDetails] = useState("");
   const [isReporting, setIsReporting] = useState(false);
   
   // File input refs - using native camera
