@@ -209,6 +209,21 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
     - Category-based organization (appliances, electronics, furniture, etc.)
     - Brand statistics summary for presentations
     - API endpoints: `/admin/brands`, `/admin/brand-stats`
+11. ✅ **ADMIN "TYPES OF SCRAP" TAB** (PIN-protected, admin only)
+    - Tracks all item types being posted automatically
+    - Background processing - NO delay to posting flow
+    - Auto-detects brand names from titles (Samsung, LG, IKEA, etc.)
+    - Category filter (All, Furniture, Electronics, Appliances...)
+    - Shows: item title, category, brand (if detected), count
+    - API endpoints: `/admin/item-types`, `/admin/item-types-summary`
+12. ✅ **ADMIN "PARTNERS" TAB** (PIN-protected, admin only)
+    - Tracks all clicks to partner links (Norman's Scrap Yard)
+    - Featured partner card: Norman's Scrap Yard (Sydney Metro)
+    - Shows: total clicks, status, region
+    - Recent clicks history with timestamps
+    - Clicks by category breakdown
+    - API endpoints: `/admin/partners`, `/admin/partner-summary`
+    - Click tracking: `/track-partner-click` (called when user taps "Get directions")
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
