@@ -3793,6 +3793,16 @@ function AdminPanel() {
               ))}
             </div>
 
+            {/* Export Button */}
+            <button
+              onClick={() => handleExport('item-types')}
+              className="w-full flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-xl font-medium transition-colors"
+              data-testid="export-item-types-btn"
+            >
+              <Download className="w-5 h-5" />
+              Export Item Types (CSV)
+            </button>
+
             {/* Item Types List */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <div className="p-3 bg-slate-50 border-b">
