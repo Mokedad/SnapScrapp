@@ -156,7 +156,7 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
   - Accepted: Scrap Metal, White Goods, Car Batteries, Aluminium, Copper, Brass, Steel
   - Future regions: Newcastle, Interstate partners, Return & Earn locations, Pallet recyclers
 
-## Completed Tasks (Jan 30-31, 2026)
+## Completed Tasks (Jan 30 - Feb 2, 2026)
 1. ✅ **AI Factory Reset (P0 Critical Fix)** - Complete rewrite of AI image analysis
    - **Title length limit: 3-6 words MAX** for mobile UI fit
    - **Description length limit: ~350 chars MAX** (2-3 sentences, ~8 lines)
@@ -193,6 +193,22 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
    - Spinner auto-hides after 2 seconds (user can type while waiting)
    - AI only fills fields if user hasn't typed anything
    - User feels instant even if AI takes 10+ seconds
+8. ✅ **NATIVE CAMERA APP** - Opens device's default camera app
+   - Camera FAB now triggers native camera via `capture="environment"`
+   - Full access to device camera features (zoom, flash, etc.)
+   - Gallery option available after photo taken
+9. ✅ **IMPROVED AI ANALYSIS ANIMATION**
+   - Shows step-by-step progress: "Scanning image..." → "Identifying item..." → "Analysis complete!"
+   - Animated scanning line overlay
+   - Spinning loader with Eye icon
+   - Gradient overlay with clear status text
+10. ✅ **ADMIN BRANDS/COMPANIES TRACKING**
+    - New "Brands" tab in Admin Panel
+    - Add/Edit/Delete brands to track
+    - Track scan counts and last scanned dates
+    - Category-based organization (appliances, electronics, furniture, etc.)
+    - Brand statistics summary for presentations
+    - API endpoints: `/admin/brands`, `/admin/brand-stats`
 
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
