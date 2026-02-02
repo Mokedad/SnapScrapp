@@ -35,7 +35,9 @@ import {
   ExternalLink,
   Navigation,
   Search,
-  Heart
+  Heart,
+  Building,
+  Edit
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "@/index.css";
