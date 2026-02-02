@@ -1787,10 +1787,21 @@ function AppContent() {
           style={{ height: '100%', width: '100%' }}
           zoomControl={false}
           preferCanvas={true}
+          tap={true}
+          touchZoom={true}
+          bounceAtZoomLimits={false}
+          inertia={true}
+          inertiaDeceleration={3000}
+          inertiaMaxSpeed={1500}
+          worldCopyJump={false}
+          maxBoundsViscosity={1.0}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            updateWhenZooming={false}
+            updateWhenIdle={true}
+            keepBuffer={4}
           />
           <MapCenterUpdater center={mapCenter} />
           <MapRefSetter mapRef={mapRef} />
