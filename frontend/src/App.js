@@ -3220,8 +3220,13 @@ function AdminPanel() {
   const [reports, setReports] = useState([]);
   const [brands, setBrands] = useState([]);
   const [brandStats, setBrandStats] = useState(null);
+  const [itemTypes, setItemTypes] = useState([]);
+  const [itemTypesSummary, setItemTypesSummary] = useState(null);
+  const [partners, setPartners] = useState([]);
+  const [partnerSummary, setPartnerSummary] = useState(null);
   const [activeTab, setActiveTab] = useState("stats");
   const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   
   // Brand form state
   const [showBrandForm, setShowBrandForm] = useState(false);
