@@ -360,11 +360,56 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
     - **Tap-Out Functionality**: All dialogs can be closed by tapping outside (clicking the overlay)
     - **Performance Improvement**: Removed unnecessary Leaflet Popup component for faster map interaction
 
+30. ✅ **CODE REFACTORING FOUNDATION (Feb 2, 2026)**
+    - Created modular component structure for better maintainability
+    - **New directories created:**
+      - `/app/frontend/src/utils/` - constants.js, api.js, mapUtils.js
+      - `/app/frontend/src/hooks/` - useGeolocation.js, usePosts.js, useCamera.js, useNotifications.js
+      - `/app/frontend/src/components/map/` - LocationPicker, UserLocationMarker, MapHelpers
+      - `/app/frontend/src/components/dialogs/` - ShareDialog, ReportDialog, WelcomeDialog, ScrapPricesDialog
+      - `/app/frontend/src/components/post/` - PostCard, ImageGallery
+      - `/app/frontend/src/components/layout/` - Header, FilterBar
+    - App.js now imports from utils/constants.js and utils/mapUtils.js
+    - Foundation ready for gradual migration of remaining code
+
+## Code Architecture (After Refactoring)
+```
+/app/frontend/src/
+├── components/
+│   ├── ui/              # Shadcn UI components
+│   ├── map/             # Map-related components
+│   │   ├── LocationPicker.jsx
+│   │   ├── UserLocationMarker.jsx
+│   │   └── MapHelpers.jsx
+│   ├── post/            # Post-related components
+│   │   ├── PostCard.jsx
+│   │   └── ImageGallery.jsx
+│   ├── dialogs/         # Modal dialogs
+│   │   ├── ShareDialog.jsx
+│   │   ├── ReportDialog.jsx
+│   │   ├── WelcomeDialog.jsx
+│   │   └── ScrapPricesDialog.jsx
+│   └── layout/          # Layout components
+│       ├── Header.jsx
+│       └── FilterBar.jsx
+├── hooks/               # Custom React hooks
+│   ├── useGeolocation.js
+│   ├── usePosts.js
+│   ├── useCamera.js
+│   └── useNotifications.js
+├── utils/               # Utility functions
+│   ├── constants.js     # App constants, categories, partners
+│   ├── api.js          # API client functions
+│   └── mapUtils.js     # Map helper functions
+├── App.js              # Main app (still large, but now imports from utils)
+└── index.css           # Global styles
+```
+
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
 
 ## Future/Backlog
-- **P1:** Code refactoring - break down monolithic `App.js` (5000+ lines) into smaller components
+- **P1:** Continue refactoring App.js - migrate remaining inline code to new components
 - **P2:** Add support for more regional partners (Newcastle, Interstate)
 - **P2:** Integrate "Return and Earn" locations or pallet recyclers
 - **P2:** Email digest of nearby items
