@@ -749,9 +749,6 @@ async def get_og_meta(post_id: str):
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     
-    # Create data URL for image (first 500 chars for preview)
-    image_preview = f"data:image/jpeg;base64,{post.get('image_base64', '')[:500]}..."
-    
     return {
         "title": f"{post.get('title', 'Free Item')} - Free on Ucycle",
         "description": f"Free pickup available! {post.get('description', 'Grab it before it is gone!')}",
@@ -760,6 +757,39 @@ async def get_og_meta(post_id: str):
         "status": post.get("status", "active"),
         "url": f"/post/{post_id}"
     }
+
+# ============ POST IMAGE FOR SOCIAL SHARING ============
+from fastapi.responses import Response
+
+@api_router.get("/post-image/{post_id}.jpg")
+async def get_post_image(post_id: str):
+    """
+    Serve the post image as an actual JPEG file for social media previews.
+    Social crawlers (Facebook, Twitter, etc.) need a real URL to an image file.
+    """
+    post = await db.posts.find_one({"id": post_id}, {"_id": 0, "image_base64": 1})
+    if not post or not post.get("image_base64"):
+        raise HTTPException(status_code=404, detail="Post or image not found")
+    
+    # Decode base64 to bytes
+    image_data = post["image_base64"]
+    # Strip data URL prefix if present
+    if "," in image_data:
+        image_data = image_data.split(",")[1]
+    
+    try:
+        image_bytes = base64.b64decode(image_data)
+        return Response(
+            content=image_bytes,
+            media_type="image/jpeg",
+            headers={
+                "Cache-Control": "public, max-age=86400",  # Cache for 24 hours
+                "Content-Disposition": f"inline; filename={post_id}.jpg"
+            }
+        )
+    except Exception as e:
+        logger.error(f"Failed to decode image for post {post_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to process image")
 
 @api_router.patch("/posts/{post_id}/collected")
 async def mark_collected(post_id: str):
