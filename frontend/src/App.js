@@ -3078,7 +3078,7 @@ function AppContent() {
                       <Share2 className="w-4 h-4 text-blue-600" />
                     </div>
                     <p className="text-sm text-slate-700">
-                      <strong>Step 1:</strong> Tap the <span className="text-blue-600">Share</span> button below
+                      <strong>Step 1:</strong> Tap the <span className="text-blue-600">Share</span> icon in your browser's toolbar (Safari, Chrome)
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
