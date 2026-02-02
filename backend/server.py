@@ -1262,6 +1262,157 @@ async def admin_get_partner_summary(pin: str = Query(...)):
         "recent_clicks": recent
     }
 
+# ============ ADMIN DATA EXPORT ============
+
+from fastapi.responses import StreamingResponse
+import io
+import csv
+
+@api_router.get("/admin/export/item-types")
+async def admin_export_item_types(pin: str = Query(...)):
+    """Export item types data as CSV"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    items = await db.item_types.find({}, {"_id": 0}).sort("count", -1).to_list(5000)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Title", "Category", "Brand", "Count", "First Posted", "Last Posted"])
+    
+    for item in items:
+        writer.writerow([
+            item.get("original_title", ""),
+            item.get("category", ""),
+            item.get("brand", ""),
+            item.get("count", 0),
+            item.get("first_posted", ""),
+            item.get("last_posted", "")
+        ])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=ucycle_item_types.csv"}
+    )
+
+@api_router.get("/admin/export/partner-clicks")
+async def admin_export_partner_clicks(pin: str = Query(...)):
+    """Export partner clicks data as CSV"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    clicks = await db.partner_clicks.find({}, {"_id": 0}).sort("clicked_at", -1).to_list(10000)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Partner Name", "Partner ID", "Category", "Post ID", "Clicked At"])
+    
+    for click in clicks:
+        writer.writerow([
+            click.get("partner_name", ""),
+            click.get("partner_id", ""),
+            click.get("category", ""),
+            click.get("post_id", ""),
+            click.get("clicked_at", "")
+        ])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=ucycle_partner_clicks.csv"}
+    )
+
+@api_router.get("/admin/export/brands")
+async def admin_export_brands(pin: str = Query(...)):
+    """Export brands data as CSV"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    brands = await db.brands.find({}, {"_id": 0}).sort("scan_count", -1).to_list(1000)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Brand Name", "Category", "Scan Count", "Notes", "Last Scanned", "Created At"])
+    
+    for brand in brands:
+        writer.writerow([
+            brand.get("name", ""),
+            brand.get("category", ""),
+            brand.get("scan_count", 0),
+            brand.get("notes", ""),
+            brand.get("last_scanned", ""),
+            brand.get("created_at", "")
+        ])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=ucycle_brands.csv"}
+    )
+
+@api_router.get("/admin/export/posts")
+async def admin_export_posts(pin: str = Query(...)):
+    """Export all posts data as CSV"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    posts = await db.posts.find({}, {"_id": 0, "image_base64": 0, "images": 0}).sort("created_at", -1).to_list(10000)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Title", "Category", "Description", "Status", "Latitude", "Longitude", "Created At", "Expires At"])
+    
+    for post in posts:
+        coords = post.get("location", {}).get("coordinates", [0, 0])
+        writer.writerow([
+            post.get("id", ""),
+            post.get("title", ""),
+            post.get("category", ""),
+            post.get("description", "")[:200],  # Truncate long descriptions
+            post.get("status", ""),
+            coords[1] if len(coords) > 1 else "",  # lat
+            coords[0] if len(coords) > 0 else "",  # lng
+            post.get("created_at", ""),
+            post.get("expires_at", "")
+        ])
+    
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=ucycle_posts.csv"}
+    )
+
+@api_router.get("/admin/export/all")
+async def admin_export_all(pin: str = Query(...)):
+    """Export all data as a single CSV bundle (JSON format for complex data)"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    import json
+    
+    # Gather all data
+    data = {
+        "exported_at": to_iso(now_utc()),
+        "item_types": await db.item_types.find({}, {"_id": 0}).to_list(5000),
+        "partner_clicks": await db.partner_clicks.find({}, {"_id": 0}).to_list(10000),
+        "brands": await db.brands.find({}, {"_id": 0}).to_list(1000),
+        "category_stats": await db.category_stats.find({}, {"_id": 0}).to_list(50),
+        "partner_stats": await db.partner_stats.find({}, {"_id": 0}).to_list(100)
+    }
+    
+    output = json.dumps(data, indent=2)
+    
+    return StreamingResponse(
+        iter([output]),
+        media_type="application/json",
+        headers={"Content-Disposition": "attachment; filename=ucycle_full_export.json"}
+    )
+
 # ============ HEALTH CHECK ============
 
 @api_router.get("/")
