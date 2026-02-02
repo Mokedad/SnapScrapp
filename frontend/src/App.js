@@ -1915,6 +1915,7 @@ function AppContent() {
           zoom={14} 
           style={{ height: '100%', width: '100%' }}
           zoomControl={false}
+          preferCanvas={true}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -1926,40 +1927,51 @@ function AppContent() {
           {/* User location marker */}
           <UserLocationMarker position={userLocation} />
           
-          {/* Post markers - use getDisplayPosts for category filter */}
-          {getDisplayPosts().map(post => (
-            <Marker
-              key={post.id}
-              position={[post.latitude, post.longitude]}
-              icon={createPinIcon(post.image_base64)}
-              eventHandlers={{
-                click: () => handleViewDetails(post)
-              }}
-            >
-              {/* Popup with distance - auto-closes after 1.5s */}
-              <Popup 
-                className="custom-popup" 
-                closeButton={false}
-                autoPan={false}
+          {/* Post markers with clustering for performance */}
+          <MarkerClusterGroup
+            chunkedLoading={true}
+            maxClusterRadius={60}
+            spiderfyOnMaxZoom={true}
+            showCoverageOnHover={false}
+            zoomToBoundsOnClick={true}
+            disableClusteringAtZoom={18}
+            animate={true}
+            animateAddingMarkers={false}
+          >
+            {getDisplayPosts().map(post => (
+              <Marker
+                key={post.id}
+                position={[post.latitude, post.longitude]}
+                icon={createPinIcon(post.image_base64)}
                 eventHandlers={{
-                  add: (e) => {
-                    // Auto-close popup after 1.5 seconds
-                    setTimeout(() => {
-                      e.target.close();
-                    }, 1500);
-                  }
+                  click: () => handleViewDetails(post)
                 }}
               >
-                <div className="text-center p-1 min-w-[140px] max-w-[200px]">
-                  <p className="font-semibold text-sm leading-tight" style={{ wordBreak: 'break-word' }}>{post.title}</p>
-                  {formatDistance(post) && (
-                    <p className="text-xs text-green-600 font-medium mt-0.5">{formatDistance(post)} away</p>
-                  )}
-                  <p className="text-xs text-slate-500">Tap to view</p>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+                {/* Popup with distance - auto-closes after 1.5s */}
+                <Popup 
+                  className="custom-popup" 
+                  closeButton={false}
+                  autoPan={false}
+                  eventHandlers={{
+                    add: (e) => {
+                      // Auto-close popup after 1.5 seconds
+                      setTimeout(() => {
+                        e.target.close();
+                      }, 1500);
+                    }
+                  }}
+                >
+                  <div className="text-center p-1 min-w-[140px] max-w-[200px]">
+                    <p className="font-semibold text-sm leading-tight" style={{ wordBreak: 'break-word' }}>{post.title}</p>
+                    {formatDistance(post) && (
+                      <p className="text-xs text-green-600 font-medium mt-0.5">{formatDistance(post)} away</p>
+                    )}
+                    <p className="text-xs text-slate-500">Tap to view</p>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MarkerClusterGroup>
           
           {/* Location picker */}
           {pickingLocation && (
