@@ -795,7 +795,7 @@ async def get_post_image(post_id: str):
 # ============ POST META PAGE FOR SOCIAL SHARING ============
 # This serves HTML with proper OG tags that social media crawlers can read
 
-@app.get("/post-meta/{post_id}")
+@api_router.get("/post-meta/{post_id}")
 async def get_post_meta_page(post_id: str):
     """
     Serve an HTML page with Open Graph meta tags for social media sharing.
