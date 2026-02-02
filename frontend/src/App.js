@@ -2333,17 +2333,6 @@ function AppContent() {
             )}
 
             {/* Regular Menu Items */}
-            <button
-              onClick={() => {
-                setShowMenu(false);
-                navigate('/admin');
-              }}
-              className="w-full flex items-center gap-3 p-4 rounded-xl hover:bg-slate-100 transition-colors text-left"
-              data-testid="admin-menu-btn"
-            >
-              <Shield className="w-5 h-5 text-slate-600" />
-              <span className="font-medium text-slate-900">Admin Panel</span>
-            </button>
             
             {/* Scrap Prices - Only show in Sydney Metro */}
             {isInSydneyMetro() && (
@@ -2403,6 +2392,19 @@ function AppContent() {
               >
                 <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${nearbyNotificationsEnabled ? 'translate-x-5' : 'translate-x-0.5'} mt-0.5`} />
               </div>
+            </button>
+            
+            {/* Admin Panel - at bottom */}
+            <button
+              onClick={() => {
+                setShowMenu(false);
+                navigate('/admin');
+              }}
+              className="w-full flex items-center gap-3 p-4 rounded-xl hover:bg-slate-100 transition-colors text-left"
+              data-testid="admin-menu-btn"
+            >
+              <Shield className="w-5 h-5 text-slate-600" />
+              <span className="font-medium text-slate-900">Admin Panel</span>
             </button>
           </div>
           {/* Safety Notice */}
