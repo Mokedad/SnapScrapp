@@ -3034,13 +3034,13 @@ function AppContent() {
 
       {/* Welcome Popup - First Visit */}
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
-        <DialogContent className="max-w-sm text-center rounded-3xl" style={{ backgroundColor: '#ffffff' }}>
+        <DialogContent className="w-[90vw] max-w-sm mx-auto text-center rounded-3xl" style={{ backgroundColor: '#ffffff', left: '50%', transform: 'translate(-50%, -50%)' }}>
           <div className="pt-4">
             <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-600 to-lime-500 rounded-3xl flex items-center justify-center mb-4">
               <RefreshCw className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
-              G'day mate! 👋
+              G&apos;day mate! 👋
             </h2>
             <p className="text-slate-600 mb-6">
               Welcome to Ucycle - where you can help a mate find your unwanted stuff!
@@ -3048,15 +3048,15 @@ function AppContent() {
             
             <div className="text-left space-y-3 mb-6 p-4 bg-slate-50 rounded-xl">
               <div className="flex items-start gap-3">
-                <Camera className="w-5 h-5 text-green-600 mt-0.5" />
+                <Camera className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-slate-700"><strong>Snap it</strong> - Take a quick photo of your item</p>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-green-600 mt-0.5" />
+                <MapPin className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-slate-700"><strong>Drop it</strong> - Set your approximate location</p>
               </div>
               <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-green-600 mt-0.5" />
+                <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-slate-700"><strong>Done!</strong> - Someone nearby will grab it</p>
               </div>
             </div>
@@ -3072,7 +3072,7 @@ function AppContent() {
               onClick={dismissWelcome}
               data-testid="welcome-start-btn"
             >
-              Let's go! 🚀
+              Let&apos;s go! 🚀
             </Button>
           </div>
         </DialogContent>
