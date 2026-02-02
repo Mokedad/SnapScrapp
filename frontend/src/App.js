@@ -3216,8 +3216,15 @@ function AdminPanel() {
   const [stats, setStats] = useState(null);
   const [posts, setPosts] = useState([]);
   const [reports, setReports] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [brandStats, setBrandStats] = useState(null);
   const [activeTab, setActiveTab] = useState("stats");
   const [loading, setLoading] = useState(false);
+  
+  // Brand form state
+  const [showBrandForm, setShowBrandForm] = useState(false);
+  const [editingBrand, setEditingBrand] = useState(null);
+  const [brandForm, setBrandForm] = useState({ name: '', category: 'appliances', notes: '' });
 
   // Verify PIN
   const handleVerify = async () => {
