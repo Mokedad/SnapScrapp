@@ -84,7 +84,29 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
 }
 
-/* Custom map pin */
+/* PERFORMANCE: GPU-accelerated map container */
+.leaflet-container {
+  will-change: auto;
+  contain: strict;
+  touch-action: pan-x pan-y;
+}
+
+.leaflet-tile-container {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.leaflet-zoom-animated {
+  will-change: transform;
+}
+
+/* Faster tile loading */
+.leaflet-tile {
+  will-change: opacity;
+  transition: opacity 150ms linear !important;
+}
+
+/* Custom map pin - optimized */
 .custom-pin {
   width: 52px;
   height: 52px;
@@ -93,11 +115,14 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transform: translateZ(0);
+  will-change: transform;
+  transition: transform 150ms ease;
 }
 
-.custom-pin:hover {
-  transform: scale(1.15);
+.custom-pin:hover,
+.custom-pin:active {
+  transform: scale(1.15) translateZ(0);
 }
 
 .custom-pin img {
