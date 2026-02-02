@@ -2966,7 +2966,11 @@ function AppContent() {
                 </Button>
                 <Button 
                   className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full"
-                  onClick={() => {
+                  onClick={async () => {
+                    // Track partner click (background, no delay)
+                    try {
+                      axios.post(`${API}/track-partner-click?partner_id=normans_scrap&partner_name=Norman's Scrap Yard&category=${selectedPost?.category || ''}`);
+                    } catch (e) { /* ignore tracking errors */ }
                     window.open(NORMAN_SCRAP_YARD.mapsUrl, '_blank');
                     setShowScrapYardAd(false);
                   }}
