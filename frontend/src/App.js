@@ -1197,8 +1197,8 @@ function AppContent() {
         
       } catch (error) {
         console.error("AI analysis failed:", error);
-        clearTimeout(spinnerTimeout);
         setIsAnalyzing(false);
+        setAiAnalysisStep('');
         // No error toast - user can fill manually
       }
     })();
@@ -1206,7 +1206,6 @@ function AppContent() {
 
   // Handle album/gallery selection
   const openGallery = () => {
-    closeCamera();
     fileInputRef.current?.click();
   };
 
