@@ -3071,41 +3071,41 @@ function AppContent() {
 
       {/* Welcome Popup - First Visit */}
       <Dialog open={showWelcome} onOpenChange={setShowWelcome}>
-        <DialogContent className="w-[90vw] max-w-sm mx-auto text-center rounded-3xl" style={{ backgroundColor: '#ffffff', left: '50%', transform: 'translate(-50%, -50%)' }}>
-          <div className="pt-4">
-            <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-600 to-lime-500 rounded-3xl flex items-center justify-center mb-4">
-              <RefreshCw className="w-10 h-10 text-white" />
+        <DialogContent className="w-[90vw] max-w-sm mx-auto text-center rounded-3xl p-5" style={{ backgroundColor: '#ffffff', left: '50%', transform: 'translate(-50%, -50%)' }}>
+          <div className="pt-2">
+            <div className="w-16 h-16 mx-auto bg-gradient-to-br from-green-600 to-lime-500 rounded-2xl flex items-center justify-center mb-3">
+              <RefreshCw className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            <h2 className="text-xl font-bold text-slate-900 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>
               G&apos;day mate! 👋
             </h2>
-            <p className="text-slate-600 mb-6">
-              Welcome to Ucycle - where you can help a mate find your unwanted stuff!
+            <p className="text-slate-600 text-sm mb-4">
+              Help a mate find your unwanted stuff!
             </p>
             
-            <div className="text-left space-y-3 mb-6 p-4 bg-slate-50 rounded-xl">
-              <div className="flex items-start gap-3">
-                <Camera className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-slate-700"><strong>Snap it</strong> - Take a quick photo of your item</p>
+            <div className="text-left space-y-2 mb-4 p-3 bg-slate-50 rounded-xl">
+              <div className="flex items-center gap-2">
+                <Camera className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <p className="text-xs text-slate-700"><strong>Snap it</strong> - Photo your item</p>
               </div>
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-slate-700"><strong>Drop it</strong> - Set your approximate location</p>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <p className="text-xs text-slate-700"><strong>Drop it</strong> - Set location</p>
               </div>
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-slate-700"><strong>Done!</strong> - Someone nearby will grab it</p>
+              <div className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                <p className="text-xs text-slate-700"><strong>Done!</strong> - Someone grabs it</p>
               </div>
             </div>
             
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl mb-6">
+            <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg mb-4">
               <p className="text-xs text-amber-800">
-                🚨 <strong>Safety first:</strong> Public pickup only. Never enter private property.
+                🚨 <strong>Safety:</strong> Public pickup only
               </p>
             </div>
             
             <Button 
-              className="w-full bg-gradient-to-r from-green-600 to-lime-500 text-white font-bold py-5 rounded-full shadow-lg text-lg"
+              className="w-full bg-gradient-to-r from-green-600 to-lime-500 text-white font-bold py-4 rounded-full shadow-lg"
               onClick={dismissWelcome}
               data-testid="welcome-start-btn"
             >
