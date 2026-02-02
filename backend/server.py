@@ -88,6 +88,21 @@ class ReportCreate(BaseModel):
 class ReportResponse(BaseModel):
     id: str
     post_id: str
+
+# Admin Branding/Companies tracking
+class BrandCreate(BaseModel):
+    name: str
+    category: str  # "appliances", "electronics", "furniture", etc.
+    notes: Optional[str] = ""
+
+class BrandResponse(BaseModel):
+    id: str
+    name: str
+    category: str
+    notes: str
+    scan_count: int
+    last_scanned: Optional[str]
+    created_at: str
     reason: str
     created_at: str
     status: str  # "pending", "reviewed"
