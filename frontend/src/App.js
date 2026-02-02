@@ -41,7 +41,12 @@ import {
   Package,
   Handshake,
   Download,
-  FileDown
+  FileDown,
+  Smartphone,
+  Settings,
+  HelpCircle,
+  ChevronDown,
+  Zap
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "@/index.css";
