@@ -27,15 +27,19 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
 
 const DrawerContent = React.forwardRef(({ className, children, ...props }, ref) => (
   <DrawerPortal>
-    <DrawerOverlay />
+    <DrawerOverlay className="modal-backdrop" />
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
+        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[20px] border bg-background modal-content",
         className
       )}
+      style={{ 
+        willChange: 'transform',
+        backfaceVisibility: 'hidden'
+      }}
       {...props}>
-      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+      <div className="mx-auto mt-4 h-1.5 w-[50px] rounded-full bg-slate-300 cursor-grab active:cursor-grabbing" />
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
