@@ -346,3 +346,27 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
     - Implemented region detection for Sydney suburbs
     - 10 regions: Penrith, Blacktown, Parramatta, Liverpool, Campbelltown, Sutherland, Northern Sydney, Eastern Sydney, Inner West, CBD
     - Used for illegal dumping report organization
+
+28. ✅ **MAP PERFORMANCE OPTIMIZATION (Feb 2, 2026)**
+    - Implemented `react-leaflet-cluster` for marker clustering
+    - Frontend sends map bounds to backend for viewport-based loading
+    - Backend uses `$geoWithin` geospatial filter with pagination
+    - Added `2dsphere` index to MongoDB posts collection
+    - Map loads much faster with many items
+
+29. ✅ **FINAL UI/UX POLISH (Feb 2, 2026)**
+    - **Dialog Centering Fixed**: All dialogs (Welcome, Share, Report, Scrap Prices) now perfectly centered on screen
+    - **Map Popup Bubble Removed**: Clicking map markers no longer shows popup bubble - directly opens item detail drawer
+    - **Tap-Out Functionality**: All dialogs can be closed by tapping outside (clicking the overlay)
+    - **Performance Improvement**: Removed unnecessary Leaflet Popup component for faster map interaction
+
+## Next Tasks
+- Deploy app and connect custom domain ucycle.com.au
+
+## Future/Backlog
+- **P1:** Code refactoring - break down monolithic `App.js` (5000+ lines) into smaller components
+- **P2:** Add support for more regional partners (Newcastle, Interstate)
+- **P2:** Integrate "Return and Earn" locations or pallet recyclers
+- **P2:** Email digest of nearby items
+- **P2:** Post analytics enhancements
+- **P2:** Rate limiting for spam prevention
