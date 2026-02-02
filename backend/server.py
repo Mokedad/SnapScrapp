@@ -681,6 +681,10 @@ async def create_post(post: PostCreate):
     # Update statistics
     await update_stats("post_created", post.category)
     
+    # BACKGROUND: Track item type for "Types of Scrap" reporting (no delay to user)
+    # This runs after the post is created
+    asyncio.create_task(track_item_type(post.title, post.category))
+    
     return PostResponse(
         id=post_doc["id"],
         image_base64=post_doc["image_base64"],
