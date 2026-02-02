@@ -3456,11 +3456,12 @@ function AdminPanel() {
       </header>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 bg-white overflow-x-auto">
+      <div className="flex border-b border-slate-200 bg-white overflow-x-auto hide-scrollbar">
         {[
           { id: 'stats', label: 'Stats', icon: BarChart3 },
+          { id: 'types', label: 'Types', icon: Package },
+          { id: 'partners', label: 'Partners', icon: Handshake },
           { id: 'posts', label: 'Posts', icon: Eye },
-          { id: 'reports', label: 'Reports', icon: Flag },
           { id: 'brands', label: 'Brands', icon: Building }
         ].map(tab => (
           <button
