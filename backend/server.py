@@ -847,10 +847,11 @@ async def get_post_meta_page(post_id: str):
     description = post.get("description", "Grab it before it's gone!")[:200]
     category = post.get("category", "general")
     
-    # Get the base URL from environment or use a fallback
-    base_url = os.environ.get("CORS_ORIGINS", "https://itemshare-map.preview.emergentagent.com").split(",")[0].strip()
-    if base_url == "*":
-        base_url = "https://itemshare-map.preview.emergentagent.com"
+    # Get the base URL from environment - use FRONTEND_URL or CORS_ORIGINS
+    base_url = os.environ.get("FRONTEND_URL", os.environ.get("CORS_ORIGINS", "")).split(",")[0].strip()
+    if not base_url or base_url == "*":
+        # Fallback to request origin or default domain
+        base_url = os.environ.get("BASE_URL", "https://ucycle.com.au")
     
     # Image URL must be absolute and publicly accessible
     image_url = f"{base_url}/api/post-image/{post_id}.jpg"
