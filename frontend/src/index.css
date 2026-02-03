@@ -23,6 +23,12 @@
   box-sizing: border-box;
 }
 
+/* PERFORMANCE: Prevent pull-to-refresh on mobile */
+html, body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Prevent browser zoom on camera view */
 .touch-none {
   touch-action: none;
