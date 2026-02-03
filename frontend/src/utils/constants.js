@@ -8,11 +8,11 @@ export const CATEGORIES = [
   "clothing", "garden", "kitchen", "tools", "e-waste", "scrap-metal", "cardboard", "general"
 ];
 
-// Report reasons
+// Report reasons - Simplified list
 export const REPORT_REASONS = [
-  { value: "not_correct", label: "Not correct / Misleading", description: "Item info or location is wrong" },
+  { value: "item_gone", label: "Item is Gone", description: "The item is no longer available" },
   { value: "illegal_dumping", label: "Illegal Dumping", description: "Report to local council" },
-  { value: "item_gone", label: "Item already gone", description: "The item is no longer available" },
+  { value: "wrong_location", label: "Wrong Location / Fake", description: "Location is incorrect or post is fake" },
   { value: "other", label: "Other", description: "Other types of concerns" }
 ];
 
