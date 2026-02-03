@@ -1590,25 +1590,45 @@ function AppContent() {
     if (!reportReason || !selectedPost) return;
 
     setIsReporting(true);
+    
+    // OPTIMISTIC UI: Immediately hide the post if "Item is Gone"
+    const postIdToHide = selectedPost.id;
+    if (reportReason === 'item_gone') {
+      // Immediately remove from local state
+      setPosts(prev => prev.filter(p => p.id !== postIdToHide));
+      setFilteredPosts(prev => prev.filter(p => p.id !== postIdToHide));
+      setShowDetailDrawer(false);
+      setShowReportDialog(false);
+      toast.success("Thanks! Item marked as gone", { duration: 2000 });
+    }
+    
     try {
       await axios.post(`${API}/reports`, {
-        post_id: selectedPost.id,
+        post_id: postIdToHide,
         reason: reportReason,
         details: reportDetails
       });
       
       if (reportReason === 'illegal_dumping') {
         toast.success("Illegal dumping reported! Council will be notified.", { duration: 4000 });
-      } else {
+        setShowReportDialog(false);
+      } else if (reportReason !== 'item_gone') {
         toast.success("Report submitted");
+        setShowReportDialog(false);
       }
       
-      setShowReportDialog(false);
       setReportReason("");
       setReportDetails("");
     } catch (error) {
       console.error("Failed to report:", error);
-      toast.error("Failed to submit report");
+      // If optimistic update failed, restore the post
+      if (reportReason === 'item_gone') {
+        // Refetch posts to restore
+        fetchPosts();
+        toast.error("Failed to submit report - item restored");
+      } else {
+        toast.error("Failed to submit report");
+      }
     } finally {
       setIsReporting(false);
     }
