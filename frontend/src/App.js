@@ -1549,7 +1549,7 @@ function AppContent() {
   const shareToFacebookGroups = (post) => {
     const url = getShareUrl(post);
     // Direct link to Ucycle Facebook community group
-    const groupUrl = 'https://www.facebook.com/groups/1JeLHV4p3n';
+    const groupUrl = 'https://www.facebook.com/share/g/17uqbznuSH/?mibextid=wwXIfr';
     window.open(groupUrl, '_blank');
     // Copy link to clipboard for easy pasting
     navigator.clipboard.writeText(`Free item: ${post.title} 🎁\n\n${url}`).then(() => {
