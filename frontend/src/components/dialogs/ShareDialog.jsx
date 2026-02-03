@@ -1,8 +1,6 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
-import { Copy } from 'lucide-react';
 import { BACKEND_URL } from '../../utils/constants';
-import { toast } from 'sonner';
 
 export function ShareDialog({ open, onOpenChange, post }) {
   if (!post) return null;
@@ -15,27 +13,8 @@ export function ShareDialog({ open, onOpenChange, post }) {
     onOpenChange(false);
   };
 
-  const shareToMessenger = () => {
-    window.open(`fb-messenger://share/?link=${encodeURIComponent(shareUrl)}`, '_blank');
-    setTimeout(() => {
-      window.open(`https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=0&redirect_uri=${encodeURIComponent(window.location.href)}`, '_blank');
-    }, 500);
-    onOpenChange(false);
-  };
-
-  const shareToFacebookGroups = () => {
-    window.open('https://www.facebook.com/groups/ucycleaustralia', '_blank');
-    onOpenChange(false);
-  };
-
   const shareToGumtree = () => {
     window.open('https://www.gumtree.com.au/p-post-ad.html', '_blank');
-    onOpenChange(false);
-  };
-
-  const copyShareLink = () => {
-    navigator.clipboard.writeText(shareUrl);
-    toast.success('Link copied!');
     onOpenChange(false);
   };
 
@@ -58,26 +37,6 @@ export function ShareDialog({ open, onOpenChange, post }) {
             WhatsApp
           </button>
           <button
-            onClick={shareToMessenger}
-            className="share-btn messenger flex-col py-4"
-            data-testid="share-messenger"
-          >
-            <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.242c1.092.301 2.246.464 3.443.464 6.627 0 12-4.974 12-11.111S18.627 0 12 0zm1.191 14.963l-3.055-3.26-5.963 3.26L10.732 8l3.131 3.259L19.752 8l-6.561 6.963z"/>
-            </svg>
-            Messenger
-          </button>
-          <button
-            onClick={shareToFacebookGroups}
-            className="share-btn facebook flex-col py-4"
-            data-testid="share-fb-groups"
-          >
-            <svg className="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2zm4 8h-2v-4h2v4zm0-6h-2V9h2v2zm4 6h-2v-2h2v2zm0-4h-2v-2h2v2z"/>
-            </svg>
-            Community
-          </button>
-          <button
             onClick={shareToGumtree}
             className="share-btn gumtree flex-col py-4"
             data-testid="share-gumtree"
@@ -86,14 +45,6 @@ export function ShareDialog({ open, onOpenChange, post }) {
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
             </svg>
             Gumtree
-          </button>
-          <button
-            onClick={copyShareLink}
-            className="share-btn copy flex-col py-4 col-span-2"
-            data-testid="share-copy-link"
-          >
-            <Copy className="w-6 h-6 mb-1" />
-            Copy Link
           </button>
         </div>
       </DialogContent>
