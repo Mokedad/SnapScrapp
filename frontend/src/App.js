@@ -5022,27 +5022,22 @@ function PostPage() {
     // Direct link to Ucycle Facebook community group
     const groupUrl = 'https://www.facebook.com/share/g/17uqbznuSH/?mibextid=wwXIfr';
     window.open(groupUrl, '_blank');
-    // Copy link to clipboard for easy pasting
-    navigator.clipboard.writeText(`Free item: ${post.title} 🎁\n\n${shareUrl}`).then(() => {
-      toast.success("Link copied! Paste it in the group");
-    }).catch(() => {
-      toast.success("Share in the Ucycle community!");
-    });
+    // Copy link to clipboard silently
+    navigator.clipboard.writeText(`Free item: ${post.title} 🎁\n\n${shareUrl}`).catch(() => {});
     setShowShareDialog(false);
   };
 
   const shareToGumtree = () => {
     window.open('https://www.gumtree.com.au/p-post-ad.html', '_blank');
-    toast.success("Post your item on Gumtree too!");
     setShowShareDialog(false);
   };
 
   const copyShareLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
-      toast.success("Link copied!");
+      // No notification - silent copy
     } catch (err) {
-      toast.error("Failed to copy link");
+      // Fallback
     }
     setShowShareDialog(false);
   };
@@ -5052,7 +5047,7 @@ function PostPage() {
     setIsReporting(true);
     try {
       await axios.post(`${API}/reports`, { post_id: postId, reason: reportReason });
-      toast.success("Report submitted");
+      // No notification - just close
       setShowReportDialog(false);
       setReportReason("");
     } catch (err) {
