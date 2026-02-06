@@ -254,9 +254,19 @@ function AppContent() {
     setNearbyNotificationsEnabled(prev => {
       const newValue = !prev;
       localStorage.setItem('ucycle_nearby_notifications', String(newValue));
-      toast.success(newValue ? 'Nearby notifications enabled!' : 'Nearby notifications disabled');
+      // Only show notification for nearby toggle
+      showNotification(newValue ? 'Nearby notifications enabled!' : 'Nearby notifications disabled', 'info');
       return newValue;
     });
+  }, [showNotification]);
+
+  // Show standardized centered notification (Success ✅ or Failure ❌)
+  const showCenteredNotification = useCallback((type, message = '') => {
+    setCustomNotification({ type, message });
+    // Auto-hide after 2.5 seconds
+    setTimeout(() => {
+      setCustomNotification(null);
+    }, 2500);
   }, []);
 
   // Calculate distance between two points (Haversine formula)
