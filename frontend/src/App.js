@@ -196,10 +196,14 @@ function AppContent() {
     address: ""  // Human-readable address from reverse geocoding
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);  // Progress percentage 0-100
   const [isPosting, setIsPosting] = useState(false);
   const [pickingLocation, setPickingLocation] = useState(false);
   const [isGettingAddress, setIsGettingAddress] = useState(false);  // For address lookup loading
   const [aiAnalysisStep, setAiAnalysisStep] = useState('');  // For showing AI progress steps
+  
+  // Custom notification state (centered, standardized)
+  const [customNotification, setCustomNotification] = useState(null); // { type: 'success' | 'error', message: string }
   
   // Report state
   const [reportReason, setReportReason] = useState("");
