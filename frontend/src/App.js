@@ -1377,7 +1377,8 @@ function AppContent() {
           .catch(err => console.log("Background description error:", err));
       }
       
-      toast.success("Item posted! 🎉");
+      // Show standardized success notification
+      showCenteredNotification('success', 'Post created');
       setShowPostDrawer(false);
       setNewPost({
         image_base64: "",
@@ -1393,9 +1394,8 @@ function AppContent() {
       fetchPosts();
     } catch (error) {
       console.error("Failed to post:", error);
-      // Show specific error message from backend (content moderation warnings)
-      const errorMessage = error.response?.data?.detail || "Failed to post item";
-      toast.error(errorMessage, { duration: 5000 });
+      // Show standardized error notification
+      showCenteredNotification('error', 'Failed – try again');
     } finally {
       setIsPosting(false);
     }
@@ -1405,7 +1405,7 @@ function AppContent() {
   const handleMarkCollected = async (postId) => {
     try {
       await axios.patch(`${API}/posts/${postId}/collected`);
-      toast.success("Nice one! Item collected 🎉");
+      showCenteredNotification('success', 'Item collected');
       setShowDetailDrawer(false);
       fetchPosts();
       
