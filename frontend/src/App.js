@@ -1625,7 +1625,7 @@ function AppContent() {
       setFilteredPosts(prev => prev.filter(p => p.id !== postIdToHide));
       setShowDetailDrawer(false);
       setShowReportDialog(false);
-      toast.success("Thanks! Item marked as gone", { duration: 2000 });
+      showCenteredNotification('success', 'Item marked as gone');
     }
     
     try {
@@ -1636,10 +1636,10 @@ function AppContent() {
       });
       
       if (reportReason === 'illegal_dumping') {
-        toast.success("Illegal dumping reported! Council will be notified.", { duration: 4000 });
+        showCenteredNotification('success', 'Reported to council');
         setShowReportDialog(false);
       } else if (reportReason !== 'item_gone') {
-        toast.success("Report submitted");
+        showCenteredNotification('success', 'Report submitted');
         setShowReportDialog(false);
       }
       
@@ -1651,9 +1651,9 @@ function AppContent() {
       if (reportReason === 'item_gone') {
         // Refetch posts to restore
         fetchPosts();
-        toast.error("Failed to submit report - item restored");
+        showCenteredNotification('error', 'Failed – try again');
       } else {
-        toast.error("Failed to submit report");
+        showCenteredNotification('error', 'Failed – try again');
       }
     } finally {
       setIsReporting(false);
@@ -1668,6 +1668,24 @@ function AppContent() {
 
   return (
     <div className="h-screen w-screen overflow-hidden" data-testid="app-container">
+      {/* Centered Notification (Success ✅ / Failure ❌) */}
+      {customNotification && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-none">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-200">
+            {customNotification.type === 'success' ? (
+              <div className="text-6xl">✅</div>
+            ) : (
+              <div className="text-6xl">❌</div>
+            )}
+            <p className="text-lg font-semibold text-slate-800">
+              {customNotification.type === 'success' ? 'Success' : 'Failure – try again'}
+            </p>
+            {customNotification.message && customNotification.message !== 'Success' && customNotification.message !== 'Failure – try again' && (
+              <p className="text-sm text-slate-500">{customNotification.message}</p>
+            )}
+          </div>
+        </div>
+      )}
       {/* Header */}
       <header className="glass-header fixed top-0 left-0 right-0 z-20 px-4 py-3">
         {!showSearchBar ? (
