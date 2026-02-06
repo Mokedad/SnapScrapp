@@ -1079,7 +1079,7 @@ function AppContent() {
   // - Instant image display
   // - Background AI analysis (high quality, non-blocking)
   // - User can type immediately or wait for AI
-  // - Spinner disappears after 2 seconds max
+  // - Progress indicator with percentage
   const processImage = async (base64) => {
     // INSTANT: Show the post drawer with image immediately
     setNewPost(prev => ({ 
@@ -1093,7 +1093,8 @@ function AppContent() {
     }));
     setShowPostDrawer(true);
     setIsAnalyzing(true);
-    setAiAnalysisStep('Scanning image...');
+    setAnalysisProgress(0);
+    setAiAnalysisStep('Uploading...');
     
     // ========== PARALLEL: GPS + AI Analysis ==========
     
@@ -1151,27 +1152,37 @@ function AppContent() {
       );
     })();
     
-    // TASK 2: AI Analysis with progress steps
+    // TASK 2: AI Analysis with progress percentage (background, non-blocking)
     (async () => {
       try {
         const base64Data = base64.split(',')[1] || base64;
         
-        // Step 1: Scanning
-        setAiAnalysisStep('Scanning image...');
-        await new Promise(r => setTimeout(r, 500));
+        // Progress simulation with real API call
+        setAnalysisProgress(10);
+        setAiAnalysisStep('Uploading...');
+        await new Promise(r => setTimeout(r, 300));
         
-        // Step 2: Identifying
-        setAiAnalysisStep('Identifying item...');
+        setAnalysisProgress(30);
+        setAiAnalysisStep('Scanning...');
+        await new Promise(r => setTimeout(r, 300));
+        
+        setAnalysisProgress(50);
+        setAiAnalysisStep('Identifying...');
         
         const response = await axios.post(`${API}/analyze-image-fast`, {
           image_base64: base64Data
         }, { timeout: 20000 });
         
-        // Step 3: Complete
-        setAiAnalysisStep('Analysis complete!');
+        setAnalysisProgress(90);
+        setAiAnalysisStep('Finishing...');
+        await new Promise(r => setTimeout(r, 200));
+        
+        setAnalysisProgress(100);
+        setAiAnalysisStep('Complete!');
         await new Promise(r => setTimeout(r, 300));
         
         setIsAnalyzing(false);
+        setAnalysisProgress(0);
         setAiAnalysisStep('');
         
         // Only update title/category if user hasn't typed anything yet
