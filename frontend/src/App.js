@@ -2393,25 +2393,42 @@ function AppContent() {
                   alt="Preview" 
                   className={`w-full ${isAnalyzing ? 'h-48' : 'h-40'} object-cover transition-all duration-300`}
                 />
-                {/* AI Analysis Progress Overlay */}
+                {/* AI Analysis Progress Overlay with Percentage */}
                 {isAnalyzing && (
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col items-center justify-end pb-6">
-                    {/* Animated scanning line */}
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-pulse" 
-                         style={{animation: 'scan 2s ease-in-out infinite'}} />
+                    {/* Animated progress bar */}
+                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-black/30">
+                      <div 
+                        className="h-full bg-green-400 transition-all duration-300 ease-out"
+                        style={{ width: `${analysisProgress}%` }}
+                      />
+                    </div>
                     
-                    {/* Progress indicator */}
+                    {/* Progress indicator with percentage */}
                     <div className="flex flex-col items-center gap-3">
                       <div className="relative">
-                        <div className="w-16 h-16 border-4 border-green-400/30 rounded-full" />
-                        <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-green-400 rounded-full animate-spin" />
+                        {/* Circular progress background */}
+                        <svg className="w-20 h-20 transform -rotate-90">
+                          <circle cx="40" cy="40" r="36" stroke="rgba(74, 222, 128, 0.2)" strokeWidth="6" fill="none" />
+                          <circle 
+                            cx="40" cy="40" r="36" 
+                            stroke="#4ade80" 
+                            strokeWidth="6" 
+                            fill="none"
+                            strokeDasharray={`${2 * Math.PI * 36}`}
+                            strokeDashoffset={`${2 * Math.PI * 36 * (1 - analysisProgress / 100)}`}
+                            strokeLinecap="round"
+                            className="transition-all duration-300 ease-out"
+                          />
+                        </svg>
+                        {/* Percentage in center */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <Eye className="w-6 h-6 text-green-400" />
+                          <span className="text-white font-bold text-lg">{analysisProgress}%</span>
                         </div>
                       </div>
                       <div className="text-center">
-                        <p className="text-white font-semibold text-base">{aiAnalysisStep || 'Analyzing...'}</p>
-                        <p className="text-green-400/80 text-xs mt-1">AI Vision Processing</p>
+                        <p className="text-white font-semibold text-base">{aiAnalysisStep || 'Processing...'}</p>
+                        <p className="text-green-400/80 text-xs mt-1">You can start typing below</p>
                       </div>
                     </div>
                   </div>
