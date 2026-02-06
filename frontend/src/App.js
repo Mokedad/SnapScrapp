@@ -1419,7 +1419,7 @@ function AppContent() {
       }
     } catch (error) {
       console.error("Failed to mark collected:", error);
-      toast.error("Failed to update");
+      showCenteredNotification('error', 'Failed – try again');
     }
   };
 
@@ -1441,7 +1441,7 @@ function AppContent() {
           text: shareText,
           url: shareUrl
         });
-        toast.success("Shared!");
+        // No notification for share success - just close silently
         return;
       } catch (err) {
         if (err.name !== 'AbortError') {
