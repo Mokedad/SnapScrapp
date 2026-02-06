@@ -1577,20 +1577,14 @@ function AppContent() {
     // Direct link to Ucycle Facebook community group
     const groupUrl = 'https://www.facebook.com/share/g/17uqbznuSH/?mibextid=wwXIfr';
     window.open(groupUrl, '_blank');
-    // Copy link to clipboard for easy pasting
-    navigator.clipboard.writeText(`Free item: ${post.title} 🎁\n\n${url}`).then(() => {
-      toast.success("Link copied! Paste it in the group");
-    }).catch(() => {
-      toast.success("Share in the Ucycle community!");
-    });
+    // Copy link to clipboard silently for easy pasting
+    navigator.clipboard.writeText(`Free item: ${post.title} 🎁\n\n${url}`).catch(() => {});
     setShowShareDialog(false);
   };
 
   const shareToGumtree = (post) => {
     // Gumtree doesn't have a direct share API, so we'll open Gumtree's post page
-    // User can then manually post their item there
     window.open('https://www.gumtree.com.au/p-post-ad.html', '_blank');
-    toast.success("Post your item on Gumtree too!");
     setShowShareDialog(false);
   };
 
@@ -1598,7 +1592,7 @@ function AppContent() {
     const url = getShareUrl(post);
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("Link copied to clipboard!");
+      showCenteredNotification('success', 'Link copied');
     } catch (err) {
       const textArea = document.createElement("textarea");
       textArea.value = url;
@@ -1606,7 +1600,7 @@ function AppContent() {
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      toast.success("Link copied!");
+      showCenteredNotification('success', 'Link copied');
     }
     setShowShareDialog(false);
   };
