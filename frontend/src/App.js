@@ -1195,8 +1195,9 @@ function AppContent() {
       } catch (error) {
         console.error("AI analysis failed:", error);
         setIsAnalyzing(false);
+        setAnalysisProgress(0);
         setAiAnalysisStep('');
-        // No error toast - user can fill manually
+        // No error notification - user can fill manually
       }
     })();
   };
