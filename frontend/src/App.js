@@ -2693,6 +2693,7 @@ function AppContent() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-green-600 hover:text-green-700 hover:underline"
                     data-testid="get-directions-link"
+                    onClick={() => logInteraction(selectedPost.id, 'direction_click')}
                   >
                     <Navigation className="w-4 h-4" />
                     <span>Get directions</span>
