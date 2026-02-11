@@ -702,7 +702,8 @@ async def create_post(post: PostCreate):
         "created_at": to_iso(now),
         "expires_at": to_iso(expires),
         "status": "active",
-        "report_count": 0
+        "report_count": 0,
+        "poster_phone": post.poster_phone  # Contact for pickers
     }
     
     await db.posts.insert_one(post_doc)
