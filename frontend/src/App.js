@@ -2928,6 +2928,9 @@ function AppContent() {
                     </div>
                   </div>
                 )}
+                
+                {/* Bottom spacer to prevent Emergent badge overlap */}
+                <div className="h-20"></div>
               </div>
             </>
           )}
