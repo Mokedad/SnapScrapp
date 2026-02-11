@@ -6,6 +6,8 @@ import L from "leaflet";
 import axios from "axios";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+// Extracted dialog components for cleaner App.js
+import { ReportDialog, ShareDialog, WelcomeDialog, AddToHomeScreenModal, ScrapYardAdModal } from "./components/dialogs/Dialogs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
