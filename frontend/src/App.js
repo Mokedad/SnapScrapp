@@ -2819,118 +2819,118 @@ function AppContent() {
 
                 {/* MESSAGE POSTER Button - Uber-style */}
                 {selectedPost.status === "active" && !activeClaim && (
-                  <button
-                    onClick={() => handleClaimItem(selectedPost)}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-xl transition-all mb-3 flex flex-col items-center"
-                    data-testid="message-poster-btn"
-                  >
-                    <span className="text-lg font-black">MESSAGE POSTER</span>
-                    <span className="text-sm opacity-90">04** *** ***</span>
-                  </button>
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    <button
+                      onClick={() => handleClaimItem(selectedPost)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex flex-col items-center justify-center"
+                      data-testid="message-poster-btn"
+                    >
+                      <Phone className="w-5 h-5 mb-1" />
+                      <span className="text-sm font-black">MESSAGE</span>
+                      <span className="text-xs opacity-80">04** *** ***</span>
+                    </button>
+                    <Button
+                      className="bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-xl shadow-lg h-full flex flex-col items-center justify-center"
+                      onClick={() => handleMarkCollected(selectedPost.id)}
+                      data-testid="mark-collected-btn"
+                    >
+                      <CheckCircle className="w-5 h-5 mb-1" />
+                      <span className="text-sm font-black">COLLECTED</span>
+                    </Button>
+                  </div>
                 )}
 
                 {/* Active Claim - ITEM CLAIMED with Timer */}
                 {(selectedPost.status === "pending" || activeClaim?.post_id === selectedPost.id) && (
                   <div className="mb-3">
                     {/* Item Claimed Header with Timer */}
-                    <div className="bg-slate-800 text-white p-4 rounded-t-2xl flex justify-between items-center">
-                      <span className="font-bold text-lg">ITEM CLAIMED</span>
-                      <span className="text-red-400 font-mono text-xl font-bold">
+                    <div className="bg-slate-800 text-white p-3 rounded-t-2xl flex justify-between items-center">
+                      <span className="font-bold">ITEM CLAIMED</span>
+                      <span className="text-red-400 font-mono text-lg font-bold">
                         {String(Math.floor(claimTimeLeft || 60)).padStart(2, '0')}:00
                       </span>
                     </div>
                     
-                    {/* Message Poster Button with Phone */}
-                    <button
-                      onClick={() => {
-                        const phone = selectedPost.poster_phone || activeClaim?.poster_phone;
-                        if (phone) window.location.href = `tel:${phone}`;
-                      }}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 flex items-center justify-between px-6"
-                      data-testid="call-poster-btn"
-                    >
-                      <div className="flex flex-col items-start">
-                        <span className="text-lg font-black">MESSAGE POSTER</span>
-                        <span className="text-sm opacity-90">
-                          {(selectedPost.poster_phone || activeClaim?.poster_phone) || '04** *** ***'}
+                    {/* Buttons side by side */}
+                    <div className="grid grid-cols-2">
+                      <button
+                        onClick={() => {
+                          const phone = selectedPost.poster_phone || activeClaim?.poster_phone;
+                          if (phone) window.location.href = `tel:${phone}`;
+                        }}
+                        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 flex flex-col items-center justify-center"
+                        data-testid="call-poster-btn"
+                      >
+                        <Phone className="w-5 h-5 mb-1" />
+                        <span className="text-sm font-black">CALL</span>
+                        <span className="text-xs opacity-80">
+                          {(selectedPost.poster_phone || activeClaim?.poster_phone)?.slice(-4) || '****'}
                         </span>
-                      </div>
-                      <CheckCircle className="w-6 h-6 text-green-300" />
-                    </button>
-                    
-                    {/* Pickup Complete Button */}
-                    <button
-                      onClick={() => handleMarkCollected(selectedPost.id)}
-                      className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-b-2xl"
-                      data-testid="pickup-complete-btn"
-                    >
-                      PICKUP COMPLETE
-                    </button>
-                    
-                    {/* Thank you message */}
-                    <div className="text-center mt-3 space-y-1">
-                      <p className="text-slate-600 text-sm">Thanks for keeping your area clean!</p>
-                      <p className="text-slate-500 text-xs">If not collected, item reverts to available after 60 mins.</p>
+                      </button>
+                      <button
+                        onClick={() => handleMarkCollected(selectedPost.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 flex flex-col items-center justify-center"
+                        data-testid="pickup-complete-btn"
+                      >
+                        <CheckCircle className="w-5 h-5 mb-1" />
+                        <span className="text-sm font-black">DONE</span>
+                      </button>
                     </div>
                     
-                    {/* Release claim */}
-                    <button
-                      onClick={handleReleaseClaim}
-                      className="w-full text-center text-red-500 hover:text-red-700 text-xs mt-2 py-2"
-                    >
-                      Cancel claim
-                    </button>
+                    {/* Thank you message */}
+                    <div className="bg-slate-100 rounded-b-2xl p-3 text-center">
+                      <p className="text-slate-600 text-xs">Item reverts to available after 60 mins if not collected.</p>
+                      <button
+                        onClick={handleReleaseClaim}
+                        className="text-red-500 hover:text-red-700 text-xs mt-1"
+                      >
+                        Cancel claim
+                      </button>
+                    </div>
                   </div>
                 )}
 
-                {/* Actions - Only show when NOT claimed */}
+                {/* Quick Actions Row - favorite, share, report */}
                 {selectedPost.status === "active" && !activeClaim && (
-                  <div className="space-y-3 pt-2 pb-16">
+                  <div className="flex justify-center gap-4 py-2">
                     <Button
-                      className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-5 rounded-full"
-                      onClick={() => handleMarkCollected(selectedPost.id)}
-                      data-testid="mark-collected-btn"
+                      variant="ghost"
+                      size="sm"
+                      className={`rounded-full ${isFavorite(selectedPost.id) ? 'text-red-600' : 'text-slate-500'}`}
+                      onClick={() => {
+                        toggleFavorite(selectedPost.id);
+                        toast.success(isFavorite(selectedPost.id) ? 'Removed from favorites' : 'Added to favorites');
+                      }}
+                      data-testid="favorite-btn"
                     >
-                      <CheckCircle className="w-5 h-5 mr-2" />
-                      Mark as Collected
+                      <Heart className={`w-5 h-5 ${isFavorite(selectedPost.id) ? 'fill-red-500' : ''}`} />
                     </Button>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button
-                        variant="outline"
-                        className={`py-5 rounded-full ${isFavorite(selectedPost.id) ? 'bg-red-50 border-red-200 text-red-600' : ''}`}
-                        onClick={() => {
-                          toggleFavorite(selectedPost.id);
-                          toast.success(isFavorite(selectedPost.id) ? 'Removed from favorites' : 'Added to favorites');
-                        }}
-                        data-testid="favorite-btn"
-                      >
-                        <Heart className={`w-4 h-4 ${isFavorite(selectedPost.id) ? 'fill-red-500' : ''}`} />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="py-5 rounded-full"
-                        onClick={() => handleSharePost(selectedPost)}
-                        data-testid="share-post-btn"
-                      >
-                        <Share2 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="py-5 rounded-full"
-                        onClick={() => {
-                          setShowDetailDrawer(false);
-                          setShowReportDialog(true);
-                        }}
-                        data-testid="report-post-btn"
-                      >
-                        <Flag className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-full text-slate-500"
+                      onClick={() => handleSharePost(selectedPost)}
+                      data-testid="share-post-btn"
+                    >
+                      <Share2 className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-full text-slate-500"
+                      onClick={() => {
+                        setShowDetailDrawer(false);
+                        setShowReportDialog(true);
+                      }}
+                      data-testid="report-post-btn"
+                    >
+                      <Flag className="w-5 h-5" />
+                    </Button>
                   </div>
                 )}
                 
                 {/* Bottom spacer to prevent Emergent badge overlap */}
-                <div className="h-20"></div>
+                <div className="h-16"></div>
               </div>
             </>
           )}
