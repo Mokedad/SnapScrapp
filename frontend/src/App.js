@@ -201,7 +201,8 @@ function AppContent() {
     latitude: null,
     longitude: null,
     images: [],  // Additional images beyond the primary one
-    address: ""  // Human-readable address from reverse geocoding
+    address: "",  // Human-readable address from reverse geocoding
+    poster_phone: ""  // Optional contact number for pickers
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);  // Progress percentage 0-100
@@ -209,6 +210,10 @@ function AppContent() {
   const [pickingLocation, setPickingLocation] = useState(false);
   const [isGettingAddress, setIsGettingAddress] = useState(false);  // For address lookup loading
   const [aiAnalysisStep, setAiAnalysisStep] = useState('');  // For showing AI progress steps
+  
+  // Claiming system state
+  const [activeClaim, setActiveClaim] = useState(null);  // { claim_id, post_id, expires_at, minutes_remaining, poster_phone }
+  const [claimTimeLeft, setClaimTimeLeft] = useState(0);  // Minutes remaining
   
   // Custom notification state (centered, standardized)
   const [customNotification, setCustomNotification] = useState(null); // { type: 'success' | 'error', message: string }
