@@ -63,6 +63,7 @@ import "@/index.css";
 // Import shared utilities and constants
 import { BACKEND_URL, API, CATEGORIES, REPORT_REASONS, STORAGE_KEYS } from './utils/constants';
 import { createPinIcon, locationIcon, calculateDistance, formatDistance as formatDistanceUtil, formatAddress } from './utils/mapUtils';
+import { logInteraction } from './utils/interactions';
 
 // Helper function using imported utility
 const formatDistance = (post) => {
