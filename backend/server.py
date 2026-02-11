@@ -754,8 +754,9 @@ async def get_posts(
         {"$set": {"status": "expired"}}
     )
     
-    # Build query
-    query = {"status": "active"} if not include_expired else {}
+    # Build query - include both 'active' AND 'pending' items
+    # Pending items are shown so users can see their claimed items
+    query = {"status": {"$in": ["active", "pending"]}} if not include_expired else {}
     
     # Projection - exclude heavy fields for list view
     projection = {
