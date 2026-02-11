@@ -953,19 +953,50 @@ async def get_post_meta_page(post_id: str):
 @api_router.patch("/posts/{post_id}/collected")
 async def mark_collected(post_id: str):
     """Mark a post as collected"""
+    # Also accept pending status (for claimed items)
     result = await db.posts.update_one(
-        {"id": post_id, "status": "active"},
+        {"id": post_id, "status": {"$in": ["active", "pending"]}},
         {"$set": {"status": "collected", "collected_at": to_iso(now_utc())}}
     )
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Post not found or already collected")
+    
+    # Also clear any active claims on this post
+    await db.claims.update_many(
+        {"post_id": post_id, "status": "active"},
+        {"$set": {"status": "completed"}}
+    )
     
     # Get post for stats
     post = await db.posts.find_one({"id": post_id}, {"_id": 0})
     if post:
         await update_stats("post_collected", post.get("category", "general"))
     
-    return {"message": "Post marked as collected"}
+    return {"success": True, "message": "Post marked as collected"}
+
+@api_router.post("/posts/{post_id}/complete")
+async def complete_pickup(post_id: str):
+    """Complete a pickup - marks post as collected and clears claim"""
+    # Update post status
+    result = await db.posts.update_one(
+        {"id": post_id, "status": {"$in": ["active", "pending"]}},
+        {"$set": {"status": "collected", "collected_at": to_iso(now_utc())}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found or already collected")
+    
+    # Clear any claims
+    await db.claims.update_many(
+        {"post_id": post_id, "status": "active"},
+        {"$set": {"status": "completed"}}
+    )
+    
+    # Update stats
+    post = await db.posts.find_one({"id": post_id}, {"_id": 0})
+    if post:
+        await update_stats("post_collected", post.get("category", "general"))
+    
+    return {"success": True, "message": "Pickup completed"}
 
 # ============ REPORTS ============
 
