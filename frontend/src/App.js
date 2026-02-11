@@ -1669,6 +1669,81 @@ function AppContent() {
     }
   };
 
+  // Handle claiming an item (60-minute handshake)
+  const handleClaimItem = async (post) => {
+    try {
+      const response = await axios.post(`${API}/claims`, {
+        post_id: post.id
+      });
+      
+      if (response.data) {
+        setActiveClaim(response.data);
+        setClaimTimeLeft(response.data.minutes_remaining || 60);
+        
+        // Update the selected post with claim info
+        setSelectedPost(prev => ({
+          ...prev,
+          status: 'pending',
+          claim_id: response.data.claim_id,
+          poster_phone: response.data.poster_phone
+        }));
+        
+        // Log the interaction
+        logInteraction(post.id, 'contact_reveal');
+        
+        showCenteredNotification('success', 'Item claimed for 60 mins!');
+      }
+    } catch (error) {
+      console.error("Claim failed:", error);
+      if (error.response?.status === 409) {
+        showCenteredNotification('error', 'Item already claimed');
+      } else {
+        showCenteredNotification('error', 'Claim failed – try again');
+      }
+    }
+  };
+
+  // Release a claim
+  const handleReleaseClaim = async () => {
+    if (!activeClaim?.claim_id) return;
+    
+    try {
+      await axios.delete(`${API}/claims/${activeClaim.claim_id}`);
+      setActiveClaim(null);
+      setClaimTimeLeft(0);
+      
+      // Update the selected post
+      setSelectedPost(prev => ({
+        ...prev,
+        status: 'active',
+        claim_id: null,
+        poster_phone: null
+      }));
+      
+      showCenteredNotification('success', 'Claim released');
+    } catch (error) {
+      console.error("Release claim failed:", error);
+    }
+  };
+
+  // Countdown timer effect for active claims
+  useEffect(() => {
+    if (!activeClaim || claimTimeLeft <= 0) return;
+    
+    const timer = setInterval(() => {
+      setClaimTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setActiveClaim(null);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(timer);
+  }, [activeClaim, claimTimeLeft]);
+
   // View post details
   const handleViewDetails = (post) => {
     setSelectedPost(post);
