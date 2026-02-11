@@ -60,8 +60,10 @@ class PostResponse(BaseModel):
     longitude: float
     created_at: str
     expires_at: str
-    status: str  # "active", "collected", "expired", "removed"
+    status: str  # "active", "pending", "collected", "expired", "removed"
     report_count: int = 0
+    claim_id: Optional[str] = None  # Active claim ID if any
+    poster_phone: Optional[str] = None  # Only revealed on active claim
 
 class AIAnalysisRequest(BaseModel):
     image_base64: str
