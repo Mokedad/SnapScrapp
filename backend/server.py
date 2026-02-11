@@ -1927,7 +1927,7 @@ async def log_interaction(interaction: InteractionLog):
 
 @api_router.post("/claims")
 async def create_claim(claim: ClaimCreate):
-    """Create a claim on a post - starts 60-minute timer"""
+    """Create a claim on a post - starts 30-minute timer"""
     # Check if post exists and is active
     post = await db.posts.find_one({"id": claim.post_id, "status": "active"}, {"_id": 0})
     if not post:
@@ -1942,8 +1942,8 @@ async def create_claim(claim: ClaimCreate):
     if existing_claim:
         raise HTTPException(status_code=409, detail="Item already has an active claim")
     
-    # Create claim with 60-minute expiry
-    expires_at = now_utc() + timedelta(minutes=60)
+    # Create claim with 30-minute expiry (CHANGED FROM 60)
+    expires_at = now_utc() + timedelta(minutes=30)
     claim_doc = {
         "id": generate_id(),
         "post_id": claim.post_id,
