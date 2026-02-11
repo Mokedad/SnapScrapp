@@ -452,10 +452,29 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 ## Next Tasks
 - Deploy app and connect custom domain ucycle.com.au
 
+## Completed Refactoring (Feb 11, 2026)
+**App.js reduced from 5439 lines to 3293 lines (~40% reduction)**
+
+Extracted Components:
+1. **AdminDashboard.jsx** (506 lines) - Full admin panel with stats, analytics, reports
+2. **PostPage.jsx** (479 lines) - Shareable post detail page
+3. **Dialogs.jsx** (294 lines) - ReportDialog, ShareDialog, WelcomeDialog, AddToHomeScreenModal, ScrapYardAdModal
+4. **Modals.jsx** (277 lines) - QuickGuideModal, CameraTroubleshootTooltip, FullscreenImageViewer, InstallPromptBanner
+5. **MenuDrawer.jsx** (190 lines) - Menu drawer with all options
+
+All features tested and working:
+- ✅ Main map with markers
+- ✅ Menu drawer opens/closes
+- ✅ Search functionality
+- ✅ Admin panel at /admin
+- ✅ Post page at /post/:id
+- ✅ Welcome dialog
+- ✅ All dialogs and modals
+
 ## Future/Backlog
-- **P1:** Continue refactoring App.js - migrate remaining inline code to new components
-- **P2:** Add support for more regional partners (Newcastle, Interstate)
-- **P2:** Integrate "Return and Earn" locations or pallet recyclers
+- **P1:** Add support for more regional partners (Newcastle, Interstate)
+- **P1:** Integrate "Return and Earn" locations or pallet recyclers
 - **P2:** Email digest of nearby items
 - **P2:** Post analytics enhancements
 - **P2:** Rate limiting for spam prevention
+- **P2:** Continue backend refactoring (split server.py into routes/models/services)
