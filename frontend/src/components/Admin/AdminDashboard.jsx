@@ -32,7 +32,7 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       const [reportsRes, statsRes] = await Promise.all([
-        axios.get(`${API}/admin/reports?pin=${adminPin}`),
+        axios.get(`${API}/reports`),
         axios.get(`${API}/admin/dashboard-full?pin=${adminPin}`)
       ]);
       setReports(reportsRes.data || []);
