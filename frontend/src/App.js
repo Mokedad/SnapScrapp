@@ -2928,11 +2928,11 @@ function AppContent() {
                   <div className="flex gap-2 mb-3">
                     <button
                       onClick={() => handleClaimItem(selectedPost)}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3"
+                      className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
                       data-testid="claim-btn"
                     >
-                      <Phone className="w-6 h-6" />
-                      <span className="text-lg font-black">CALL POSTER</span>
+                      <Phone className="w-5 h-5" />
+                      <span className="font-black uppercase">Claim (30 Mins)</span>
                     </button>
                     <Button
                       variant="outline"
@@ -2947,37 +2947,40 @@ function AppContent() {
 
                 {/* ACTIVE CLAIM - Big phone icon + timer */}
                 {(selectedPost.status === "pending" || activeClaim?.post_id === selectedPost.id) && (
-                  <div className="mb-3">
+                  <div className="mb-3 bg-slate-900 rounded-xl overflow-hidden">
                     {/* Timer bar */}
-                    <div className="bg-slate-800 text-white px-4 py-2 rounded-t-xl flex justify-between items-center">
-                      <span className="text-sm font-medium">⏱️ CLAIMED</span>
-                      <span className="text-red-400 font-mono text-xl font-bold">
-                        {claimTimeLeft || 60} min
-                      </span>
+                    <div className="px-4 py-3 flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <span className="text-red-400 font-bold text-xl animate-pulse">
+                          {claimTimeLeft || 30} min
+                        </span>
+                        <span className="text-slate-400 text-xs uppercase tracking-wider">
+                          left to pickup
+                        </span>
+                      </div>
                     </div>
                     
-                    {/* Big call button + done */}
-                    <div className="flex">
+                    {/* Call + Done buttons */}
+                    <div className="flex h-14">
                       <a
                         href={`tel:${selectedPost.poster_phone || activeClaim?.poster_phone || ''}`}
-                        className="flex-1 bg-green-500 hover:bg-green-600 text-white py-5 flex flex-col items-center justify-center"
+                        className="flex-1 bg-green-500 hover:bg-green-600 text-white flex flex-col items-center justify-center border-r border-green-600"
                         data-testid="call-btn"
                       >
-                        <Phone className="w-10 h-10 mb-1" />
-                        <span className="text-lg font-black">CALL</span>
+                        <Phone className="w-6 h-6" />
+                        <span className="text-[10px] font-bold mt-1 uppercase">Call</span>
                       </a>
                       <button
                         onClick={() => handleMarkCollected(selectedPost.id)}
-                        className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-5 flex flex-col items-center justify-center rounded-br-xl"
+                        className="flex-1 bg-slate-700 hover:bg-slate-600 text-white flex flex-col items-center justify-center"
                         data-testid="done-btn"
                       >
-                        <CheckCircle className="w-10 h-10 mb-1" />
-                        <span className="text-lg font-black">DONE</span>
+                        <CheckCircle className="w-6 h-6" />
+                        <span className="text-[10px] font-bold mt-1 uppercase">Done</span>
                       </button>
                     </div>
-                    
-                    {/* Cancel link */}
-                    <button
+                  </div>
+                )}
                       onClick={handleReleaseClaim}
                       className="w-full text-center text-red-500 hover:text-red-700 text-sm py-2 mt-1"
                     >
