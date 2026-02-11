@@ -1992,6 +1992,31 @@ function AppContent() {
         </div>
       )}
 
+      {/* Active Claim Banner - Tap to reopen claimed item */}
+      {activeClaim && (
+        <button
+          onClick={() => {
+            // Find the claimed post and open its drawer
+            const claimedPost = posts.find(p => p.id === activeClaim.post_id);
+            if (claimedPost) {
+              setSelectedPost({ ...claimedPost, status: 'pending', poster_phone: activeClaim.poster_phone });
+              setShowDetailDrawer(true);
+            }
+          }}
+          className="fixed top-16 left-4 right-4 z-30 bg-yellow-400 text-black rounded-xl shadow-lg p-3 flex items-center justify-between animate-slide-up"
+          data-testid="active-claim-banner"
+        >
+          <div className="flex items-center gap-2">
+            <Phone className="w-5 h-5" />
+            <span className="font-bold text-sm">You have a claimed item</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-red-700 font-mono font-bold">{claimTimeLeft} min</span>
+            <ChevronDown className="w-4 h-4 -rotate-90" />
+          </div>
+        </button>
+      )}
+
       {/* Map */}
       <div className="map-container">
         <MapContainer 
