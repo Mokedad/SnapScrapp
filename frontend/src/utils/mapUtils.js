@@ -4,14 +4,22 @@ import L from 'leaflet';
 const iconCache = new Map();
 
 // Create custom marker icon from base64 image (memoized)
-export const createPinIcon = (imageBase64) => {
+// status: 'active' (green), 'pending' (yellow), 'collected' (gray)
+export const createPinIcon = (imageBase64, status = 'active') => {
+  const cacheKey = `${imageBase64}_${status}`;
+  
   // Check cache first
-  if (iconCache.has(imageBase64)) {
-    return iconCache.get(imageBase64);
+  if (iconCache.has(cacheKey)) {
+    return iconCache.get(cacheKey);
   }
   
+  // Border color based on status
+  const borderColor = status === 'pending' ? '#eab308' : // Yellow for pending claims
+                      status === 'collected' ? '#94a3b8' : // Gray for collected
+                      '#16a34a'; // Green for available/active
+  
   const html = `
-    <div class="custom-pin">
+    <div class="custom-pin" style="border-color: ${borderColor};">
       <img src="${imageBase64.startsWith('data:') ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`}" alt="item" loading="lazy" />
     </div>
   `;
@@ -24,11 +32,11 @@ export const createPinIcon = (imageBase64) => {
   });
   
   // Cache the icon (limit cache size)
-  if (iconCache.size > 100) {
+  if (iconCache.size > 200) {
     const firstKey = iconCache.keys().next().value;
     iconCache.delete(firstKey);
   }
-  iconCache.set(imageBase64, icon);
+  iconCache.set(cacheKey, icon);
   
   return icon;
 };
