@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { ReportDialog, ShareDialog, WelcomeDialog, AddToHomeScreenModal, ScrapYardAdModal } from "./components/dialogs/Dialogs";
 // Extracted menu drawer component
 import { MenuDrawer } from "./components/layout/MenuDrawer";
+// Extracted modals
+import { QuickGuideModal, CameraTroubleshootTooltip, FullscreenImageViewer, InstallPromptBanner } from "./components/modals/Modals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
