@@ -3703,11 +3703,7 @@ function AppContent() {
   );
 }
 
-// Import extracted pages and components
-import { AdminDashboard } from './components/Admin/AdminDashboard';
-import { PostPage } from './pages/PostPage';
-
-// Lazy load AdminPanel for better initial load performance - using extracted component
+// Lazy load Admin and Post pages for better initial load performance
 const LazyAdminPanel = lazy(() => import('./components/Admin/AdminDashboard'));
 const LazyPostPage = lazy(() => import('./pages/PostPage'));
 
