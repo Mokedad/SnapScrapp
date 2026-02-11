@@ -2555,6 +2555,24 @@ function AppContent() {
               )}
             </div>
             
+            {/* Contact Number (Optional) */}
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Phone className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-slate-700">Contact Number (Optional)</span>
+              </div>
+              <input
+                type="tel"
+                inputMode="tel"
+                placeholder="Mobile for pickers to contact you"
+                value={newPost.poster_phone}
+                onChange={(e) => setNewPost(prev => ({ ...prev, poster_phone: e.target.value }))}
+                className="w-full p-3 bg-white border border-blue-200 rounded-lg text-slate-800 placeholder:text-slate-400"
+                data-testid="poster-phone-input"
+              />
+              <p className="text-xs text-blue-600 mt-1">Only shared when someone claims your item</p>
+            </div>
+            
             {/* Swipe to Post Button */}
             <div className="pt-2">
               <Button
