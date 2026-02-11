@@ -3167,12 +3167,43 @@ function AppContent() {
         </DialogContent>
       </Dialog>
 
-      {/* Quick Guide Modal - iOS swipe to dismiss */}
-      {showQuickGuide && (
-        <div 
-          className="fixed inset-0 z-[70] bg-black/60 modal-backdrop animate-fade-in"
-          onClick={() => setShowQuickGuide(false)}
-        >
+      {/* Quick Guide Modal - Extracted */}
+      <QuickGuideModal 
+        show={showQuickGuide} 
+        onClose={() => setShowQuickGuide(false)} 
+        isStandalone={isStandalone} 
+      />
+
+      {/* Camera Troubleshoot Tooltip - Extracted */}
+      <CameraTroubleshootTooltip 
+        show={showCameraTroubleshoot} 
+        hasSeenTip={hasSeenCameraTip} 
+        onDismiss={() => {
+          setShowCameraTroubleshoot(false);
+          setHasSeenCameraTip(true);
+        }} 
+      />
+
+      {/* Fullscreen Image Viewer - Extracted */}
+      <FullscreenImageViewer
+        show={showFullscreenImage}
+        images={fullscreenImages}
+        currentIndex={fullscreenIndex}
+        setCurrentIndex={setFullscreenIndex}
+        swipeY={fullscreenSwipeY}
+        onClose={closeFullscreenImage}
+        onTouchStart={handleFullscreenTouchStart}
+        onTouchMove={handleFullscreenTouchMove}
+        onTouchEnd={handleFullscreenTouchEnd}
+      />
+
+      {/* PWA Install Prompt Banner - Extracted */}
+      <InstallPromptBanner
+        show={showInstallPrompt}
+        deferredPrompt={deferredPrompt}
+        onInstall={() => {}}
+        onDismiss={() => setShowInstallPrompt(false)}
+      />
           <div 
             className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[80vh] overflow-y-auto animate-slide-up modal-content"
             onClick={(e) => e.stopPropagation()}
