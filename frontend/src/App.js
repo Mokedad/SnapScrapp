@@ -2802,64 +2802,90 @@ function AppContent() {
                   </a>
                 </div>
 
-                {/* Safety Notice */}
-                <div className="safety-notice p-3">
+                {/* Safety Notice - Full Recovery Network Message */}
+                <div className="safety-notice p-3 mb-3">
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-amber-700 text-xs">
-                      Public pickup only. Do not enter private property.
-                    </p>
+                    <div>
+                      <p className="text-amber-700 text-xs font-medium">
+                        Public pickup only. Do not enter private property.
+                      </p>
+                      <p className="text-amber-600 text-xs mt-1">
+                        Ucycle is a recovery network. We do not support dumping. Items not claimed within 48 hours must be removed by the owner.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                {/* CLAIM SECTION - Uber-style handshake */}
+                {/* MESSAGE POSTER Button - Uber-style */}
                 {selectedPost.status === "active" && !activeClaim && (
                   <button
                     onClick={() => handleClaimItem(selectedPost)}
-                    className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-black py-4 rounded-2xl shadow-xl transition-all mb-2"
-                    data-testid="claim-item-btn"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-xl transition-all mb-3 flex flex-col items-center"
+                    data-testid="message-poster-btn"
                   >
-                    <Timer className="w-5 h-5 inline mr-2" />
-                    CLAIM ITEM (60 MIN WINDOW)
+                    <span className="text-lg font-black">MESSAGE POSTER</span>
+                    <span className="text-sm opacity-90">04** *** ***</span>
                   </button>
                 )}
 
-                {/* Active Claim - Phone Reveal */}
+                {/* Active Claim - ITEM CLAIMED with Timer */}
                 {(selectedPost.status === "pending" || activeClaim?.post_id === selectedPost.id) && (
-                  <div className="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200 mb-2 animate-in fade-in zoom-in">
-                    <p className="text-xs font-bold text-blue-600 uppercase mb-2 flex items-center gap-1">
-                      <Timer className="w-3 h-3" />
-                      Picker Contract Active
-                    </p>
-                    {(selectedPost.poster_phone || activeClaim?.poster_phone) ? (
-                      <a 
-                        href={`tel:${selectedPost.poster_phone || activeClaim?.poster_phone}`} 
-                        className="text-2xl font-black text-slate-900 flex items-center gap-2 hover:text-blue-600"
-                        data-testid="call-poster-link"
-                      >
-                        <Phone className="w-6 h-6 text-green-600" />
-                        {selectedPost.poster_phone || activeClaim?.poster_phone}
-                      </a>
-                    ) : (
-                      <p className="text-lg font-semibold text-slate-600">Contact via app</p>
-                    )}
-                    <div className="flex items-center justify-between mt-3">
-                      <p className="text-sm text-blue-500 font-medium">
-                        ⏱️ Expires in {claimTimeLeft || activeClaim?.minutes_remaining || 60} mins
-                      </p>
-                      <button
-                        onClick={handleReleaseClaim}
-                        className="text-xs text-red-500 hover:text-red-700 font-medium"
-                      >
-                        Release claim
-                      </button>
+                  <div className="mb-3">
+                    {/* Item Claimed Header with Timer */}
+                    <div className="bg-slate-800 text-white p-4 rounded-t-2xl flex justify-between items-center">
+                      <span className="font-bold text-lg">ITEM CLAIMED</span>
+                      <span className="text-red-400 font-mono text-xl font-bold">
+                        {String(Math.floor(claimTimeLeft || 60)).padStart(2, '0')}:00
+                      </span>
                     </div>
+                    
+                    {/* Message Poster Button with Phone */}
+                    <button
+                      onClick={() => {
+                        const phone = selectedPost.poster_phone || activeClaim?.poster_phone;
+                        if (phone) window.location.href = `tel:${phone}`;
+                      }}
+                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 flex items-center justify-between px-6"
+                      data-testid="call-poster-btn"
+                    >
+                      <div className="flex flex-col items-start">
+                        <span className="text-lg font-black">MESSAGE POSTER</span>
+                        <span className="text-sm opacity-90">
+                          {(selectedPost.poster_phone || activeClaim?.poster_phone) || '04** *** ***'}
+                        </span>
+                      </div>
+                      <CheckCircle className="w-6 h-6 text-green-300" />
+                    </button>
+                    
+                    {/* Pickup Complete Button */}
+                    <button
+                      onClick={() => handleMarkCollected(selectedPost.id)}
+                      className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-b-2xl"
+                      data-testid="pickup-complete-btn"
+                    >
+                      PICKUP COMPLETE
+                    </button>
+                    
+                    {/* Thank you message */}
+                    <div className="text-center mt-3 space-y-1">
+                      <p className="text-slate-600 text-sm">Thanks for keeping your area clean!</p>
+                      <p className="text-slate-500 text-xs">If not collected, item reverts to available after 60 mins.</p>
+                    </div>
+                    
+                    {/* Release claim */}
+                    <button
+                      onClick={handleReleaseClaim}
+                      className="w-full text-center text-red-500 hover:text-red-700 text-xs mt-2 py-2"
+                    >
+                      Cancel claim
+                    </button>
                   </div>
                 )}
 
-                {/* Actions */}
-                {selectedPost.status === "active" && (
-                  <div className="space-y-3 pt-2">
+                {/* Actions - Only show when NOT claimed */}
+                {selectedPost.status === "active" && !activeClaim && (
+                  <div className="space-y-3 pt-2 pb-16">
                     <Button
                       className="w-full bg-green-800 hover:bg-green-900 text-white font-bold py-5 rounded-full"
                       onClick={() => handleMarkCollected(selectedPost.id)}
