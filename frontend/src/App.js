@@ -1404,7 +1404,8 @@ function AppContent() {
         latitude: null,
         longitude: null,
         images: [],
-        address: ""
+        address: "",
+        poster_phone: ""
       });
       fetchPosts();
     } catch (error) {
