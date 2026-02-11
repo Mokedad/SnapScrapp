@@ -55,7 +55,9 @@ import {
   ChevronDown,
   TrendingUp,
   Mail,
-  MapPinned
+  MapPinned,
+  Phone,
+  Timer
 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import "@/index.css";
