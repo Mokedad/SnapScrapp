@@ -3703,21 +3703,54 @@ function AppContent() {
   );
 }
 
-// Admin Panel Component
-function AdminPanel() {
-  const navigate = useNavigate();
-  const [verified, setVerified] = useState(false);
-  const [pin, setPin] = useState("");
-  const [verifying, setVerifying] = useState(false);
-  const [stats, setStats] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [reports, setReports] = useState([]);
-  const [analytics, setAnalytics] = useState(null);
-  const [illegalDumpingReports, setIllegalDumpingReports] = useState(null);
-  const [brands, setBrands] = useState([]);
-  const [brandStats, setBrandStats] = useState(null);
-  const [itemTypes, setItemTypes] = useState([]);
-  const [itemTypesSummary, setItemTypesSummary] = useState(null);
+// Import extracted pages and components
+import { AdminDashboard } from './components/Admin/AdminDashboard';
+import { PostPage } from './pages/PostPage';
+
+// Lazy load AdminPanel for better initial load performance - using extracted component
+const LazyAdminPanel = lazy(() => import('./components/Admin/AdminDashboard'));
+const LazyPostPage = lazy(() => import('./pages/PostPage'));
+
+// Loading fallback for lazy components
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-50">
+    <div className="text-center">
+      <Loader2 className="w-8 h-8 animate-spin text-green-600 mx-auto mb-2" />
+      <p className="text-slate-600">Loading...</p>
+    </div>
+  </div>
+);
+
+// Main App with Router
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AppContent />} />
+        <Route path="/post/:postId" element={
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyPostPage />
+          </Suspense>
+        } />
+        <Route path="/admin" element={
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyAdminPanel />
+          </Suspense>
+        } />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+// REMOVED: ~1700 lines of duplicate AdminPanel and PostPage code
+// Now using extracted components:
+// - /app/frontend/src/components/Admin/AdminDashboard.jsx
+// - /app/frontend/src/pages/PostPage.jsx
+
+/* ORIGINAL CODE REMOVED FOR BREVITY - SEE EXTRACTED FILES */
+const REMOVED_ADMIN_PANEL_START = true;
   const [partners, setPartners] = useState([]);
   const [partnerSummary, setPartnerSummary] = useState(null);
   const [activeTab, setActiveTab] = useState("stats");
