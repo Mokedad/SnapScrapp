@@ -175,6 +175,19 @@ export const MenuDrawer = ({
             </button>
           </div>
           
+          {/* Safety Notice */}
+          <div className="mx-0 mt-2 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-amber-800 text-sm">Safety Notice</p>
+                <p className="text-amber-700 text-xs mt-1 leading-relaxed">
+                  Ucycle is a recovery network. We do not support dumping. Items not claimed within 48 hours must be removed by the owner.
+                </p>
+              </div>
+            </div>
+          </div>
+          
           <div className="pt-3 text-center">
             <p className="text-xs text-slate-400">
               Made with 💚 in Sydney
