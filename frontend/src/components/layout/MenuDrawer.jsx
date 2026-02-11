@@ -32,29 +32,31 @@ export const MenuDrawer = ({
           
           {/* Download App Section - Only show if NOT in standalone mode */}
           {!isStandalone && (
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 mb-2 border border-blue-100">
-              <div className="flex items-center gap-2 mb-3">
-                <Smartphone className="w-5 h-5 text-blue-600" />
-                <h3 className="font-semibold text-slate-900">Download App</h3>
+            <div className="bg-gradient-to-br from-green-50 to-lime-50 rounded-2xl p-4 mb-2 border border-green-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Smartphone className="w-5 h-5 text-green-600" />
+                <h3 className="font-semibold text-slate-900">Install Ucycle</h3>
               </div>
-              <p className="text-xs text-slate-600 mb-3">Get the full app experience with quick access from your home screen</p>
+              <p className="text-xs text-slate-700 mb-3 leading-relaxed">
+                <strong>Install Ucycle to your home screen</strong> to get instant alerts when scrap is dropped in your area.
+              </p>
               
               <button
                 onClick={() => {
                   onOpenChange(false);
                   onShowAddToHomeScreen();
                 }}
-                className="w-full flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-blue-50 transition-colors text-left shadow-sm"
+                className="w-full flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-green-50 transition-colors text-left shadow-sm border border-green-100"
                 data-testid="add-home-menu-btn"
               >
-                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-green-600" />
                 </div>
                 <div className="flex-1">
                   <span className="font-medium text-slate-900 text-sm">Add to Home Screen</span>
-                  <p className="text-xs text-slate-500">Install Ucycle on your device</p>
+                  <p className="text-xs text-green-600">Get instant scrap alerts</p>
                 </div>
-                <ChevronDown className="w-4 h-4 text-slate-400 -rotate-90" />
+                <ChevronDown className="w-4 h-4 text-green-500 -rotate-90" />
               </button>
             </div>
           )}
