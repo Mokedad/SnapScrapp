@@ -1688,7 +1688,7 @@ function AppContent() {
     }
   };
 
-  // Handle claiming an item (60-minute handshake)
+  // Handle claiming an item (30-minute handshake)
   const handleClaimItem = async (post) => {
     try {
       const response = await axios.post(`${API}/claims`, {
@@ -1702,7 +1702,7 @@ function AppContent() {
         };
         
         setActiveClaim(claimData);
-        setClaimTimeLeft(response.data.minutes_remaining || 60);
+        setClaimTimeLeft(response.data.minutes_remaining || 30);
         
         // Save to localStorage so it persists
         localStorage.setItem('ucycle_active_claim', JSON.stringify(claimData));
