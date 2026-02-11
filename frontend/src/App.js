@@ -2979,10 +2979,11 @@ function AppContent() {
                         <span className="text-[10px] font-bold mt-1 uppercase">Done</span>
                       </button>
                     </div>
-                  </div>
-                )}
+                    
+                    {/* Cancel link */}
+                    <button
                       onClick={handleReleaseClaim}
-                      className="w-full text-center text-red-500 hover:text-red-700 text-sm py-2 mt-1"
+                      className="w-full text-center text-red-400 hover:text-red-300 text-xs py-2 bg-slate-800 rounded-b-xl"
                     >
                       Cancel claim
                     </button>
