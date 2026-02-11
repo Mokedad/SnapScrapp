@@ -3256,6 +3256,7 @@ function AppContent() {
 
 // Lazy load Admin and Post pages for better initial load performance
 const LazyAdminPanel = lazy(() => import('./components/Admin/AdminDashboard'));
+const LazyAdminHQ = lazy(() => import('./components/Admin/AdminHQ'));
 const LazyPostPage = lazy(() => import('./pages/PostPage'));
 
 // Loading fallback for lazy components
@@ -3282,6 +3283,11 @@ function App() {
         <Route path="/admin" element={
           <Suspense fallback={<LoadingFallback />}>
             <LazyAdminPanel />
+          </Suspense>
+        } />
+        <Route path="/hq" element={
+          <Suspense fallback={<LoadingFallback />}>
+            <LazyAdminHQ />
           </Suspense>
         } />
       </Routes>
