@@ -332,8 +332,17 @@ function AppContent() {
   }, [filteredPosts, userLocation, radiusKm, getDistance]);
 
   // Filter posts by category (from radius-filtered posts)
+  // IMPORTANT: Also show items I've claimed (status = 'pending' and in myClaims)
   const getDisplayPosts = useCallback(() => {
     let result = postsInRadius;
+    
+    // Also include any pending items that I've claimed
+    const myClaimIds = myClaims.map(c => c.post_id);
+    result = result.filter(post => 
+      post.status === 'active' || 
+      (post.status === 'pending' && myClaimIds.includes(post.id))
+    );
+    
     if (selectedCategory) {
       result = result.filter(post => post.category === selectedCategory);
     }
@@ -341,7 +350,7 @@ function AppContent() {
       result = result.filter(post => favorites.includes(post.id));
     }
     return result;
-  }, [postsInRadius, selectedCategory, showFavoritesOnly, favorites]);
+  }, [postsInRadius, selectedCategory, showFavoritesOnly, favorites, myClaims]);
 
   // Get unique categories from posts within radius only
   const availableCategories = useMemo(() => {
