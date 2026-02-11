@@ -193,6 +193,12 @@ function AppContent() {
   });
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   
+  // My Claims - track items I've claimed (persisted in localStorage)
+  const [myClaims, setMyClaims] = useState(() => {
+    const saved = localStorage.getItem('ucycle_my_claims');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
   // Post form state
   const [newPost, setNewPost] = useState({
     image_base64: "",
@@ -214,7 +220,10 @@ function AppContent() {
   const [aiAnalysisStep, setAiAnalysisStep] = useState('');  // For showing AI progress steps
   
   // Claiming system state
-  const [activeClaim, setActiveClaim] = useState(null);  // { claim_id, post_id, expires_at, minutes_remaining, poster_phone }
+  const [activeClaim, setActiveClaim] = useState(() => {
+    const saved = localStorage.getItem('ucycle_active_claim');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [claimTimeLeft, setClaimTimeLeft] = useState(0);  // Minutes remaining
   
   // Custom notification state (centered, standardized)
