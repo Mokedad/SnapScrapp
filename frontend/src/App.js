@@ -2811,6 +2811,51 @@ function AppContent() {
                   </div>
                 </div>
 
+                {/* CLAIM SECTION - Uber-style handshake */}
+                {selectedPost.status === "active" && !activeClaim && (
+                  <button
+                    onClick={() => handleClaimItem(selectedPost)}
+                    className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-black py-4 rounded-2xl shadow-xl transition-all mb-2"
+                    data-testid="claim-item-btn"
+                  >
+                    <Timer className="w-5 h-5 inline mr-2" />
+                    CLAIM ITEM (60 MIN WINDOW)
+                  </button>
+                )}
+
+                {/* Active Claim - Phone Reveal */}
+                {(selectedPost.status === "pending" || activeClaim?.post_id === selectedPost.id) && (
+                  <div className="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200 mb-2 animate-in fade-in zoom-in">
+                    <p className="text-xs font-bold text-blue-600 uppercase mb-2 flex items-center gap-1">
+                      <Timer className="w-3 h-3" />
+                      Picker Contract Active
+                    </p>
+                    {(selectedPost.poster_phone || activeClaim?.poster_phone) ? (
+                      <a 
+                        href={`tel:${selectedPost.poster_phone || activeClaim?.poster_phone}`} 
+                        className="text-2xl font-black text-slate-900 flex items-center gap-2 hover:text-blue-600"
+                        data-testid="call-poster-link"
+                      >
+                        <Phone className="w-6 h-6 text-green-600" />
+                        {selectedPost.poster_phone || activeClaim?.poster_phone}
+                      </a>
+                    ) : (
+                      <p className="text-lg font-semibold text-slate-600">Contact via app</p>
+                    )}
+                    <div className="flex items-center justify-between mt-3">
+                      <p className="text-sm text-blue-500 font-medium">
+                        ⏱️ Expires in {claimTimeLeft || activeClaim?.minutes_remaining || 60} mins
+                      </p>
+                      <button
+                        onClick={handleReleaseClaim}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium"
+                      >
+                        Release claim
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Actions */}
                 {selectedPost.status === "active" && (
                   <div className="space-y-3 pt-2">
