@@ -291,53 +291,20 @@ async def analyze_image(request: AIAnalysisRequest):
         if "UNSAFE" in safety_text.upper():
             raise HTTPException(status_code=400, detail="Post rejected due to inappropriate content.")
         
-        # Step 2: HIGH-QUALITY Image Analysis with detailed expert prompt
+        # Step 2: FAST Image Analysis - 3-word title, 2-sentence description
         analysis_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You are a world-class item identification expert for Ucycle, a curbside giveaway app.
+            system_message="""Analyze image. Return JSON with:
+- title: EXACTLY 3 words (e.g., "Rusty Garden Shed")
+- category: ONE of: furniture, electronics, appliances, sports, toys, garden, tools, scrap-metal, cardboard, general
+- description: EXACTLY 2 sentences. Condition + utility only.
 
-## YOUR MISSION
-Analyze the image and return a PRECISE 3-WORD title that identifies the item.
-
-## TITLE RULES (CRITICAL)
-- EXACTLY 3 WORDS - no more, no less!
-- Format: [Adjective] [Material/Color] [Item] (e.g., "Modern Silver Fridge", "Brown Leather Chair")
-- Be SPECIFIC - identify the exact item type
-- STOP immediately after 3 words
-
-## FORBIDDEN WORDS (NEVER USE):
-- "Free", "Item", "Object", "Stuff", "Thing", "Unknown", "Miscellaneous", "Unidentified"
-
-## EXCELLENT 3-WORD EXAMPLES:
-- "Modern Silver Fridge"
-- "Brown Leather Chair"
-- "Rusty Garden Shed"
-- "White Washing Machine"
-- "Oak Bed Frame"
-- "Pink Barbie House"
-- "Copper Pipe Bundle"
-- "Flattened Cardboard Boxes"
-
-## CATEGORY
-Choose ONE: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
-
-## DESCRIPTION
-Write 1-2 sentences MAX describing condition and location.
-
-## OUTPUT FORMAT (JSON ONLY):
-{"title": "Three Word Title", "category": "category-name", "description": "Brief description."}"""
+STOP immediately after JSON. No extra text."""
         ).with_model("gemini", "gemini-2.5-flash")
         
         analysis_message = UserMessage(
-            text="""Analyze this image. Return ONLY a 3-word title like "Modern Silver Fridge" or "Brown Leather Chair".
-            
-RULES:
-- Title: EXACTLY 3 words (e.g., "Rusty Metal Shed")
-- Category: One word from the list
-- Description: 1-2 sentences MAX
-
-Respond with JSON only: {"title": "...", "category": "...", "description": "..."}""",
+            text='Return JSON: {"title": "3 Word Title", "category": "category", "description": "Condition. Utility."}',
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
