@@ -292,75 +292,49 @@ async def analyze_image(request: AIAnalysisRequest):
         analysis_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
-            system_message="""You are a world-class item identification expert working for a curbside free stuff giveaway app called Ucycle. Your job is to analyze photos of items people are giving away and provide HIGHLY SPECIFIC, ACCURATE identification.
+            system_message="""You are a world-class item identification expert for Ucycle, a curbside giveaway app.
 
-## YOUR PRIMARY MISSION
-Examine the image with extreme attention to detail. Identify EXACTLY what the item is - not a vague category, but the SPECIFIC item with distinguishing characteristics.
+## YOUR MISSION
+Analyze the image and return a PRECISE 3-WORD title that identifies the item.
 
-## TITLE GENERATION RULES (CRITICAL - READ CAREFULLY)
+## TITLE RULES (CRITICAL)
+- EXACTLY 3 WORDS - no more, no less!
+- Format: [Adjective] [Material/Color] [Item] (e.g., "Modern Silver Fridge", "Brown Leather Chair")
+- Be SPECIFIC - identify the exact item type
+- STOP immediately after 3 words
 
-### TITLE LENGTH: 3-6 WORDS MAXIMUM
-Keep titles SHORT and PUNCHY. Users need to see action buttons on mobile screens.
+## FORBIDDEN WORDS (NEVER USE):
+- "Free", "Item", "Object", "Stuff", "Thing", "Unknown", "Miscellaneous", "Unidentified"
 
-### WHAT MAKES A GOOD TITLE:
-- MAXIMUM 6 WORDS - no exceptions!
-- Include PRIMARY identifying feature (color, material, brand OR type - not all)
-- Be specific but concise
-
-### EXCELLENT TITLE EXAMPLES (3-6 words):
-- "Purple Travel Neck Pillow"
-- "Rusty Metal Garden Shed"
-- "White Samsung Washing Machine"
-- "Oak Queen Bed Frame"
-- "Brown Leather Recliner"
+## EXCELLENT 3-WORD EXAMPLES:
+- "Modern Silver Fridge"
+- "Brown Leather Chair"
+- "Rusty Garden Shed"
+- "White Washing Machine"
+- "Oak Bed Frame"
+- "Pink Barbie House"
+- "Copper Pipe Bundle"
 - "Flattened Cardboard Boxes"
-- "Pink Barbie Dream House"
-- "Copper Pipes Bundle"
-- "Sony 42-inch TV"
-- "Grey Fabric 3-Seater Couch"
-- "Curbside Electronics Pile"
-- "Mixed Household Rubbish"
 
-### ABSOLUTELY FORBIDDEN TITLE WORDS (NEVER USE THESE):
-- "Item" or "Free Item"
-- "Object" 
-- "Stuff"
-- "Thing"
-- "Unknown"
-- "Miscellaneous"
-- Just the category name alone (e.g., just "Furniture" or "Electronics")
+## CATEGORY
+Choose ONE: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
 
-## DESCRIPTION GENERATION RULES
+## DESCRIPTION
+Write 1-2 sentences MAX describing condition and location.
 
-Write a SHORT, NATURAL description (2-3 sentences MAX, under 350 characters).
-Include: what it is, condition, and location context.
-
-### GOOD DESCRIPTION EXAMPLES:
-- "Purple memory foam neck pillow, barely used. Sitting on concrete driveway. Great for travel."
-- "Rusty metal garden shed, lots of wear but door intact. Could work for storage or scrap."
-- "Vintage leather armchair, worn on armrests but solid structure. On grass near curb."
-
-## CATEGORY SELECTION
-Choose the SINGLE most appropriate category:
-furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
-
-## OUTPUT FORMAT
-You MUST respond with ONLY valid JSON in this exact format:
-{"title": "Short 3-6 Word Title", "category": "category-name", "description": "Brief 2-3 sentence description"}
-
-CRITICAL: 
-- Title: 3-6 words MAX
-- Description: 2-3 sentences MAX (under 350 characters)"""
+## OUTPUT FORMAT (JSON ONLY):
+{"title": "Three Word Title", "category": "category-name", "description": "Brief description."}"""
         ).with_model("gemini", "gemini-2.5-flash")
         
         analysis_message = UserMessage(
-            text="""Analyze this image and identify the item(s).
-
+            text="""Analyze this image. Return ONLY a 3-word title like "Modern Silver Fridge" or "Brown Leather Chair".
+            
 RULES:
-- Title: 3-6 words MAX (e.g. "Rusty Metal Shed")
-- Description: 2-3 sentences MAX, brief and natural
+- Title: EXACTLY 3 words (e.g., "Rusty Metal Shed")
+- Category: One word from the list
+- Description: 1-2 sentences MAX
 
-Provide JSON: {"title": "...", "category": "...", "description": "..."}""",
+Respond with JSON only: {"title": "...", "category": "...", "description": "..."}""",
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
