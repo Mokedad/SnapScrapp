@@ -2171,6 +2171,17 @@ async def create_indexes():
         await db.partner_clicks.create_index("partner_id")
         await db.partner_clicks.create_index("created_at")
         
+        # Interactions collection indexes
+        await db.interactions.create_index("post_id")
+        await db.interactions.create_index("interaction_type")
+        await db.interactions.create_index("created_at")
+        
+        # Claims collection indexes
+        await db.claims.create_index("id", unique=True)
+        await db.claims.create_index("post_id")
+        await db.claims.create_index("status")
+        await db.claims.create_index([("post_id", 1), ("status", 1)])
+        
         logger.info("Database indexes created successfully")
     except Exception as e:
         logger.warning(f"Error creating indexes (may already exist): {e}")
