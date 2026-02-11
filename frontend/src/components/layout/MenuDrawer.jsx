@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { toast } from "sonner";
 import { 
-  RefreshCw, Plus, ChevronDown, Smartphone, Settings, HelpCircle, Heart, Shield 
+  RefreshCw, Plus, ChevronDown, Smartphone, Settings, HelpCircle, Heart, Shield, AlertTriangle 
 } from "lucide-react";
 
 export const MenuDrawer = ({
