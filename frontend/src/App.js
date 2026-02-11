@@ -1687,10 +1687,23 @@ function AppContent() {
       });
       
       if (response.data) {
-        setActiveClaim(response.data);
+        const claimData = {
+          ...response.data,
+          claimed_at: new Date().toISOString()
+        };
+        
+        setActiveClaim(claimData);
         setClaimTimeLeft(response.data.minutes_remaining || 60);
         
-        // Update the selected post with claim info
+        // Save to localStorage so it persists
+        localStorage.setItem('ucycle_active_claim', JSON.stringify(claimData));
+        
+        // Add to my claims list
+        const newMyClaims = [...myClaims.filter(c => c.post_id !== post.id), { post_id: post.id, claim_id: response.data.claim_id }];
+        setMyClaims(newMyClaims);
+        localStorage.setItem('ucycle_my_claims', JSON.stringify(newMyClaims));
+        
+        // Update the selected post with claim info - KEEP DRAWER OPEN
         setSelectedPost(prev => ({
           ...prev,
           status: 'pending',
@@ -1698,10 +1711,15 @@ function AppContent() {
           poster_phone: response.data.poster_phone
         }));
         
+        // Also update the post in the posts array so pin turns yellow
+        setPosts(prevPosts => prevPosts.map(p => 
+          p.id === post.id ? { ...p, status: 'pending', claim_id: response.data.claim_id } : p
+        ));
+        
         // Log the interaction
         logInteraction(post.id, 'contact_reveal');
         
-        showCenteredNotification('success', 'Item claimed for 60 mins!');
+        showCenteredNotification('success', 'Item claimed! Call to arrange pickup.');
       }
     } catch (error) {
       console.error("Claim failed:", error);
@@ -1719,6 +1737,20 @@ function AppContent() {
     
     try {
       await axios.delete(`${API}/claims/${activeClaim.claim_id}`);
+      
+      // Clear from localStorage
+      localStorage.removeItem('ucycle_active_claim');
+      
+      // Remove from my claims
+      const newMyClaims = myClaims.filter(c => c.claim_id !== activeClaim.claim_id);
+      setMyClaims(newMyClaims);
+      localStorage.setItem('ucycle_my_claims', JSON.stringify(newMyClaims));
+      
+      // Update the post in posts array
+      setPosts(prevPosts => prevPosts.map(p => 
+        p.id === activeClaim.post_id ? { ...p, status: 'active', claim_id: null } : p
+      ));
+      
       setActiveClaim(null);
       setClaimTimeLeft(0);
       
@@ -1738,12 +1770,26 @@ function AppContent() {
 
   // Countdown timer effect for active claims
   useEffect(() => {
-    if (!activeClaim || claimTimeLeft <= 0) return;
+    if (!activeClaim) return;
+    
+    // Calculate remaining time from expires_at
+    const expiresAt = new Date(activeClaim.expires_at);
+    const now = new Date();
+    const remaining = Math.max(0, Math.floor((expiresAt - now) / 60000));
+    setClaimTimeLeft(remaining);
+    
+    if (remaining <= 0) {
+      // Claim expired
+      localStorage.removeItem('ucycle_active_claim');
+      setActiveClaim(null);
+      return;
+    }
     
     const timer = setInterval(() => {
       setClaimTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer);
+          localStorage.removeItem('ucycle_active_claim');
           setActiveClaim(null);
           return 0;
         }
@@ -1752,7 +1798,7 @@ function AppContent() {
     }, 60000); // Update every minute
     
     return () => clearInterval(timer);
-  }, [activeClaim, claimTimeLeft]);
+  }, [activeClaim]);
 
   // View post details
   const handleViewDetails = (post) => {
