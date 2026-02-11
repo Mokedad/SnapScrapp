@@ -13,27 +13,57 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 ```
 /app
 ├── backend/
-│   └── server.py           # FastAPI backend (monolithic)
+│   └── server.py           # FastAPI backend
 └── frontend/
     └── src/
-        ├── App.js          # Main component (~3293 lines, down from 5439)
+        ├── App.js          # Main component (~3500 lines)
         ├── components/
         │   ├── Admin/
-        │   │   └── AdminDashboard.jsx    # Extracted admin panel (506 lines)
+        │   │   ├── AdminDashboard.jsx    # Full admin panel
+        │   │   └── AdminHQ.jsx           # NEW: Simplified HQ dashboard
         │   ├── dialogs/
-        │   │   └── Dialogs.jsx           # Report, Share, Welcome dialogs (294 lines)
+        │   │   └── Dialogs.jsx           # Report, Share, Welcome dialogs
         │   ├── layout/
-        │   │   └── MenuDrawer.jsx        # Menu drawer component (190 lines)
+        │   │   └── MenuDrawer.jsx        # Menu with Safety Notice & PWA
         │   ├── modals/
-        │   │   └── Modals.jsx            # QuickGuide, Camera, Fullscreen modals (277 lines)
+        │   │   └── Modals.jsx            # QuickGuide, Camera, Fullscreen
         │   ├── map/
         │   │   └── UserLocationMarker.jsx
         │   └── ui/                        # Shadcn components
         ├── pages/
-        │   └── PostPage.jsx              # Share post page (479 lines)
+        │   └── PostPage.jsx              # Share post page
         └── utils/
-            └── constants.js              # Shared constants
+            ├── constants.js              # Shared constants
+            ├── mapUtils.js               # Map utilities (pin colors)
+            └── interactions.js           # NEW: Interaction logging
 ```
+
+## Recent Updates (Feb 11, 2026)
+
+### AI Vision Engine Fix
+- Updated Gemini prompt for EXACTLY 3-word titles (e.g., "Modern Silver Fridge")
+- Forbidden words: "Free", "Item", "Object", "Stuff", "Thing", "Unknown"
+- Progress bar auto-fills title field on completion
+
+### Uber-Style Claiming System
+- **Poster Phone Input**: Optional "Contact Number for Pickers" field in post form
+- **Claim Button**: Yellow "CLAIM ITEM (60 MIN WINDOW)" button in post detail
+- **Phone Reveal**: poster_phone only revealed when claim is active
+- **60-Minute Timer**: Countdown displayed, auto-expires claims
+- **Pin Colors**: Green (available), Yellow (pending/claimed)
+
+### Interaction Tracking
+- Direction clicks logged to /api/log-interaction
+- Contact reveals tracked when claims are made
+- Admin HQ dashboard (/hq) shows:
+  - Direction Clicks count
+  - Contact Reveals count
+  - Claim Intents count
+  - Active Claims, Pending, Collected stats
+
+### Safety & PWA
+- Safety Notice: "Ucycle is a recovery network. We do not support dumping. Items not claimed within 48 hours must be removed by the owner."
+- PWA Install: "Install Ucycle to your home screen to get instant alerts when scrap is dropped in your area."
 
 ## User Personas
 1. **Giver**: Person wanting to give away unwanted items quickly without hassle
