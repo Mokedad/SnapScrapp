@@ -2681,7 +2681,7 @@ function AppContent() {
         setShowDetailDrawer(open);
         if (!open) setCurrentImageIndex(0);
       }}>
-        <DrawerContent className="max-h-[85vh]">
+        <DrawerContent className="max-h-[85vh] pb-20">
           {selectedPost && (
             <>
               <div className="relative">
