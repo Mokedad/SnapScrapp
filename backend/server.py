@@ -1973,7 +1973,7 @@ async def create_claim(claim: ClaimCreate):
     )
     
     # Calculate minutes remaining
-    minutes_remaining = 60
+    minutes_remaining = 30
     
     return {
         "claim_id": claim_doc["id"],
