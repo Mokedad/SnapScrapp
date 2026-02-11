@@ -48,6 +48,7 @@ class PostCreate(BaseModel):
     expiry_hours: int = 48
     latitude: float
     longitude: float
+    poster_phone: Optional[str] = None  # Optional contact number for pickers
 
 class PostResponse(BaseModel):
     id: str
