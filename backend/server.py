@@ -341,9 +341,17 @@ Respond with JSON only: {"title": "...", "category": "...", "description": "..."
             file_contents=[ImageContent(image_base64=request.image_base64)]
         )
         
-        response = await analysis_chat.send_message(analysis_message)
-        response_text = response.strip() if isinstance(response, str) else str(response).strip()
-        logger.info(f"AI Raw Response: {response_text[:500]}")
+        # Add 5-second timeout to prevent AI stall
+        try:
+            response = await asyncio.wait_for(
+                analysis_chat.send_message(analysis_message),
+                timeout=5.0
+            )
+            response_text = response.strip() if isinstance(response, str) else str(response).strip()
+            logger.info(f"AI Raw Response: {response_text[:500]}")
+        except asyncio.TimeoutError:
+            logger.warning("AI analysis timed out after 5 seconds - using fallback")
+            return {"title": "Curbside Item", "category": "general", "description": "Item available for pickup."}
         
         # Parse JSON from response
         if "```" in response_text:
