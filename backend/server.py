@@ -164,6 +164,24 @@ class PartnerClickRecord(BaseModel):
     post_id: Optional[str] = None
     category: Optional[str] = None
 
+# Interaction Logging (for analytics)
+class InteractionLog(BaseModel):
+    post_id: str
+    interaction_type: str  # 'direction_click', 'contact_reveal', 'claim_intent'
+
+# Claim System (for item claiming handshake)
+class ClaimCreate(BaseModel):
+    post_id: str
+
+class ClaimResponse(BaseModel):
+    claim_id: str
+    post_id: str
+    status: str  # 'pending', 'active', 'expired', 'completed'
+    created_at: str
+    expires_at: str
+    minutes_remaining: int
+    poster_phone: Optional[str] = None  # Only revealed when claim is active
+
 # ============ HELPER FUNCTIONS ============
 
 def generate_id():
