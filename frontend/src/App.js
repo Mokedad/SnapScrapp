@@ -79,10 +79,11 @@ import { MapCenterUpdater, MapRefSetter } from './components/map/MapHelpers';
 import { CategoryBadge, StatusBadge } from './components/post/PostCard';
 
 // Performance: Memoized marker component to prevent re-renders
+// Now supports status-based pin colors: green (active), yellow (pending)
 const MemoizedMarker = memo(({ post, onClick }) => (
   <Marker
     position={[post.latitude, post.longitude]}
-    icon={createPinIcon(post.image_base64)}
+    icon={createPinIcon(post.image_base64, post.status)}
     eventHandlers={{ click: () => onClick(post) }}
   />
 ));
