@@ -2787,7 +2787,7 @@ function AppContent() {
         setShowDetailDrawer(open);
         if (!open) setCurrentImageIndex(0);
       }}>
-        <DrawerContent className="max-h-[85vh] pb-20">
+        <DrawerContent className="max-h-[85vh] pb-24">
           {selectedPost && (
             <>
               <div className="relative">
@@ -3030,7 +3030,7 @@ function AppContent() {
                 )}
                 
                 {/* Bottom spacer to prevent Emergent badge overlap */}
-                <div className="h-16"></div>
+                <div className="h-20"></div>
               </div>
             </>
           )}
