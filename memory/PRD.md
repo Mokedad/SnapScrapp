@@ -9,6 +9,32 @@ Build a web-based, mobile-first MVP app called "Ucycle" - a public live-map util
 - **AI Integration**: Gemini 2.0 Flash via Emergent LLM key for image analysis
 - **Map**: Leaflet with CartoDB Positron tiles
 
+## Code Architecture (Updated Feb 11, 2026)
+```
+/app
+├── backend/
+│   └── server.py           # FastAPI backend (monolithic)
+└── frontend/
+    └── src/
+        ├── App.js          # Main component (~3293 lines, down from 5439)
+        ├── components/
+        │   ├── Admin/
+        │   │   └── AdminDashboard.jsx    # Extracted admin panel (506 lines)
+        │   ├── dialogs/
+        │   │   └── Dialogs.jsx           # Report, Share, Welcome dialogs (294 lines)
+        │   ├── layout/
+        │   │   └── MenuDrawer.jsx        # Menu drawer component (190 lines)
+        │   ├── modals/
+        │   │   └── Modals.jsx            # QuickGuide, Camera, Fullscreen modals (277 lines)
+        │   ├── map/
+        │   │   └── UserLocationMarker.jsx
+        │   └── ui/                        # Shadcn components
+        ├── pages/
+        │   └── PostPage.jsx              # Share post page (479 lines)
+        └── utils/
+            └── constants.js              # Shared constants
+```
+
 ## User Personas
 1. **Giver**: Person wanting to give away unwanted items quickly without hassle
 2. **Collector**: Person looking for free items in their area
