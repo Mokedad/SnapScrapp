@@ -1922,6 +1922,200 @@ async def admin_export_all(pin: str = Query(...)):
         headers={"Content-Disposition": "attachment; filename=ucycle_full_export.json"}
     )
 
+# ============ INTERACTION LOGGING ============
+
+@api_router.post("/log-interaction")
+async def log_interaction(interaction: InteractionLog):
+    """Log user interactions for analytics"""
+    interaction_doc = {
+        "id": generate_id(),
+        "post_id": interaction.post_id,
+        "interaction_type": interaction.interaction_type,
+        "created_at": to_iso(now_utc())
+    }
+    await db.interactions.insert_one(interaction_doc)
+    
+    # Update aggregated stats
+    await db.interaction_stats.update_one(
+        {"type": interaction.interaction_type},
+        {"$inc": {"count": 1}, "$set": {"last_at": to_iso(now_utc())}},
+        upsert=True
+    )
+    
+    return {"success": True}
+
+# ============ CLAIMING SYSTEM (60-min handshake) ============
+
+@api_router.post("/claims")
+async def create_claim(claim: ClaimCreate):
+    """Create a claim on a post - starts 60-minute timer"""
+    # Check if post exists and is active
+    post = await db.posts.find_one({"id": claim.post_id, "status": "active"}, {"_id": 0})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found or not available")
+    
+    # Check if there's already an active claim on this post
+    existing_claim = await db.claims.find_one({
+        "post_id": claim.post_id,
+        "status": "active",
+        "expires_at": {"$gt": to_iso(now_utc())}
+    })
+    if existing_claim:
+        raise HTTPException(status_code=409, detail="Item already has an active claim")
+    
+    # Create claim with 60-minute expiry
+    expires_at = now_utc() + timedelta(minutes=60)
+    claim_doc = {
+        "id": generate_id(),
+        "post_id": claim.post_id,
+        "status": "active",
+        "created_at": to_iso(now_utc()),
+        "expires_at": to_iso(expires_at)
+    }
+    await db.claims.insert_one(claim_doc)
+    
+    # Update post status to pending
+    await db.posts.update_one(
+        {"id": claim.post_id},
+        {"$set": {"status": "pending", "claim_id": claim_doc["id"]}}
+    )
+    
+    # Log the claim intent interaction
+    await db.interactions.insert_one({
+        "id": generate_id(),
+        "post_id": claim.post_id,
+        "interaction_type": "claim_intent",
+        "created_at": to_iso(now_utc())
+    })
+    await db.interaction_stats.update_one(
+        {"type": "claim_intent"},
+        {"$inc": {"count": 1}, "$set": {"last_at": to_iso(now_utc())}},
+        upsert=True
+    )
+    
+    # Calculate minutes remaining
+    minutes_remaining = 60
+    
+    return {
+        "claim_id": claim_doc["id"],
+        "post_id": claim.post_id,
+        "status": "active",
+        "created_at": claim_doc["created_at"],
+        "expires_at": claim_doc["expires_at"],
+        "minutes_remaining": minutes_remaining,
+        "poster_phone": post.get("poster_phone")  # Reveal phone on active claim
+    }
+
+@api_router.get("/claims/{post_id}")
+async def get_claim_status(post_id: str):
+    """Get claim status for a post"""
+    claim = await db.claims.find_one(
+        {"post_id": post_id, "status": "active"},
+        {"_id": 0}
+    )
+    
+    if not claim:
+        return {"status": "available", "claim_id": None}
+    
+    # Check if expired
+    expires_at = from_iso(claim["expires_at"])
+    if now_utc() > expires_at:
+        # Expire the claim
+        await db.claims.update_one(
+            {"id": claim["id"]},
+            {"$set": {"status": "expired"}}
+        )
+        await db.posts.update_one(
+            {"id": post_id},
+            {"$set": {"status": "active"}, "$unset": {"claim_id": ""}}
+        )
+        return {"status": "available", "claim_id": None}
+    
+    # Calculate remaining time
+    remaining = expires_at - now_utc()
+    minutes_remaining = max(0, int(remaining.total_seconds() / 60))
+    
+    return {
+        "claim_id": claim["id"],
+        "post_id": post_id,
+        "status": "active",
+        "created_at": claim["created_at"],
+        "expires_at": claim["expires_at"],
+        "minutes_remaining": minutes_remaining
+    }
+
+@api_router.delete("/claims/{claim_id}")
+async def release_claim(claim_id: str):
+    """Release/cancel a claim"""
+    claim = await db.claims.find_one({"id": claim_id}, {"_id": 0})
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+    
+    # Update claim status
+    await db.claims.update_one(
+        {"id": claim_id},
+        {"$set": {"status": "released"}}
+    )
+    
+    # Reset post status to active
+    await db.posts.update_one(
+        {"id": claim["post_id"]},
+        {"$set": {"status": "active"}, "$unset": {"claim_id": ""}}
+    )
+    
+    return {"success": True}
+
+# ============ ADMIN DASHBOARD (Full Data) ============
+
+@api_router.get("/admin/dashboard-full")
+async def admin_dashboard_full(pin: str = Query(...)):
+    """Get full dashboard data for admin HQ"""
+    if pin != ADMIN_PIN:
+        raise HTTPException(status_code=403, detail="Invalid admin PIN")
+    
+    # Get interaction stats
+    direction_clicks = await db.interaction_stats.find_one({"type": "direction_click"}, {"_id": 0})
+    contact_reveals = await db.interaction_stats.find_one({"type": "contact_reveal"}, {"_id": 0})
+    claim_intents = await db.interaction_stats.find_one({"type": "claim_intent"}, {"_id": 0})
+    
+    # Get recent reports
+    reports = await db.reports.find(
+        {},
+        {"_id": 0, "id": 1, "post_id": 1, "reason": 1, "created_at": 1, "status": 1}
+    ).sort("created_at", -1).limit(20).to_list(20)
+    
+    # Get active claims
+    active_claims = await db.claims.count_documents({"status": "active"})
+    
+    # Get post stats
+    total_posts = await db.posts.count_documents({})
+    active_posts = await db.posts.count_documents({"status": "active"})
+    pending_posts = await db.posts.count_documents({"status": "pending"})
+    collected_posts = await db.posts.count_documents({"status": "collected"})
+    
+    return {
+        "stats": {
+            "direction_clicks": direction_clicks.get("count", 0) if direction_clicks else 0,
+            "contact_reveals": contact_reveals.get("count", 0) if contact_reveals else 0,
+            "claim_intents": claim_intents.get("count", 0) if claim_intents else 0,
+            "active_claims": active_claims,
+            "total_posts": total_posts,
+            "active_posts": active_posts,
+            "pending_posts": pending_posts,
+            "collected_posts": collected_posts
+        },
+        "reports": [
+            {
+                "id": r["id"],
+                "post_id": r["post_id"],
+                "reason": r["reason"],
+                "timestamp": r["created_at"],
+                "status": r.get("status", "pending")
+            }
+            for r in reports
+        ]
+    }
+
 # ============ HEALTH CHECK ============
 
 @api_router.get("/")
