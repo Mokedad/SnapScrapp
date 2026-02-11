@@ -2881,76 +2881,66 @@ function AppContent() {
                   </div>
                 </div>
 
-                {/* MESSAGE POSTER Button - Uber-style */}
-                {selectedPost.status === "active" && !activeClaim && (
-                  <div className="grid grid-cols-2 gap-2 mb-3">
+                {/* CLAIM BUTTON - For unclaimed items */}
+                {selectedPost.status === "active" && (!activeClaim || activeClaim?.post_id !== selectedPost.id) && (
+                  <div className="flex gap-2 mb-3">
                     <button
                       onClick={() => handleClaimItem(selectedPost)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg transition-all flex flex-col items-center justify-center"
-                      data-testid="message-poster-btn"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3"
+                      data-testid="claim-btn"
                     >
-                      <Phone className="w-5 h-5 mb-1" />
-                      <span className="text-sm font-black">MESSAGE</span>
-                      <span className="text-xs opacity-80">04** *** ***</span>
+                      <Phone className="w-6 h-6" />
+                      <span className="text-lg font-black">CALL POSTER</span>
                     </button>
                     <Button
-                      className="bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-xl shadow-lg h-full flex flex-col items-center justify-center"
+                      variant="outline"
+                      className="py-4 px-4 rounded-xl"
                       onClick={() => handleMarkCollected(selectedPost.id)}
-                      data-testid="mark-collected-btn"
+                      data-testid="collected-btn"
                     >
-                      <CheckCircle className="w-5 h-5 mb-1" />
-                      <span className="text-sm font-black">COLLECTED</span>
+                      <CheckCircle className="w-5 h-5 text-green-600" />
                     </Button>
                   </div>
                 )}
 
-                {/* Active Claim - ITEM CLAIMED with Timer */}
+                {/* ACTIVE CLAIM - Big phone icon + timer */}
                 {(selectedPost.status === "pending" || activeClaim?.post_id === selectedPost.id) && (
                   <div className="mb-3">
-                    {/* Item Claimed Header with Timer */}
-                    <div className="bg-slate-800 text-white p-3 rounded-t-2xl flex justify-between items-center">
-                      <span className="font-bold">ITEM CLAIMED</span>
-                      <span className="text-red-400 font-mono text-lg font-bold">
-                        {String(Math.floor(claimTimeLeft || 60)).padStart(2, '0')}:00
+                    {/* Timer bar */}
+                    <div className="bg-slate-800 text-white px-4 py-2 rounded-t-xl flex justify-between items-center">
+                      <span className="text-sm font-medium">⏱️ CLAIMED</span>
+                      <span className="text-red-400 font-mono text-xl font-bold">
+                        {claimTimeLeft || 60} min
                       </span>
                     </div>
                     
-                    {/* Buttons side by side */}
-                    <div className="grid grid-cols-2">
-                      <button
-                        onClick={() => {
-                          const phone = selectedPost.poster_phone || activeClaim?.poster_phone;
-                          if (phone) window.location.href = `tel:${phone}`;
-                        }}
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 flex flex-col items-center justify-center"
-                        data-testid="call-poster-btn"
+                    {/* Big call button + done */}
+                    <div className="flex">
+                      <a
+                        href={`tel:${selectedPost.poster_phone || activeClaim?.poster_phone || ''}`}
+                        className="flex-1 bg-green-500 hover:bg-green-600 text-white py-5 flex flex-col items-center justify-center"
+                        data-testid="call-btn"
                       >
-                        <Phone className="w-5 h-5 mb-1" />
-                        <span className="text-sm font-black">CALL</span>
-                        <span className="text-xs opacity-80">
-                          {(selectedPost.poster_phone || activeClaim?.poster_phone)?.slice(-4) || '****'}
-                        </span>
-                      </button>
+                        <Phone className="w-10 h-10 mb-1" />
+                        <span className="text-lg font-black">CALL</span>
+                      </a>
                       <button
                         onClick={() => handleMarkCollected(selectedPost.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 flex flex-col items-center justify-center"
-                        data-testid="pickup-complete-btn"
+                        className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-5 flex flex-col items-center justify-center rounded-br-xl"
+                        data-testid="done-btn"
                       >
-                        <CheckCircle className="w-5 h-5 mb-1" />
-                        <span className="text-sm font-black">DONE</span>
+                        <CheckCircle className="w-10 h-10 mb-1" />
+                        <span className="text-lg font-black">DONE</span>
                       </button>
                     </div>
                     
-                    {/* Thank you message */}
-                    <div className="bg-slate-100 rounded-b-2xl p-3 text-center">
-                      <p className="text-slate-600 text-xs">Item reverts to available after 60 mins if not collected.</p>
-                      <button
-                        onClick={handleReleaseClaim}
-                        className="text-red-500 hover:text-red-700 text-xs mt-1"
-                      >
-                        Cancel claim
-                      </button>
-                    </div>
+                    {/* Cancel link */}
+                    <button
+                      onClick={handleReleaseClaim}
+                      className="w-full text-center text-red-500 hover:text-red-700 text-sm py-2 mt-1"
+                    >
+                      Cancel claim
+                    </button>
                   </div>
                 )}
 
