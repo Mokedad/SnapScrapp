@@ -1438,22 +1438,39 @@ function AppContent() {
   // Mark as collected
   const handleMarkCollected = async (postId) => {
     try {
-      await axios.patch(`${API}/posts/${postId}/collected`);
-      showCenteredNotification('success', 'Item collected');
-      setShowDetailDrawer(false);
-      fetchPosts();
+      // Use /complete endpoint which handles both collected status AND claim clearing
+      await axios.post(`${API}/posts/${postId}/complete`);
       
-      // Show Norman Scrap Yard ad if user is in Western Sydney (auto-dismiss after 5 seconds)
+      // Clear active claim if this was our claimed item
+      if (activeClaim?.post_id === postId) {
+        localStorage.removeItem('ucycle_active_claim');
+        setActiveClaim(null);
+        setClaimTimeLeft(0);
+        
+        // Remove from my claims
+        const newMyClaims = myClaims.filter(c => c.post_id !== postId);
+        setMyClaims(newMyClaims);
+        localStorage.setItem('ucycle_my_claims', JSON.stringify(newMyClaims));
+      }
+      
+      // Remove post from display
+      setPosts(prev => prev.filter(p => p.id !== postId));
+      
+      showCenteredNotification('success', 'Pickup complete! 🎉');
+      setShowDetailDrawer(false);
+      setSelectedPost(null);
+      
+      // Show Norman Scrap Yard ad if user is in Western Sydney
       if (isInWesternSydney()) {
         setTimeout(() => {
           setShowScrapYardAd(true);
-          // Auto-dismiss after 5 seconds
           setTimeout(() => setShowScrapYardAd(false), 5000);
         }, 500);
       }
     } catch (error) {
-      console.error("Failed to mark collected:", error);
-      showCenteredNotification('error', 'Failed – try again');
+      console.error("Failed to complete pickup:", error);
+      const errorMsg = error.response?.data?.detail || 'Network error – try again';
+      showCenteredNotification('error', errorMsg);
     }
   };
 
