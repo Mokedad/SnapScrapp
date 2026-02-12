@@ -2410,13 +2410,13 @@ function AppContent() {
                   </svg>
                 </button>
                 
-                {/* Capture Button */}
+                {/* Capture Button - Input Zero Protocol */}
                 <button
                   onClick={capturePhoto}
-                  className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl ring-4 ring-white/30"
+                  className="w-24 h-24 bg-green-600 hover:bg-green-700 active:scale-95 transition-all rounded-full flex items-center justify-center shadow-2xl ring-4 ring-white/50"
                   data-testid="capture-btn"
                 >
-                  <div className="w-16 h-16 bg-lime-400 rounded-full" />
+                  <Camera className="w-10 h-10 text-white" />
                 </button>
                 
                 {/* Flip Camera (placeholder) */}
