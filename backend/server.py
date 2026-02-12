@@ -508,9 +508,11 @@ async def analyze_image_fast(request: FastTitleRequest):
         fast_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"fast-title-{generate_id()}",
-            system_message="""Identify item. Title ONLY. Intellectual, Precise, exact details. Max 3 words.
-Examples: "Vintage Oak Bureau", "Rusted Iron Skillet", "Broken LCD Monitor".
-Reply JSON: {"title": "3 words max", "category": "furniture/electronics/appliances/sports/toys/books/clothing/garden/kitchen/tools/e-waste/scrap-metal/cardboard/general"}"""
+            system_message="""Analyze image. Return JSON with:
+- title: EXACTLY 3 words. Intellectual, Precise. (e.g., "Vintage Oak Bureau")
+- category: ONE of: furniture, electronics, appliances, sports, toys, books, clothing, garden, kitchen, tools, e-waste, scrap-metal, cardboard, general
+
+STOP immediately after JSON. No extra text."""
         ).with_model("gemini", "gemini-2.5-flash")
         
         response = await fast_chat.send_message(UserMessage(
