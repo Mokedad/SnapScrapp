@@ -2558,11 +2558,11 @@ function AppContent() {
         <DrawerContent className="h-[90vh] rounded-t-[40px] p-0 overflow-hidden bg-white">
           {selectedPost && (
             <div className="relative w-full h-full bg-white flex flex-col">
-               {/* Hero Image - Top 60% */}
-               <div className="h-[60%] w-full relative flex-shrink-0 bg-slate-100">
+               {/* Hero Image - Top 50% to prevent scrolling */}
+               <div className="h-[50%] w-full relative flex-shrink-0 bg-slate-100">
                   <img 
                      src={selectedPost.images?.[0] || selectedPost.image_base64} 
-                     className="w-full h-full object-cover rounded-b-[40px] shadow-lg"
+                     className="w-full h-full object-cover rounded-b-[30px] shadow-lg"
                      alt={selectedPost.title}
                      onClick={() => openFullscreenImage(selectedPost.images || [selectedPost.image_base64], 0)}
                   />
@@ -2574,7 +2574,7 @@ function AppContent() {
                         className="bg-black/30 backdrop-blur-md p-3 rounded-full text-white hover:bg-black/50 transition-colors"
                         data-testid="report-post-btn"
                      >
-                        <Flag className="w-6 h-6" />
+                        <Flag className="w-5 h-5" />
                      </button>
                   </div>
                   <div className="absolute top-6 right-6 z-10 flex gap-3">
@@ -2583,75 +2583,77 @@ function AppContent() {
                         className="bg-black/30 backdrop-blur-md p-3 rounded-full text-white hover:bg-black/50 transition-colors"
                         data-testid="favorite-btn"
                      >
-                        <Heart className={`w-6 h-6 ${isFavorite(selectedPost.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                        <Heart className={`w-5 h-5 ${isFavorite(selectedPost.id) ? 'fill-red-500 text-red-500' : ''}`} />
                      </button>
                      <button 
                         onClick={() => handleNativeShare(selectedPost)}
                         className="bg-black/30 backdrop-blur-md p-3 rounded-full text-white hover:bg-black/50 transition-colors"
                         data-testid="share-post-btn"
                      >
-                        <Share2 className="w-6 h-6" />
+                        <Share2 className="w-5 h-5" />
                      </button>
                   </div>
                   
-                  <div className="absolute bottom-6 right-6">
+                  <div className="absolute bottom-4 right-4">
                      <StatusBadge status={selectedPost.status} />
                   </div>
                </div>
         
-               {/* Content */}
-               <div className="flex-1 p-8 pt-6 flex flex-col items-center text-center overflow-y-auto">
-                  <h2 className="text-3xl font-black text-slate-900 mt-2 leading-tight break-words">
+               {/* Content - Compact Layout */}
+               <div className="flex-1 px-6 pt-4 flex flex-col items-center text-center overflow-hidden">
+                  <h2 className="text-2xl font-black text-slate-900 leading-tight line-clamp-2">
                      {selectedPost.title}
                   </h2>
                   
-                  {/* Info List - Clean & Precise */}
-                  <div className="flex flex-col gap-3 mt-6 w-full max-w-xs mx-auto">
+                  {/* Info Box - Side by Side */}
+                  <div className="flex items-center justify-center gap-3 mt-4 w-full text-xs font-bold text-slate-600 bg-slate-50 py-3 px-2 rounded-xl border border-slate-100">
                      {/* Distance */}
                      {formatDistance(selectedPost) && (
-                       <div className="flex items-center gap-3 text-slate-600 font-medium">
-                          <MapPin className="w-5 h-5 text-green-600 flex-shrink-0" />
-                          <span>{formatDistance(selectedPost)} away</span>
+                       <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <MapPin className="w-4 h-4 text-green-600" />
+                          <span>{formatDistance(selectedPost)}</span>
                        </div>
                      )}
                      
+                     <div className="w-px h-4 bg-slate-300"></div>
+                     
                      {/* Expiry */}
-                     <div className="flex items-center gap-3 text-slate-600 font-medium">
-                        <Timer className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                        <span>Expires {new Date(selectedPost.expires_at).toLocaleDateString()}</span>
+                     <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <Timer className="w-4 h-4 text-amber-500" />
+                        <span>{new Date(selectedPost.expires_at).toLocaleDateString(undefined, {day:'numeric', month:'short'})}</span>
                      </div>
+                     
+                     <div className="w-px h-4 bg-slate-300"></div>
                      
                      {/* Directions Link */}
                      <a 
                         href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPost.latitude},${selectedPost.longitude}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-blue-600 font-bold hover:underline"
+                        className="flex items-center gap-1.5 text-blue-600 hover:underline flex-shrink-0"
                         data-testid="get-directions-link"
                         onClick={() => logInteraction(selectedPost.id, 'direction_click')}
                      >
-                        <Navigation className="w-5 h-5 flex-shrink-0" />
-                        <span>Get directions</span>
-                        <ExternalLink className="w-3 h-3 ml-auto" />
+                        <Navigation className="w-4 h-4" />
+                        <span>Directions</span>
                      </a>
                   </div>
 
-                  {/* Safety Text Block */}
-                  <div className="mt-8 text-left w-full max-w-xs mx-auto space-y-2">
-                     <div className="flex gap-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-xs text-amber-800 font-medium">
-                           Public pickup only. Do not enter private property.
+                  {/* Safety Text Block - Compact */}
+                  <div className="mt-4 text-left w-full space-y-1.5 bg-amber-50/50 p-3 rounded-xl border border-amber-100/50">
+                     <div className="flex gap-2 items-center">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                        <p className="text-[11px] text-amber-800 font-bold">
+                           Public pickup only.
                         </p>
                      </div>
-                     <p className="text-[10px] text-slate-400 leading-relaxed pl-6">
-                        Ucycle is a recovery network. We do not support dumping.
-                        Items not claimed within 48 hours must be removed by the owner.
+                     <p className="text-[10px] text-slate-500 leading-tight pl-5">
+                        Ucycle is a recovery network. No dumping. Unclaimed items must be removed by owner in 48h.
                      </p>
                   </div>
                   
-                  {/* Action Dock Placeholder */}
-                  <div className="h-32"></div>
+                  {/* Spacer for Action Dock */}
+                  <div className="flex-grow"></div>
                </div>
         
                {/* Action Dock (Fixed Bottom) */}
