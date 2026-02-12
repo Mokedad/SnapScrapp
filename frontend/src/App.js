@@ -2328,7 +2328,8 @@ function AppContent() {
             <Camera className="w-10 h-10 text-white" />
           </button>
           
-          {/* Gallery Button (Small, Left of Camera) */}
+          {/* Gallery Button - REMOVED per user request */}
+          {/* 
           <button
             onClick={openGallery}
             className="absolute right-full mr-4 w-12 h-12 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg"
@@ -2340,6 +2341,7 @@ function AppContent() {
               <path d="M21 15l-5-5L5 21" />
             </svg>
           </button>
+          */}
 
           {/* Location Button (Small, Right of Camera) */}
           <button
