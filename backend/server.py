@@ -1063,6 +1063,10 @@ async def create_report(report: ReportCreate):
     
     await db.reports.insert_one(report_doc)
     
+    # Remove _id added by mongo
+    if "_id" in report_doc:
+        del report_doc["_id"]
+    
     # Increment report count on post
     await db.posts.update_one(
         {"id": report.post_id},
