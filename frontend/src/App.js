@@ -2316,16 +2316,48 @@ function AppContent() {
       {/* Hidden canvas for image processing */}
       <canvas ref={canvasRef} className="hidden" />
 
-      {/* Camera FAB Button - Opens NATIVE camera */}
+      {/* Camera Button Container - "Input Zero" Protocol */}
       {!pickingLocation && (
-        <button 
-          className="fab-button"
-          onClick={openCamera}
-          data-testid="camera-fab"
-          aria-label="Open camera"
-        >
-          <Camera className="w-7 h-7" />
-        </button>
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-[400] flex items-center justify-center">
+          {/* Massive Pulsing Camera Button */}
+          <button
+            onClick={openCamera}
+            className="w-[80px] h-[80px] bg-green-600 hover:bg-green-700 active:scale-95 transition-all rounded-full flex items-center justify-center shadow-2xl border-4 border-white animate-pulse"
+            data-testid="capture-btn"
+          >
+            <Camera className="w-10 h-10 text-white" />
+          </button>
+          
+          {/* Gallery Button (Small, Left of Camera) */}
+          <button
+            onClick={openGallery}
+            className="absolute right-full mr-4 w-12 h-12 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg"
+            data-testid="gallery-btn"
+          >
+            <svg className="w-5 h-5 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="M21 15l-5-5L5 21" />
+            </svg>
+          </button>
+
+          {/* Location Button (Small, Right of Camera) */}
+          <button
+            onClick={() => requestLocation(true)}
+            className="absolute left-full ml-4 w-12 h-12 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg"
+            data-testid="locate-btn"
+          >
+            {isLocating ? (
+              <Loader2 className="w-5 h-5 animate-spin text-green-600" />
+            ) : (
+              <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="2" />
+                <path d="M12 2v2m0 16v2M2 12h2m16 0h2" />
+              </svg>
+            )}
+          </button>
+        </div>
       )}
 
       {/* Full Screen Camera View */}
