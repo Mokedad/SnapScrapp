@@ -2684,17 +2684,22 @@ function AppContent() {
                      </Button>
                   ) : (selectedPost.status === 'pending' || activeClaim?.post_id === selectedPost.id) ? (
                      <div className="flex gap-4 w-full">
-                        <a 
-                           href={`tel:${selectedPost.poster_phone || activeClaim?.poster_phone || ''}`}
-                           className="flex-1 h-20 flex items-center justify-center text-xl font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 no-underline"
-                           data-testid="call-btn"
-                        >
-                           <Phone className="w-6 h-6 mr-2" />
-                           CALL
-                        </a>
+                        {/* Only show Call button if phone exists */}
+                        {(selectedPost.poster_phone || activeClaim?.poster_phone) && (
+                           <a 
+                              href={`tel:${selectedPost.poster_phone || activeClaim?.poster_phone}`}
+                              className="flex-1 h-20 flex items-center justify-center text-xl font-bold bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-xl border-b-4 border-green-800 active:border-b-0 active:translate-y-1 no-underline"
+                              data-testid="call-btn"
+                           >
+                              <Phone className="w-6 h-6 mr-2" />
+                              CALL
+                           </a>
+                        )}
                         <Button 
                            onClick={() => handleMarkCollected(selectedPost.id)}
-                           className="flex-1 h-20 text-xl font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-2xl shadow-xl border-b-4 border-slate-400 active:border-b-0 active:translate-y-1"
+                           className={`h-20 text-xl font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-2xl shadow-xl border-b-4 border-slate-400 active:border-b-0 active:translate-y-1 ${
+                              (selectedPost.poster_phone || activeClaim?.poster_phone) ? 'flex-1' : 'w-full'
+                           }`}
                            data-testid="done-btn"
                         >
                            DONE
