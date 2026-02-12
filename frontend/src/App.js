@@ -2571,11 +2571,14 @@ function AppContent() {
         <DrawerContent className="h-[90vh] rounded-t-[40px] p-0 overflow-hidden bg-white">
           {selectedPost && (
             <div className="relative w-full h-full bg-white flex flex-col">
-               {/* Hero Image - Top 50% to prevent scrolling */}
-               <div className="h-[50%] w-full relative flex-shrink-0 bg-slate-100">
+               {/* Hero Image - Top 50% - "Into Box" Layout */}
+               <div className="h-[50%] w-full relative flex-shrink-0 bg-black">
+                  {/* Exit Handle for Visibility */}
+                  <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/40 backdrop-blur-md rounded-full z-20"></div>
+                  
                   <img 
                      src={selectedPost.images?.[0] || selectedPost.image_base64} 
-                     className="w-full h-full object-cover rounded-b-[30px] shadow-lg"
+                     className="w-full h-full object-contain bg-black/90 rounded-b-[30px] shadow-lg"
                      alt={selectedPost.title}
                      onClick={() => openFullscreenImage(selectedPost.images || [selectedPost.image_base64], 0)}
                   />
