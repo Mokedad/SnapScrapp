@@ -2255,7 +2255,8 @@ function AppContent() {
         </button>
       )}
 
-      {/* My Location button */}
+      {/* My Location button - REMOVED (Redundant) */}
+      {/* 
       {!pickingLocation && (
         <button 
           className={`my-location-btn ${isLocating ? 'locating' : ''}`}
@@ -2274,6 +2275,7 @@ function AppContent() {
           )}
         </button>
       )}
+      */}
 
       {/* Location picking overlay */}
       {pickingLocation && (
