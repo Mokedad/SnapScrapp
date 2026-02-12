@@ -2319,7 +2319,8 @@ function AppContent() {
       <canvas ref={canvasRef} className="hidden" />
 
       {/* Camera Button Container - "Input Zero" Protocol */}
-      {!pickingLocation && (
+      {/* Hidden when picking location OR viewing a post detail (Hero Card) */}
+      {!pickingLocation && !showDetailDrawer && !showPostDrawer && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-[400] flex items-center justify-center">
           {/* Massive Pulsing Camera Button */}
           <button
