@@ -2480,335 +2480,57 @@ function AppContent() {
         favoritesCount={favoritesCount}
       />
 
-      {/* Post Item Drawer - Compact Design */}
+      {/* Smart Post Modal - Input Zero Protocol */}
       <Drawer open={showPostDrawer} onOpenChange={setShowPostDrawer}>
-        <DrawerContent className="max-h-[85vh]">
-          {/* Compact Header with Image */}
-          <div className="relative">
-            {newPost.image_base64 ? (
-              <>
-                <img 
-                  src={newPost.image_base64} 
-                  alt="Preview" 
-                  className={`w-full ${isAnalyzing ? 'h-48' : 'h-40'} object-cover transition-all duration-300`}
-                />
-                {/* AI Analysis Progress Overlay with Percentage */}
-                {isAnalyzing && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col items-center justify-end pb-6">
-                    {/* Animated progress bar */}
-                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-black/30">
-                      <div 
-                        className="h-full bg-green-400 transition-all duration-300 ease-out"
-                        style={{ width: `${analysisProgress}%` }}
-                      />
-                    </div>
-                    
-                    {/* Progress indicator with percentage */}
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="relative">
-                        {/* Circular progress background */}
-                        <svg className="w-20 h-20 transform -rotate-90">
-                          <circle cx="40" cy="40" r="36" stroke="rgba(74, 222, 128, 0.2)" strokeWidth="6" fill="none" />
-                          <circle 
-                            cx="40" cy="40" r="36" 
-                            stroke="#4ade80" 
-                            strokeWidth="6" 
-                            fill="none"
-                            strokeDasharray={`${2 * Math.PI * 36}`}
-                            strokeDashoffset={`${2 * Math.PI * 36 * (1 - analysisProgress / 100)}`}
-                            strokeLinecap="round"
-                            className="transition-all duration-300 ease-out"
-                          />
-                        </svg>
-                        {/* Percentage in center */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-white font-bold text-lg">{analysisProgress}%</span>
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-white font-semibold text-base">{aiAnalysisStep || 'Processing...'}</p>
-                        <p className="text-green-400/80 text-xs mt-1">You can start typing below</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <button
-                  onClick={() => {
-                    setNewPost(prev => ({ ...prev, image_base64: "" }));
-                    openCamera();
-                    setShowPostDrawer(false);
-                  }}
-                  className="absolute top-3 right-3 p-2 bg-black/50 rounded-full text-white"
-                  data-testid="retake-photo-btn"
-                >
-                  <Camera className="w-4 h-4" />
-                </button>
-              </>
-            ) : (
-              <div 
-                className="h-40 bg-slate-100 flex items-center justify-center cursor-pointer"
-                onClick={() => { setShowPostDrawer(false); openCamera(); }}
-              >
-                <div className="text-center">
-                  <Camera className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                  <p className="text-slate-500 text-sm">Tap to snap a photo</p>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Additional Images Section */}
-          {newPost.image_base64 && (
-            <div className="px-4 py-2 bg-slate-50 border-t">
-              <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
-                {/* Thumbnails of additional images */}
-                {newPost.images.map((img, index) => (
-                  <div key={index} className="relative flex-shrink-0">
-                    <img 
-                      src={img} 
-                      alt={`Photo ${index + 2}`}
-                      className="w-14 h-14 object-cover rounded-lg"
-                    />
-                    <button
-                      onClick={() => removeAdditionalImage(index)}
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center"
-                    >
-                      <X className="w-3 h-3 text-white" />
-                    </button>
-                  </div>
-                ))}
-                
-                {/* Add more button (if less than 4 additional) */}
-                {newPost.images.length < 4 && (
-                  <button
-                    onClick={() => additionalImagesRef.current?.click()}
-                    className="w-14 h-14 flex-shrink-0 bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center hover:border-green-500 transition-colors"
-                    data-testid="add-more-photos-btn"
-                  >
-                    <Plus className="w-5 h-5 text-slate-400" />
-                  </button>
-                )}
-                
-                <span className="text-xs text-slate-500 flex-shrink-0 ml-1">
-                  {newPost.images.length + 1}/5 photos
-                </span>
-              </div>
-              
-              {/* Hidden file input for additional images */}
-              <input
-                ref={additionalImagesRef}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleAdditionalImages}
-                className="hidden"
-              />
-            </div>
-          )}
-          
-          {/* Compact Form */}
-          <div className="p-4 pb-20 space-y-4">
-            {/* Title - larger, prominent */}
-            <Input
-              value={newPost.title}
-              onChange={(e) => setNewPost(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="What is it? (e.g. Old Chair)"
-              disabled={isAnalyzing}
-              className="text-lg font-semibold border-0 border-b rounded-none px-0 focus-visible:ring-0"
-              data-testid="post-title-input"
-            />
-            
-            {/* Category + Expiry in one row */}
-            <div className="flex gap-3">
-              <Select 
-                value={newPost.category} 
-                onValueChange={(val) => setNewPost(prev => ({ ...prev, category: val }))}
-                disabled={isAnalyzing}
-              >
-                <SelectTrigger className="flex-1" data-testid="post-category-select">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map(cat => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat.replace('-', ' ').charAt(0).toUpperCase() + cat.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              {/* Compact expiry buttons */}
-              <div className="flex border rounded-lg overflow-hidden">
-                {[24, 48, 72].map(hours => (
-                  <button
-                    key={hours}
-                    onClick={() => setNewPost(prev => ({ ...prev, expiry_hours: hours }))}
-                    className={`px-3 py-2 text-sm font-medium transition-colors ${
-                      newPost.expiry_hours === hours 
-                        ? 'bg-green-600 text-white' 
-                        : 'bg-white text-slate-600 hover:bg-slate-50'
-                    }`}
-                    data-testid={`expiry-${hours}h`}
-                  >
-                    {hours}h
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Location - auto-use current if available with human-readable address */}
-            <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl">
-              <MapPin className="w-5 h-5 text-green-600 flex-shrink-0" />
-              {isGettingAddress ? (
-                <span className="text-sm text-slate-500 flex items-center gap-2 flex-1">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Getting location...
-                </span>
-              ) : newPost.latitude ? (
-                <>
-                  <div className="flex-1 min-w-0">
-                    {newPost.address ? (
-                      <span className="text-sm text-green-700 font-medium truncate block">{newPost.address}</span>
-                    ) : (
-                      <span className="text-sm text-green-700">Location set ✓</span>
-                    )}
-                  </div>
-                  <button
-                    onClick={async () => {
-                      // Refresh to get fresh GPS location + new address
-                      if (navigator.geolocation) {
-                        toast.loading("Refreshing...", { id: 'refresh-loc' });
-                        setIsGettingAddress(true);
-                        navigator.geolocation.getCurrentPosition(
-                          async (position) => {
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
-                            setNewPost(prev => ({
-                              ...prev,
-                              latitude: lat,
-                              longitude: lng
-                            }));
-                            setUserLocation([lat, lng]);
-                            // Get new address
-                            const addr = await reverseGeocode(lat, lng);
-                            if (addr) {
-                              setNewPost(prev => ({ ...prev, address: addr }));
-                            }
-                            setIsGettingAddress(false);
-                            toast.success("Location updated!", { id: 'refresh-loc' });
-                          },
-                          (error) => {
-                            setIsGettingAddress(false);
-                            toast.error("Could not refresh location", { id: 'refresh-loc' });
-                          },
-                          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                        );
-                      }
-                    }}
-                    className="text-xs text-green-600 hover:text-green-700 font-medium flex items-center gap-1 flex-shrink-0"
-                    data-testid="refresh-location-btn"
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    Refresh
-                  </button>
-                </>
-              ) : userLocation ? (
-                <button
-                  onClick={async () => {
-                    // Get fresh location with address
-                    if (navigator.geolocation) {
-                      toast.loading("Getting location...", { id: 'get-loc' });
-                      setIsGettingAddress(true);
-                      navigator.geolocation.getCurrentPosition(
-                        async (position) => {
-                          const lat = position.coords.latitude;
-                          const lng = position.coords.longitude;
-                          setNewPost(prev => ({
-                            ...prev,
-                            latitude: lat,
-                            longitude: lng
-                          }));
-                          setUserLocation([lat, lng]);
-                          const addr = await reverseGeocode(lat, lng);
-                          if (addr) setNewPost(prev => ({ ...prev, address: addr }));
-                          setIsGettingAddress(false);
-                          toast.success("Location set!", { id: 'get-loc' });
-                        },
-                        async (error) => {
-                          // Fallback to cached location
-                          setNewPost(prev => ({
-                            ...prev,
-                            latitude: userLocation[0],
-                            longitude: userLocation[1]
-                          }));
-                          const addr = await reverseGeocode(userLocation[0], userLocation[1]);
-                          if (addr) setNewPost(prev => ({ ...prev, address: addr }));
-                          setIsGettingAddress(false);
-                          toast.success("Using cached location", { id: 'get-loc' });
-                        },
-                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                      );
-                    } else {
-                      setNewPost(prev => ({
-                        ...prev,
-                        latitude: userLocation[0],
-                        longitude: userLocation[1]
-                      }));
-                      toast.success("Using your location!");
-                    }
-                  }}
-                  className="text-sm text-green-600 flex-1 text-left"
-                >
-                  Tap to use current location
-                </button>
+        <DrawerContent className="h-full max-h-none border-none rounded-none p-0 bg-black">
+          <div className="relative w-full h-full bg-black flex flex-col">
+            {/* Full Screen Image */}
+            <div className="flex-1 relative overflow-hidden">
+              {newPost.image_base64 ? (
+                <img src={newPost.image_base64} alt="Preview" className="w-full h-full object-cover" />
               ) : (
-                <button
-                  onClick={() => { setShowPostDrawer(false); setPickingLocation(true); }}
-                  className="text-sm text-slate-600 flex-1 text-left"
-                >
-                  Tap to set location
-                </button>
+                <div className="w-full h-full flex items-center justify-center bg-slate-900">
+                  <Camera className="w-16 h-16 text-slate-500" />
+                </div>
               )}
-            </div>
-            
-            {/* Contact Number (Optional) */}
-            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Phone className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-slate-700">Contact Number (Optional)</span>
+              
+              {/* Overlays */}
+              <div className="absolute inset-0 flex flex-col justify-between z-10 p-6 pb-32 safe-area-bottom pointer-events-none">
+                 {/* Top: AI Title */}
+                 <div className="mt-16 text-center pointer-events-auto">
+                   {isAnalyzing ? (
+                      <div className="animate-pulse flex flex-col items-center">
+                         <Loader2 className="w-8 h-8 text-white mb-2 animate-spin" />
+                         <h1 className="text-4xl font-black text-white/50">Analyzing...</h1>
+                      </div>
+                   ) : (
+                      <h1 className="text-4xl md:text-5xl font-black text-white leading-tight drop-shadow-lg break-words text-shadow-lg">
+                         {newPost.title || "..."}
+                      </h1>
+                   )}
+                 </div>
+  
+                 {/* Bottom: The "Yes" Button */}
+                 <div className="w-full pb-8 pointer-events-auto">
+                    <Button
+                      className="w-full h-24 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl shadow-xl flex items-center justify-center transition-transform active:scale-95 border-b-8 border-emerald-700 active:border-b-0 active:translate-y-2"
+                      onClick={handleSubmitPost}
+                      disabled={isPosting || isAnalyzing}
+                      data-testid="publish-post-btn"
+                    >
+                       {isPosting ? <Loader2 className="w-12 h-12 animate-spin" /> : <Check className="w-16 h-16" />}
+                    </Button>
+                 </div>
               </div>
-              <input
-                type="tel"
-                inputMode="tel"
-                placeholder="Mobile for pickers to contact you"
-                value={newPost.poster_phone}
-                onChange={(e) => setNewPost(prev => ({ ...prev, poster_phone: e.target.value }))}
-                className="w-full p-3 bg-white border border-blue-200 rounded-lg text-slate-800 placeholder:text-slate-400"
-                data-testid="poster-phone-input"
-              />
-              <p className="text-xs text-blue-600 mt-1">Only shared when someone claims your item</p>
-            </div>
-            
-            {/* Swipe to Post Button */}
-            <div className="pt-2">
-              <Button
-                className="w-full bg-gradient-to-r from-green-600 to-lime-500 hover:from-green-700 hover:to-lime-600 text-white font-bold py-6 rounded-full shadow-lg text-lg"
-                onClick={handleSubmitPost}
-                disabled={isPosting || isAnalyzing || !newPost.image_base64 || !newPost.title || !newPost.latitude}
-                data-testid="publish-post-btn"
+              
+              {/* Retake Button (Top Right) */}
+              <button 
+                onClick={() => { setShowPostDrawer(false); openCamera(); }}
+                className="absolute top-8 right-6 p-3 bg-black/40 backdrop-blur rounded-full text-white z-20 pointer-events-auto"
+                data-testid="retake-photo-btn"
               >
-                {isPosting ? (
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                ) : (
-                  <>
-                    <Check className="w-6 h-6 mr-2" />
-                    Help a mate find it!
-                  </>
-                )}
-              </Button>
-              <p className="text-center text-xs text-slate-400 mt-2">
-                Approximate location shown for privacy
-              </p>
+                <X className="w-6 h-6" />
+              </button>
             </div>
           </div>
         </DrawerContent>
