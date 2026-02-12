@@ -2503,12 +2503,12 @@ function AppContent() {
               <div className="absolute inset-0 flex flex-col justify-end z-10 safe-area-bottom pointer-events-none">
                  
                  {/* Bottom Action Panel */}
-                 <div className="bg-emerald-500 rounded-t-[40px] pt-8 pb-12 px-6 pointer-events-auto flex flex-col items-center shadow-2xl relative">
+                 <div className="bg-emerald-500 rounded-t-[40px] pt-6 pb-10 px-6 pointer-events-auto flex flex-col items-center shadow-2xl relative transition-all">
                     {/* Handle/Indicator */}
                     <div className="w-12 h-1.5 bg-emerald-700/30 rounded-full absolute top-3"></div>
 
                     {/* Editable Title Input - Centered & Huge */}
-                    <div className="w-full mb-6">
+                    <div className="w-full mb-4">
                        {isAnalyzing ? (
                           <div className="flex flex-col items-center animate-pulse py-2">
                              <Loader2 className="w-8 h-8 text-white mb-2 animate-spin" />
@@ -2519,20 +2519,32 @@ function AppContent() {
                              value={newPost.title}
                              onChange={(e) => setNewPost(prev => ({ ...prev, title: e.target.value }))}
                              placeholder="Name this item..."
-                             className="w-full bg-transparent text-center text-4xl md:text-5xl font-black text-white placeholder:text-emerald-200/50 outline-none border-none p-0 m-0 leading-tight"
+                             className="w-full bg-transparent text-center text-3xl md:text-4xl font-black text-white placeholder:text-emerald-200/50 outline-none border-none p-0 m-0 leading-tight"
                              autoFocus={!newPost.title}
                           />
                        )}
                     </div>
 
+                    {/* Optional Phone Input - Integrated cleanly */}
+                    <div className="w-full max-w-xs mb-4 flex items-center justify-center border-b border-emerald-400/50 pb-1">
+                        <Phone className="w-4 h-4 text-emerald-200 mr-2" />
+                        <input
+                            type="tel"
+                            placeholder="Mobile # for pickup (Optional)"
+                            value={newPost.poster_phone}
+                            onChange={(e) => setNewPost(prev => ({ ...prev, poster_phone: e.target.value }))}
+                            className="bg-transparent text-emerald-100 placeholder:text-emerald-200/50 text-sm outline-none w-48 text-center"
+                        />
+                    </div>
+
                     {/* Massive Checkmark Button */}
                     <button
-                      className="w-24 h-24 bg-white hover:bg-emerald-50 text-emerald-600 rounded-full shadow-lg flex items-center justify-center transition-all active:scale-90"
+                      className="w-20 h-20 bg-white hover:bg-emerald-50 text-emerald-600 rounded-full shadow-lg flex items-center justify-center transition-all active:scale-90"
                       onClick={handleSubmitPost}
                       disabled={isPosting || isAnalyzing}
                       data-testid="publish-post-btn"
                     >
-                       {isPosting ? <Loader2 className="w-10 h-10 animate-spin" /> : <Check className="w-12 h-12 stroke-[4]" />}
+                       {isPosting ? <Loader2 className="w-8 h-8 animate-spin" /> : <Check className="w-10 h-10 stroke-[4]" />}
                     </button>
                  </div>
               </div>
