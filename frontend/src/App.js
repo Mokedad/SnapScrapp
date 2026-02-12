@@ -2495,38 +2495,47 @@ function AppContent() {
               )}
               
               {/* Overlays */}
-              <div className="absolute inset-0 flex flex-col justify-between z-10 p-6 pb-32 safe-area-bottom pointer-events-none">
-                 {/* Top: AI Title */}
-                 <div className="mt-16 text-center pointer-events-auto">
-                   {isAnalyzing ? (
-                      <div className="animate-pulse flex flex-col items-center">
-                         <Loader2 className="w-8 h-8 text-white mb-2 animate-spin" />
-                         <h1 className="text-4xl font-black text-white/50">Analyzing...</h1>
-                      </div>
-                   ) : (
-                      <h1 className="text-4xl md:text-5xl font-black text-white leading-tight drop-shadow-lg break-words text-shadow-lg">
-                         {newPost.title || "..."}
-                      </h1>
-                   )}
-                 </div>
-  
-                 {/* Bottom: The "Yes" Button */}
-                 <div className="w-full pb-8 pointer-events-auto">
-                    <Button
-                      className="w-full h-24 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl shadow-xl flex items-center justify-center transition-transform active:scale-95 border-b-8 border-emerald-700 active:border-b-0 active:translate-y-2"
+              <div className="absolute inset-0 flex flex-col justify-end z-10 safe-area-bottom pointer-events-none">
+                 
+                 {/* Bottom Action Panel */}
+                 <div className="bg-emerald-500 rounded-t-[40px] pt-8 pb-12 px-6 pointer-events-auto flex flex-col items-center shadow-2xl relative">
+                    {/* Handle/Indicator */}
+                    <div className="w-12 h-1.5 bg-emerald-700/30 rounded-full absolute top-3"></div>
+
+                    {/* Editable Title Input - Centered & Huge */}
+                    <div className="w-full mb-6">
+                       {isAnalyzing ? (
+                          <div className="flex flex-col items-center animate-pulse py-2">
+                             <Loader2 className="w-8 h-8 text-white mb-2 animate-spin" />
+                             <span className="text-emerald-100 font-medium text-lg">Thinking...</span>
+                          </div>
+                       ) : (
+                          <input
+                             value={newPost.title}
+                             onChange={(e) => setNewPost(prev => ({ ...prev, title: e.target.value }))}
+                             placeholder="Name this item..."
+                             className="w-full bg-transparent text-center text-4xl md:text-5xl font-black text-white placeholder:text-emerald-200/50 outline-none border-none p-0 m-0 leading-tight"
+                             autoFocus={!newPost.title}
+                          />
+                       )}
+                    </div>
+
+                    {/* Massive Checkmark Button */}
+                    <button
+                      className="w-24 h-24 bg-white hover:bg-emerald-50 text-emerald-600 rounded-full shadow-lg flex items-center justify-center transition-all active:scale-90"
                       onClick={handleSubmitPost}
                       disabled={isPosting || isAnalyzing}
                       data-testid="publish-post-btn"
                     >
-                       {isPosting ? <Loader2 className="w-12 h-12 animate-spin" /> : <Check className="w-16 h-16" />}
-                    </Button>
+                       {isPosting ? <Loader2 className="w-10 h-10 animate-spin" /> : <Check className="w-12 h-12 stroke-[4]" />}
+                    </button>
                  </div>
               </div>
               
               {/* Retake Button (Top Right) */}
               <button 
                 onClick={() => { setShowPostDrawer(false); openCamera(); }}
-                className="absolute top-8 right-6 p-3 bg-black/40 backdrop-blur rounded-full text-white z-20 pointer-events-auto"
+                className="absolute top-8 right-6 p-3 bg-black/40 backdrop-blur rounded-full text-white z-20 pointer-events-auto hover:bg-black/60 transition-colors"
                 data-testid="retake-photo-btn"
               >
                 <X className="w-6 h-6" />
