@@ -296,7 +296,7 @@ async def analyze_image(request: AIAnalysisRequest):
             api_key=EMERGENT_LLM_KEY,
             session_id=f"analyze-{generate_id()}",
             system_message="""Analyze image. Return JSON with:
-- title: EXACTLY 3 words (e.g., "Rusty Garden Shed")
+- title: EXACTLY 3 words. Intellectual, Precise. (e.g., "Vintage Oak Bureau")
 - category: ONE of: furniture, electronics, appliances, sports, toys, garden, tools, scrap-metal, cardboard, general
 - description: EXACTLY 2 sentences. Condition + utility only.
 
