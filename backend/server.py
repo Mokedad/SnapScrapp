@@ -508,14 +508,13 @@ async def analyze_image_fast(request: FastTitleRequest):
         fast_chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"fast-title-{generate_id()}",
-            system_message="""Identify items in 2-4 words. Be specific.
-Good: "Rusty Metal Shed", "White Washing Machine", "Cardboard Boxes"
-Bad: "Item", "Object", "Stuff", "Thing"
-Reply JSON: {"title": "2-4 words", "category": "furniture/electronics/appliances/sports/toys/books/clothing/garden/kitchen/tools/e-waste/scrap-metal/cardboard/general"}"""
+            system_message="""Identify item. Title ONLY. Intellectual, Precise, exact details. Max 3 words.
+Examples: "Vintage Oak Bureau", "Rusted Iron Skillet", "Broken LCD Monitor".
+Reply JSON: {"title": "3 words max", "category": "furniture/electronics/appliances/sports/toys/books/clothing/garden/kitchen/tools/e-waste/scrap-metal/cardboard/general"}"""
         ).with_model("gemini", "gemini-2.5-flash")
         
         response = await fast_chat.send_message(UserMessage(
-            text="What is this? 2-4 word title + category. JSON only.",
+            text="Identify this. Intellectual, precise title. JSON only.",
             file_contents=[ImageContent(image_base64=request.image_base64)]
         ))
         response_text = response.strip() if isinstance(response, str) else str(response).strip()
